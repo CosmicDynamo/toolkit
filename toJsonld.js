@@ -5,25 +5,25 @@ define([
     "dojo/_base/Deferred",
     "dojo/_base/lang",
     "dojo/when",
-    "qash/rdf/parser/jsonld"
-], function(Deferred, lang, when, jsonld){
-    return function(input, options){
+    "jazzHands/rdf/parser/jsonld"
+], function (Deferred, lang, when, jsonld) {
+    return function (input, options) {
         options = options || {};
 
-        return when(input, function(rdf){
-            if (lang.isFunction(rdf.toArray)){
+        return when(input, function (rdf) {
+            if (lang.isFunction(rdf.toArray)) {
                 rdf = rdf.toArray();
             }
 
             var p = new Deferred();
-            jsonld.fromRDF({ "@default": rdf }, function(err, ld){
-                if (err){
+            jsonld.fromRDF({ "@default": rdf }, function (err, ld) {
+                if (err) {
                     p.reject(err);
                 }
 
-                if (options.context){
-                    jsonld.compact(ld, options.context, function(err, ld){
-                        if (err){
+                if (options.context) {
+                    jsonld.compact(ld, options.context, function (err, ld) {
+                        if (err) {
                             p.reject(err);
                         }
 

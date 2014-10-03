@@ -2,7 +2,7 @@
  * Created by Akeron on 2/26/14.
  */
 define([
-    "./_Node", "qash/genId"
+    "./_Node", "jazzHands/genId"
 ], function (_Node, genId) {
     /* Implementation of <http://www.w3.org/TR/rdf-interfaces/#idl-def-BlankNode> */
     return function (params) {
