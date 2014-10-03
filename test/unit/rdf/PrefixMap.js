@@ -2,10 +2,10 @@
  * Created by Akeron on 3/8/14.
  */
 define([
-    "qasht/package/Unit", "qash/rdf/PrefixMap"
+    "qasht/package/Unit", "jazzHands/rdf/PrefixMap"
 ], function (TestPackage, PrefixMap) {
     return new TestPackage({
-        module: "qash/rdf/PrefixMap",
+        module: "jazzHands/rdf/PrefixMap",
         tests: [
             {
                 name: "constructor: takes values and default params to initialize the new PrefixMap",

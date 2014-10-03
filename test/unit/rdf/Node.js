@@ -2,7 +2,7 @@
  * Created by Akeron on 3/4/14.
  */
 define([
-    "qasht/package/Unit", "qash/rdf/Node", "dojo/_base/lang"
+    "qasht/package/Unit", "jazzHands/rdf/Node", "dojo/_base/lang"
 ], function (TestPackage, Node, lang) {
     return new TestPackage({
         module: "quash/rdf/Node",
@@ -56,7 +56,8 @@ define([
 
                     test.complete();
                 }
-            }, {
+            },
+            {
                 name: "null Value creates bNode with new id",
                 exec: function (test) {
                     var out = new Node(null);

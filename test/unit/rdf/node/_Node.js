@@ -2,7 +2,7 @@
  * Created by Akeron on 3/4/14.
  */
 define([
-    "qasht/package/Unit", "qash/rdf/node/_Node"
+    "qasht/package/Unit", "jazzHands/rdf/node/_Node"
 ], function (TestPackage, _Node) {
     return new TestPackage({
         module: "quash/rdf/node/_Node",

@@ -2,10 +2,10 @@
  * Created by Akeron on 2/26/14.
  */
 define([
-    "qasht/package/Unit", "qash/rdf/Triple", "dojo/_base/lang"
+    "qasht/package/Unit", "jazzHands/rdf/Triple", "dojo/_base/lang"
 ], function (TestPackage, Triple, lang) {
     return new TestPackage({
-        module: "qash/rdf/Triple",
+        module: "jazzHands/rdf/Triple",
         tests: [
             {
                 name: "equals: Returns true if input = self",

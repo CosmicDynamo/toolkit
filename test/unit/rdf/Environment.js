@@ -2,10 +2,10 @@
  * Created by Akeron on 3/8/14.
  */
 define([
-    "qasht/package/Unit", "qash/rdf/Environment", "dojo/_base/lang"
+    "qasht/package/Unit", "jazzHands/rdf/Environment", "dojo/_base/lang"
 ], function (TestPackage, Environment, lang) {
     return new TestPackage({
-        module: "qash/rdf/Environment",
+        module: "jazzHands/rdf/Environment",
         tests: [
             {
                 name: "createBlankNode: creates a new Blank Node",

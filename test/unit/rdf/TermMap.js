@@ -2,10 +2,10 @@
  * Created by Akeron on 3/8/14.
  */
 define([
-    "qasht/package/Unit", "qash/rdf/TermMap"
+    "qasht/package/Unit", "jazzHands/rdf/TermMap"
 ], function (TestPackage, TermMap) {
     return new TestPackage({
-        module: "qash/rdf/TermMap",
+        module: "jazzHands/rdf/TermMap",
         tests: [
             {
                 name: "constructor: takes values and default params to initialize the new TermMap",

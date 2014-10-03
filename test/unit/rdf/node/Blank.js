@@ -2,8 +2,8 @@
  * Created by Akeron on 3/4/14.
  */
 define([
-    "qasht/package/Unit", "qash/rdf/node/Blank", "dojo/_base/lang", "qash/rdf/node/Literal",
-    "qash/rdf/node/Named"], function (TestPackage, bNode, lang, lNode, nNode) {
+    "qasht/package/Unit", "jazzHands/rdf/node/Blank", "dojo/_base/lang", "jazzHands/rdf/node/Literal",
+    "jazzHands/rdf/node/Named"], function (TestPackage, bNode, lang, lNode, nNode) {
     return new TestPackage({
         module: "quash/rdf/node/Blank",
         tests: [

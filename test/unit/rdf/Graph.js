@@ -1,7 +1,7 @@
 define([
     "qasht/package/Unit",
-    "qash/test/fake/rdf/Triple",
-    "qash/rdf/Graph",
+    "jazzHands/test/fake/rdf/Triple",
+    "jazzHands/rdf/Graph",
     "dojo/_base/lang"
 ], function (TestPackage, Triple, Graph, lang) {
     return new TestPackage({
@@ -11,7 +11,7 @@ define([
                 name: "add(Triple): Adds the specified Triple to the graph",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-add-Graph-Triple-triple",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "\"!!!\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"!!!\"^^<xsd:string>"}, test);
                     test.graph.add(input);
 
                     var contains = test.graph.toArray();
@@ -26,7 +26,7 @@ define([
                 name: "add(Triple): returns the graph instance it was called on",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-add-Graph-Triple-triple",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "\"!!!\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"!!!\"^^<xsd:string>"}, test);
                     var output = test.graph.add(input);
 
                     test.assertEqual(test.graph, output);
@@ -38,7 +38,7 @@ define([
                 name: "remove(Triple): Removes the specified Triple from the Graph",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-remove-Graph-Triple-triple",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "\"!!!\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"!!!\"^^<xsd:string>"}, test);
                     test.graph.add(input);
 
                     var contains = test.graph.toArray();
@@ -58,7 +58,7 @@ define([
                 name: "remove(Triple): returns the graph instance it was called on",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-add-Graph-Triple-triple",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "\"!!!\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", prediate: "<urn:World>", object: "\"!!!\"^^<xsd:string>"}, test);
                     var output = test.graph.remove(input);
 
                     test.assertEqual(test.graph, output);
@@ -75,7 +75,7 @@ define([
                     for (var sIdx = 1; sIdx < 10; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 1; oIdx < 100; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -97,7 +97,7 @@ define([
                     for (var sIdx = 1; sIdx < 10; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 1; oIdx < 101; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -125,7 +125,7 @@ define([
                     for (var sIdx = 0; sIdx < 10; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 0; oIdx < 100; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -161,7 +161,7 @@ define([
                     for (var sIdx = 1; sIdx < 11; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 1; oIdx < 101; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -189,7 +189,7 @@ define([
                     for (var sIdx = 1; sIdx < 11; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 1; oIdx < 101; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -236,7 +236,7 @@ define([
                     for (var sIdx = 1; sIdx < 11; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 1; oIdx < 101; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -266,7 +266,7 @@ define([
                     for (var sIdx = 1; sIdx < 11; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 1; oIdx < 101; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -311,7 +311,7 @@ define([
                     for (var sIdx = 1; sIdx < 11; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 1; oIdx < 101; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -359,7 +359,7 @@ define([
                 name: "removeMatches(): returns the graph instance it was called on",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-removeMatches-Graph-any-subject-any-predicate-any-object",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "\"!!!\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"!!!\"^^<xsd:string>"}, test);
                     var output = test.graph.removeMatches(input);
 
                     test.assertEqual(test.graph, output);
@@ -371,8 +371,8 @@ define([
                 name: "toArray: Returns the set of Triples within the Graph",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-toArray-sequence-Triple",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "\"!!!\"^^<xsd:string>");
-                    var input2 = new Triple("<urn:Hello>", "<urn:World>", "\"XOXO\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"!!!\"^^<xsd:string>"}, test);
+                    var input2 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"XOXO\"^^<xsd:string>"}, test);
                     test.graph.add(input);
                     test.graph.add(input2);
 
@@ -388,9 +388,9 @@ define([
                 name: "some:  This method will return boolean true when the first Triple is found that passes the test",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-some-boolean-TripleFilter-callback",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "123");
-                    var input2 = new Triple("<urn:Hello>", "<urn:World>", "\"XOXO\"^^<xsd:string>");
-                    var input3 = new Triple("<urn:Hello>", "<urn:World>", "\"ABC\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "123"}, test);
+                    var input2 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"XOXO\"^^<xsd:string>"}, test);
+                    var input3 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"ABC\"^^<xsd:string>"}, test);
                     test.graph.add(input);
                     test.graph.add(input2);
                     test.graph.add(input3);
@@ -408,9 +408,9 @@ define([
                 name: "some:  This method will return boolean false if no Triple is found that passes the test",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-some-boolean-TripleFilter-callback",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "123");
-                    var input2 = new Triple("<urn:Hello>", "<urn:World>", "\"XOXO\"^^<xsd:string>");
-                    var input3 = new Triple("<urn:Hello>", "<urn:World>", "\"ABC\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "123"}, test);
+                    var input2 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"XOXO\"^^<xsd:string>"}, test);
+                    var input3 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"ABC\"^^<xsd:string>"}, test);
                     test.graph.add(input);
                     test.graph.add(input2);
                     test.graph.add(input3);
@@ -428,9 +428,9 @@ define([
                 name: "every:  This method will return boolean false when the first Triple is found that does not pass the test.",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-every-boolean-TripleFilter-callback",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "123");
-                    var input2 = new Triple("<urn:Hello>", "<urn:World>", "\"XOXO\"^^<xsd:string>");
-                    var input3 = new Triple("<urn:Hello>", "<urn:World>", "\"ABC\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "123"}, test);
+                    var input2 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"XOXO\"^^<xsd:string>"}, test);
+                    var input3 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"ABC\"^^<xsd:string>"}, test);
                     test.graph.add(input);
                     test.graph.add(input2);
                     test.graph.add(input3);
@@ -448,9 +448,9 @@ define([
                 name: "every:  This method will return boolean true if every Triple is found that passes the test.",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-every-boolean-TripleFilter-callback",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "123");
-                    var input2 = new Triple("<urn:Hello>", "<urn:World>", "\"XOXO\"^^<xsd:string>");
-                    var input3 = new Triple("<urn:Hello>", "<urn:World>", "\"ABC\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "123"}, test);
+                    var input2 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"XOXO\"^^<xsd:string>"}, test);
+                    var input3 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"ABC\"^^<xsd:string>"}, test);
                     test.graph.add(input);
                     test.graph.add(input2);
                     test.graph.add(input3);
@@ -468,10 +468,10 @@ define([
                 name: "filter:  Creates a new Graph with all the Triples which pass the test implemented by the provided TripleFilter.",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-filter-Graph-TripleFilter-filter",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "123");
-                    var input2 = new Triple("<urn:Hello>", "<urn:World>", "\"XOXO\"^^<xsd:string>");
-                    var input3 = new Triple("<urn:Hello>", "<urn:World>", "\"ABC\"^^<xsd:string>");
-                    var input4 = new Triple("<urn:Hello>", "<urn:World>", "\"Who's on First!!\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "123"}, test);
+                    var input2 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"XOXO\"^^<xsd:string>"}, test);
+                    var input3 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"ABC\"^^<xsd:string>"}, test);
+                    var input4 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"Who's on First!!\"^^<xsd:string>"}, test);
                     test.graph.add(input);
                     test.graph.add(input2);
                     test.graph.add(input3);
@@ -505,10 +505,10 @@ define([
                 name: "forEach:  Executes the provided TripleCallback once on each Triple in the Graph.",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-forEach-void-TripleCallback-callback",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "123");
-                    var input2 = new Triple("<urn:Hello>", "<urn:World>", "\"XOXO\"^^<xsd:string>");
-                    var input3 = new Triple("<urn:Hello>", "<urn:World>", "\"ABC\"^^<xsd:string>");
-                    var input4 = new Triple("<urn:Hello>", "<urn:World>", "\"Who's on First!!\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "123"}, test);
+                    var input2 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"XOXO\"^^<xsd:string>"}, test);
+                    var input3 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"ABC\"^^<xsd:string>"}, test);
+                    var input4 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"Who's on First!!\"^^<xsd:string>"}, test);
                     test.graph.add(input);
                     test.graph.add(input2);
                     test.graph.add(input3);
@@ -550,7 +550,7 @@ define([
                     for (var sIdx = 1; sIdx < 10; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 1; oIdx < 100; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -571,7 +571,7 @@ define([
                     for (var sIdx = 1; sIdx < 11; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 1; oIdx < 101; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -599,7 +599,7 @@ define([
                     for (var sIdx = 0; sIdx < 10; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 0; oIdx < 100; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -633,7 +633,7 @@ define([
                     for (var sIdx = 1; sIdx < 11; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 1; oIdx < 101; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -660,7 +660,7 @@ define([
                     for (var sIdx = 1; sIdx < 11; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 1; oIdx < 101; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -699,7 +699,7 @@ define([
                     for (var sIdx = 1; sIdx < 11; sIdx++) {
                         for (var pIdx = 0; pIdx < p.length; pIdx++) {
                             for (var oIdx = 1; oIdx < 101; oIdx++) {
-                                test.graph.add(new Triple("_:" + sIdx, p[pIdx], "\"" + oIdx + "\"^^<xsd:int>"));
+                                test.graph.add(new Triple({subject: "_:" + sIdx, predicate: p[pIdx], object: "\"" + oIdx + "\"^^<xsd:int>"}, test));
                             }
                         }
                     }
@@ -723,11 +723,13 @@ define([
                 name: "merge: Returns a new Graph which is a concatenation of this graph and the graph given as an argument.",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-merge-Graph-Graph-graph",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "123");
-                    var input2 = new Triple("<urn:Hello>", "<urn:World>", "\"XOXO\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "123"}, test);
+                    var input2 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"XOXO\"^^<xsd:string>"}, test);
                     test.graph.add(input);
                     var g2 = new Graph({
-                        TripleCtr: Triple
+                        TripleCtr: function (s, p, o) {
+                            return Triple(s, p, o, test);
+                        }
                     });
                     g2.add(input2);
 
@@ -758,11 +760,13 @@ define([
                 name: "addAll: Imports the graph in to this graph. This method returns the graph instance it was called on",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-addAll-Graph-Graph-graph",
                 exec: function (test) {
-                    var input = new Triple("<urn:Hello>", "<urn:World>", "123");
-                    var input2 = new Triple("<urn:Hello>", "<urn:World>", "\"XOXO\"^^<xsd:string>");
+                    var input = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "123"}, test);
+                    var input2 = new Triple({subject: "<urn:Hello>", predicate: "<urn:World>", object: "\"XOXO\"^^<xsd:string>"}, test);
                     test.graph.add(input);
                     var g2 = new Graph({
-                        TripleCtr: Triple
+                        TripleCtr: function (s, p, o) {
+                            return Triple(s, p, o, test);
+                        }
                     });
                     g2.add(input2);
 
@@ -804,14 +808,14 @@ define([
                         }
                     };
 
-                    test.graph.add(Triple("<1>", "<1>", "\"1\""));
+                    test.graph.add(Triple({subject: "<1>", predicate: "<1>", object: "\"1\""}, test));
 
                     test.graph.addAction(a1);
 
                     test.assertEqual(0, a1.runCt);
                     test.assertEqual(0, a2.runCt);
 
-                    test.graph.add(Triple("<2>", "<2>", "\"2\""));
+                    test.graph.add(Triple({subject: "<2>", predicate: "<2>", object: "\"2\""}, test));
 
                     test.assertEqual(1, a1.runCt);
                     test.assertEqual(0, a2.runCt);
@@ -821,7 +825,7 @@ define([
                     test.assertEqual(1, a1.runCt);
                     test.assertEqual(2, a2.runCt);
 
-                    test.graph.add(Triple("<3>", "<3>", "\"3\""));
+                    test.graph.add(Triple({subject: "<3>", predicate: "<3>", object: "\"3\""}, test));
 
                     test.assertEqual(2, a1.runCt);
                     test.assertEqual(3, a2.runCt);
@@ -832,7 +836,9 @@ define([
         ],
         setUp: function (test) {
             test.graph = new Graph({
-                TripleCtr: Triple
+                TripleCtr: function (s, p, o) {
+                    return Triple(s, p, o, test)
+                }
             });
         }
     })
