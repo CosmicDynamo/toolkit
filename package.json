@@ -1,0 +1,11 @@
+{
+    "name": "blocks",
+    "version": "0.1.0",
+    "dependencies": {
+        "dojo":"~1.10"
+    },
+    "devDependencies": {
+        "dojo":"~1.10",
+        "qasht":"~0.1.0"
+    }
+}
