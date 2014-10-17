@@ -5,7 +5,7 @@ define([
     "dojo/_base/Deferred",
     "dojo/_base/lang",
     "dojo/when",
-    "jazzHands/rdf/parser/jsonld"
+    "rdfjs/parser/jsonld"
 ], function (Deferred, lang, when, jsonld) {
     return function (input, options) {
         options = options || {};
