@@ -25,11 +25,11 @@
  */
 define([
     "qasht/package/Unit",
-    "jazzHands/query/Variable",
+    "jazzHands/Variable",
     "jazzHands/test/fake/rdf/Node"
 ], function (TestPackage, Variable, Node) {
     return new TestPackage({
-        module: "jazzHands/query/Variable",
+        module: "jazzHands/Variable",
         tests: [
             {
                 name: "toString: Returns the original form of this variable",

@@ -1,5 +1,5 @@
 define([
-    "./query/module",
-    "./rdf/module"
+    "./Graph",
+    './Variable'
 ], function () {
 });

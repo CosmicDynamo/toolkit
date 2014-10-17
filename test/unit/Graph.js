@@ -25,12 +25,12 @@
  */
 define([
     "qasht/package/Unit",
-    "jazzHands/query/Graph",
+    "jazzHands/Graph",
     "jazzHands/test/fake/rdf/TripleStore",
     "jazzHands/test/fake/rdf/Triple"
 ], function (TestPackage, QueryGraph, TripleStore, Triple) {
     return new TestPackage({
-        module: "jazzHands/query/Graph",
+        module: "jazzHands/Graph",
         tests: [
             {
                 name: "add: Adds Triple to a Graph",
