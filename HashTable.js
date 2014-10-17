@@ -1,6 +1,3 @@
-/**
- * Created by Akeron on 3/9/14.
- */
 define([
     "dojo/_base/declare", "dojo/_base/lang"
 ], function (declare, lang) {
