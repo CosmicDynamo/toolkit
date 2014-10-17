@@ -1,0 +1,8 @@
+{
+    "name": "polyfill",
+    "version": "0.1.0",
+    "dependencies": {},
+    "devDependencies": {
+        "qasht": "0.1.0"
+    }
+}
