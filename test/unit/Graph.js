@@ -1,11 +1,11 @@
 define([
     "qasht/package/Unit",
-    "rdfjs/test/fake/Triple",
-    "rdfjs/Graph",
+    "RdfJs/test/fake/Triple",
+    "RdfJs/Graph",
     "dojo/_base/lang"
 ], function (TestPackage, Triple, Graph, lang) {
     return new TestPackage({
-        module: "quash/rdf/Graph",
+        module: "RdfJs/Graph",
         tests: [
             {
                 name: "add(Triple): Adds the specified Triple to the graph",
@@ -792,18 +792,19 @@ define([
 
                     test.complete();
                 }
-            }, {
+            },
+            {
                 name: "addAction: Adds a new TripleAction to the array of actions",
-                spec:"http://www.w3.org/TR/rdf-interfaces/#widl-Graph-addAction-Graph-TripleAction-action-boolean-run",
-                exec: function(test){
+                spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-addAction-Graph-TripleAction-action-boolean-run",
+                exec: function (test) {
                     var a1 = {
-                        runCt:0,
-                        run: function(){
+                        runCt: 0,
+                        run: function () {
                             this.runCt++;
                         }
                     }, a2 = {
-                        runCt:0,
-                        run: function(){
+                        runCt: 0,
+                        run: function () {
                             this.runCt++;
                         }
                     };

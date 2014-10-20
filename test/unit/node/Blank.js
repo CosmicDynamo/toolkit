@@ -2,10 +2,10 @@
  * Created by Akeron on 3/4/14.
  */
 define([
-    "qasht/package/Unit", "rdfjs/node/Blank", "dojo/_base/lang", "rdfjs/node/Literal",
-    "rdfjs/node/Named"], function (TestPackage, bNode, lang, lNode, nNode) {
+    "qasht/package/Unit", "RdfJs/node/Blank", "dojo/_base/lang", "RdfJs/node/Literal",
+    "RdfJs/node/Named"], function (TestPackage, bNode, lang, lNode, nNode) {
     return new TestPackage({
-        module: "quash/rdf/node/Blank",
+        module: "RdfJs/node/Blank",
         tests: [
             {
                 name: "constructor: null/undefined parameter will create bNode with a new id",

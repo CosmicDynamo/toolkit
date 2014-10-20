@@ -2,10 +2,10 @@
  * Created by Akeron on 2/26/14.
  */
 define([
-    "qasht/package/Unit", "rdfjs/Triple", "dojo/_base/lang"
+    "qasht/package/Unit", "RdfJs/Triple", "dojo/_base/lang"
 ], function (TestPackage, Triple, lang) {
     return new TestPackage({
-        module: "rdfjs/Triple",
+        module: "RdfJs/Triple",
         tests: [
             {
                 name: "equals: Returns true if input = self",

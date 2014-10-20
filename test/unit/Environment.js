@@ -2,10 +2,10 @@
  * Created by Akeron on 3/8/14.
  */
 define([
-    "qasht/package/Unit", "rdfjs/Environment", "dojo/_base/lang"
+    "qasht/package/Unit", "RdfJs/Environment", "dojo/_base/lang"
 ], function (TestPackage, Environment, lang) {
     return new TestPackage({
-        module: "rdfjs/Environment",
+        module: "RdfJs/Environment",
         tests: [
             {
                 name: "createBlankNode: creates a new Blank Node",

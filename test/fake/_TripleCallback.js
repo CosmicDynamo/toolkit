@@ -21,32 +21,32 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.test.fake.rdf._TripleCallback
+ * @module RdfJs.test.fake._TripleCallback
  */
 define([
     "dojo/_base/declare",
     "qasht/_Fake",
-    "rdfjs/_TripleCallback"
+    "RdfJs/_TripleCallback"
 ], function (declare, _Fake, _TripleCallback) {
     /**
-     * @class jazzHands.test.fake.rdf._TripleCallback
+     * @class RdfJs.test.fake._TripleCallback
      * @mixes qasht.test
-     * @implements jazzHands.rdf._TripleCallback
+     * @implements RdfJs._TripleCallback
      */
     var Callback = declare([_Fake, _TripleCallback], {
 
     });
 
     /**
-     * @method jazzHands.test.fake.rdf._TripleCallback#testApi
+     * @method RdfJs.test.fake._TripleCallback#testApi
      * @param {*} object - The object being tested
-     * @param {qasht.type._Test} test - The test instance being executed
+     * @param {qasht.Test} test - The test instance being executed
      */
     Callback.testApi = function (object, test) {
         test.assertIsObject(object);
 
         test.assertIsFunction(object.run);
-    }
+    };
 
     return Callback;
 });

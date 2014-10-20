@@ -21,26 +21,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.test.fake.rdf._TripleFilter
+ * @module RdfJs.test.fake._TripleFilter
  */
 define([
     "dojo/_base/declare",
     "qasht/_Fake",
-    "rdfjs/_TripleFilter"
+    "RdfJs/_TripleFilter"
 ], function (declare, _Fake, _TripleFilter) {
     /**
-     * @class jazzHands.test.fake.rdf._TripleFilter
+     * @class RdfJs.test.fake._TripleFilter
      * @mixes qasht.test
-     * @implements jazzHands.rdf._TripleFilter
+     * @implements RdfJs._TripleFilter
      */
     var Filter = declare([_Fake, _TripleFilter], {
 
     });
 
     /**
-     * @method jazzHands.test.fake.rdf._TripleFilter#testApi
+     * @method RdfJs.test.fake._TripleFilter#testApi
      * @param {*} object - The object being tested
-     * @param {qasht.type._Test} test - The test instance being executed
+     * @param {qasht.Test} test - The test instance being executed
      */
     Filter.testApi = function (object, test) {
         test.assertIsObject(object);

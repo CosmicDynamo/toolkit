@@ -2,11 +2,11 @@
  * Created by Akeron on 3/4/14.
  */
 define([
-    "qasht/package/Unit", "rdfjs/node/Literal", "dojo/_base/lang", "rdfjs/node/Named",
-    "rdfjs/node/Blank"
+    "qasht/package/Unit", "RdfJs/node/Literal", "dojo/_base/lang", "RdfJs/node/Named",
+    "RdfJs/node/Blank"
 ], function (TestPackage, lNode, lang, nNode, bNode) {
     return new TestPackage({
-        module: "quash/rdf/node/Literal",
+        module: "RdfJs/node/Literal",
         tests: [
             {
                 name: "constructor: string parameter '<val>' will create a valid lNode",

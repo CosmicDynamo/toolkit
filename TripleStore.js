@@ -27,18 +27,18 @@ define([
     "dojo/_base/declare",
     "dojo/_base/lang",
     "./Graph",
-    "memory/Hash",
-    "error/Exception"
-], function (declare, lang, Graph, Hash, Exception) {
+    "blocks/HashTable",
+    "blocks/Exception"
+], function (declare, lang, Graph, HashTable, Exception) {
     /**
-     * @class jazzHands.rdf.TripleStore
+     * @class RdfJs.TripleStore
      */
     return declare([], {
-        /** @property {memory.Hash} The graphs stored in this sto*/
+        /** @property {blocks.HashTable} The graphs stored in this sto*/
         _graphData: null,
         /** @property {String|String[]} - Default Graph(s) */
         _default: null,
-        /** @constructs jazzHands.rdf.Graph */
+        /** @constructs RdfJs.Graph */
         GraphCtor: null,
         constructor: function (args) {
             args = args || {};
@@ -48,12 +48,12 @@ define([
             var defGraph = args.default || "urn:Default";
             this.setDefault(defGraph);
 
-            this._graphData = new Hash();
+            this._graphData = new HashTable();
         },
         /**
          * Creates a new RDF Graph and adds it to the store
          * @param {String} name - Name of this new graph
-         * @return {jazzHands.rdf.Graph}
+         * @return {RdfJs.Graph}
          */
         addGraph: function (name) {
             if (name === "DEFAULT" || name === "ALL") {
@@ -61,7 +61,7 @@ define([
             }
             var graph = new this.GraphCtor();
 
-            this._graphData.set(name, graph)
+            this._graphData.set(name, graph);
 
             return graph;
         },
@@ -90,13 +90,13 @@ define([
          * Takes a list of Graphs and returns a list of realized names
          * @description Removes duplicates to avoid redundant calls, as well as handling the DEFAULT and ALL keywords
          * @param {String[]} list - The list of desired names
-         * @param {memory.Hash} [mix] - Hash of graph names used internally by _resolveGraphs
+         * @param {blocks.HashTable} [mix] - Hash of graph names used internally by _resolveGraphs
          * @returns {Array}
          * @private
          */
         _resolveGraphs: function (list, mix) {
             var store = this;
-            var selected = mix || new Hash();
+            var selected = mix || new HashTable();
 
             for (var idx = 0; idx < list.length; idx++) {
                 var item = list[idx];
@@ -123,7 +123,7 @@ define([
         },
         /**
          * Adds a Triple to the specified Graph
-         * @param {jazzHands.rdf.Triple} triple - The Triple being added
+         * @param {RdfJs.Triple} triple - The Triple being added
          * @param {String|String[]} graphName - The target Graph name(s)
          */
         add: function (triple, graphName) {
@@ -133,7 +133,7 @@ define([
         },
         /**
          * Adds all Triples from input Graph to the specified Graph
-         * @param {jazzHands.rdf.Graph} graph - The graph being added
+         * @param {RdfJs.Graph} graph - The graph being added
          * @param {String|String[]} graphName - The target Graph name(s)
          */
         addAll: function (graph, graphName) {
@@ -143,7 +143,7 @@ define([
         },
         /**
          * Removes a Triple from the specified Graph
-         * @param {jazzHands.rdf.Triple} triple - The Triple being removed
+         * @param {RdfJs.Triple} triple - The Triple being removed
          * @param {String|String[]} graphName - The target Graph name(s)
          */
         remove: function (triple, graphName) {
@@ -166,7 +166,7 @@ define([
         /**
          * Returns an Array containing the Triples from all Graphs
          * @param {String|String[]} graphName - The target Graph name(s)
-         * @return {jazzHands.rdf.Triple[]}
+         * @return {RdfJs.Triple[]}
          */
         toArray: function (graphName) {
             var out = [];
@@ -177,7 +177,7 @@ define([
         },
         /**
          * Returns true if tFilter returns true for any Triple in the target Graph(s)
-         * @param {jazzHands.rdf._TripleFilter} tFilter - Filter to run against the Graph
+         * @param {RdfJs._TripleFilter} tFilter - Filter to run against the Graph
          * @param {String|String[]} graphName - The target Graph name(s)
          * @returns {Boolean}
          */
@@ -190,7 +190,7 @@ define([
         },
         /**
          * Returns true if tFilter returns true for every Triple in the target Graph(s)
-         * @param {jazzHands.rdf._TripleFilter} tFilter - Filter to run against the Graph
+         * @param {RdfJs._TripleFilter} tFilter - Filter to run against the Graph
          * @param {String|String[]} graphName - The target Graph name(s)
          * @returns {Boolean}
          */
@@ -203,13 +203,13 @@ define([
         },
         /**
          * Returns A Graph containing the filtered Triples from the target Graph(s)
-         * @param {jazzHands.rdf._TripleFilter} tFilter - Filter to run against the Graph
+         * @param {RdfJs._TripleFilter} tFilter - Filter to run against the Graph
          * @param {String|String[]} graphName - The target Graph name(s)
-         * @returns {jazzHands.rdf.Graph}
+         * @returns {RdfJs.Graph}
          */
         filter: function (tFilter, graphName) {
             var filtered = new this.GraphCtor();
-            ;
+
             this.runOnGraphs(function (graph) {
                 filtered.addAll(graph.filter(tFilter));
             }, graphName);
@@ -217,9 +217,9 @@ define([
         },
         /**
          * Runs the input function on the target Graph(s)
-         * @param {jazzHands.rdf._TripleCallback} tCallback - Filter to run against the Graph
+         * @param {RdfJs._TripleCallback} tCallback - Filter to run against the Graph
          * @param {String|String[]} graphName - The target Graph name(s)
-         * @returns {jazzHands.rdf.Graph}
+         * @returns {RdfJs.Graph}
          */
         forEach: function (tCallback, graphName) {
             this.runOnGraphs(function (graph) {
@@ -232,11 +232,11 @@ define([
          * @param {String} [predicate] - The NT form predicate being searched for
          * @param {String} [object] - The NT form object being searched for
          * @param {String|String[]} graphName - The target Graph name(s)
-         * @returns {jazzHands.rdf.Graph}
+         * @returns {RdfJs.Graph}
          */
         match: function (subject, predicate, object, graphName) {
             var matched = new this.GraphCtor();
-            ;
+
             this.runOnGraphs(function (graph) {
                 matched.addAll(graph.match(subject, predicate, object));
             }, graphName);
@@ -245,7 +245,7 @@ define([
         /**
          * Gets a Graph from the Store
          * @param {String} name - Name of the Graph to get
-         * @returns {jazzHands.rdf.Graph}
+         * @returns {RdfJs.Graph}
          */
         getGraph: function (name) {
             return this._graphData.get(name);

@@ -2,10 +2,10 @@
  * Created by Akeron on 3/8/14.
  */
 define([
-    "qasht/package/Unit", "rdfjs/TermMap"
+    "qasht/package/Unit", "RdfJs/TermMap"
 ], function (TestPackage, TermMap) {
     return new TestPackage({
-        module: "rdfjs/TermMap",
+        module: "RdfJs/TermMap",
         tests: [
             {
                 name: "constructor: takes values and default params to initialize the new TermMap",

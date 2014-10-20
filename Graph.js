@@ -2,7 +2,7 @@
  * @module qash.rdf.Graph
  */
 define([
-    "../io/Cache",
+    "blocks/Cache",
     "./Triple",
     "dojo/_base/declare",
     "dojo/_base/lang"
@@ -34,12 +34,6 @@ define([
             });
 
             this.spo = {};
-            this.sp = {};
-            this.so = {};
-            this.s = {};
-            this.po = {};
-            this.p = {};
-            this.o = {};
 
             this.actions = this.actions || [];
         },
@@ -91,7 +85,7 @@ define([
             return this.onChange();
         },
         remove: function (triple) {
-            var ct = this._remove(triple);
+            this._remove(triple);
 
             return this.onChange();
         },
@@ -124,7 +118,7 @@ define([
                 return out;
             }
 
-            var n = -1
+            var n = -1;
             spo[n][p][o] = rem(tPtr, spo[n][p][o]);
             spo[s][n][o] = rem(tPtr, spo[s][n][o]);
             spo[s][p][n] = rem(tPtr, spo[s][p][n]);
@@ -167,8 +161,8 @@ define([
             return out;
         },
         _ptrToTriple: function (ptr) {
-            if (lang.isArray(ptr)){
-                for(var idx = 0;idx<ptr.length;idx++){
+            if (lang.isArray(ptr)) {
+                for (var idx = 0; idx < ptr.length; idx++) {
                     ptr[idx] = this._ptrToTriple(ptr[idx]);
                 }
                 return ptr;
@@ -187,7 +181,7 @@ define([
         some: function (tFilter) {
             /* http://www.w3.org/TR/rdf-interfaces/#widl-Graph-some-boolean-TripleFilter-callback */
             var lst = this._triples.getAllPointers();
-            for (var idx in lst) {
+            for (var idx = 0; idx < lst.length; idx++) {
                 if (tFilter.test(this._ptrToTriple(lst[idx]), this) === true) {
                     return true;
                 }
@@ -215,7 +209,7 @@ define([
             var results = this._newGraph();
 
             var lst = this._triples.getAllPointers();
-            for (var idx in lst) {
+            for (var idx = 0; idx < lst.length; idx++) {
                 var t = this._ptrToTriple(lst[idx]);
                 if (tFilter.test(t, this) === true) {
                     results.add(t);
@@ -276,21 +270,21 @@ define([
             var s = subject && this._node.getPointer(subject);
             var p = predicate && this._node.getPointer(predicate);
             var o = object && this._node.getPointer(object);
-            if (subject == null){
+            if (subject == null) {
                 s = -1;
             }
-            if (predicate == null){
+            if (predicate == null) {
                 p = -1;
             }
-            if (object == null){
+            if (object == null) {
                 o = -1;
             }
 
             var spo = this.spo;
             var out = spo[s] && spo[s][p] && spo[s][p][o];
-            if (out == undefined){
+            if (out == undefined) {
                 out = [];
-            } else if (!lang.isArray(out)){
+            } else if (!lang.isArray(out)) {
                 out = [out];
             }
             return out;
@@ -327,8 +321,8 @@ define([
                 this.forEach(tAction);
             }
         },
-        equals: function(graph){
-            if (graph.length === this.length){
+        equals: function (graph) {
+            if (graph.length === this.length) {
                 var left = new rdfGraph(this);
                 var right = new rdfGraph(graph);
 
@@ -336,15 +330,15 @@ define([
                 left.every({
                     record: pass2,
                     right: right,
-                    run: function(t){
+                    run: function (t) {
                         var r = this.right;
-                        if (!t.subject.isBlank() && !t.object.isBlank()){
-                            if (r.match(t.subject, t.predicate, t.object).length !== 1){
+                        if (!t.subject.isBlank() && !t.object.isBlank()) {
+                            if (r.match(t.subject, t.predicate, t.object).length !== 1) {
                                 return false;
                             }
                             this.remove(t);
                             r.remove(t);
-                        } else if (!t.subject.isBlank()){
+                        } else if (!t.subject.isBlank()) {
                             this.record.push(t);
                         }
 
@@ -352,47 +346,17 @@ define([
                     }
                 });
 
-                var removeMatch = function(exp, act){
+                var removeMatch = function (exp, act) {
+                };
 
-                }
-                for(var idx = 0; idx < pass2.length;idx++){
+                for (var idx = 0; idx < pass2.length; idx++) {
                     var t = pass2[idx];
                     var possible = right.match(t.subject, t.predicate, t.object);
 
-                    if (!removeMatch(t, possible)){
+                    if (!removeMatch(t, possible)) {
                         return false;
                     }
                 }
-                /*
-                var left = this.toArray();
-                var right = rdfGraph(graph);
-                for(var idx = 0; idx < left.length;idx++){
-                    var s = left.subject;
-                    var o = left.object;
-                    var sDist = !s.isBlank();
-                    var oDist = !o.isBlank();
-                    if (sDist && oDist){
-                        var sMatch = sDist?s.toNT():null;
-                        var pMatch = left.predicate.toNT();
-                        var oMatch = oDist?o.toNT():null;
-                        if (right.match(sMatch, pMatch, oMatch).length !== 1){
-                            return false;
-                        }
-                        right.removeMatches(sMatch, pMatch, oMatch);
-                    }
-                    if (!sDist){
-                        var p = left.predicate;
-                        tree[s.toNT()] = tree[s.toNT()] || {};
-                        tree[s.toNT()][p.toNT()] = tree[s.toNT()][p.toNT()] || [];
-                        tree[s.toNT()][p.toNT()].push(o.toNT());
-                    }
-                }
-                if (left.length !== right.length){
-                    return false;
-                }
-                if (left.length === 0){
-                    return true;
-                }*/
 
             }
             return false;
@@ -405,11 +369,11 @@ define([
          *              re-indexing
          * @return {qash.rdf.Graph}
          */
-        clone: function(){
+        clone: function () {
             var clone = new rdfGraph();
             return lang.mixin(clone, this);
         },
-        has: function(triple){
+        has: function (triple) {
             return this.match(triple.subject.toNT(), triple.predicate.toNT(), triple.object.toNT()).length > 0;
         }
     });

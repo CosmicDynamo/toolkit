@@ -7,7 +7,7 @@ define([
     "dojo/_base/Deferred",
     "./_Parser",
     "dojo/when",
-    "rdfjs/Environment"
+    "RdfJs/Environment"
 ], function (declare, lang, Deferred, _Parser, when, rdfEnv) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     return declare([_Parser], {

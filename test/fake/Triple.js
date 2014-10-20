@@ -4,15 +4,14 @@ define([
     "./Node"
 ], function (declare, _Fake, Node) {
     /**
-     * @class jazzHands.test.fake.rdf.Triple
-     * @mixes jazzHands.rdf.Triple
+     * @class RdfJs.test.fake.Triple
+     * @mixes RdfJs.Triple
      * @mixes qasht._Fake
      */
     var Triple = declare([_Fake], {
         constructor: function (params) {
             var test = this.test;
 
-            var s, p, o;
             this.subject = new Node(params.subject, test);
             this.predicate = new Node(params.predicate, test);
             this.object = new Node(params.object, test);
@@ -35,16 +34,16 @@ define([
         },
         equals: function (t) {
             var test = this.test;
-            var pass = Triple.testApi(t, test);
+            Triple.testApi(t, test);
 
             return this.subject.equals(t.subject) && this.predicate.equals(t.predicate) && this.object.equals(t.object);
         }
     });
 
     /**
-     * @method jazzHands.test.fake.rdf.Triple#testApi
+     * @method RdfJs.test.fake.Triple#testApi
      * @param {*} object - The object being tested
-     * @param {qasht.type._Test} test - The test instance being executed
+     * @param {qasht.Test} test - The test instance being executed
      */
     Triple.testApi = function (object, test) {
         test.assertIsObject(object);

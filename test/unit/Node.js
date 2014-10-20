@@ -2,10 +2,10 @@
  * Created by Akeron on 3/4/14.
  */
 define([
-    "qasht/package/Unit", "rdfjs/Node", "dojo/_base/lang"
+    "qasht/package/Unit", "RdfJs/Node", "dojo/_base/lang"
 ], function (TestPackage, Node, lang) {
     return new TestPackage({
-        module: "quash/rdf/Node",
+        module: "RdfJs/Node",
         tests: [
             {
                 name: "Create Named Node by String",

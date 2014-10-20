@@ -21,7 +21,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.test.fake.rdf.TripleStore
+ * @module RdfJs.test.fake.TripleStore
  */
 define([
     "dojo/_base/declare",
@@ -29,9 +29,9 @@ define([
     "./Graph"
 ], function (declare, _Fake, Graph) {
     /**
-     * @class jazzHands.test.fake.rdf.TripleStore
+     * @class RdfJs.test.fake.TripleStore
      * @mixes qasht._Fake
-     * @mixes jazzHands.rdf.TripleStore
+     * @mixes RdfJs.TripleStore
      */
     return declare([_Fake], {
         /** @property {Object} */
@@ -42,7 +42,7 @@ define([
         /**
          * Creates a new RDF Graph and adds it to the store
          * @param {String} name - Name of this new graph
-         * @return {jazzHands.rdf.Graph}
+         * @return {RdfJs.Graph}
          */
         create: function (name) {
             var test = this.test;

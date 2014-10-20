@@ -21,21 +21,21 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.rdf._TripleFilter
+ * @module RdfJs._TripleFilter
  */
 define([
     "dojo/_base/declare"
 ], function (declare) {
     /**
-     * @class jazzHands.rdf._TripleFilter
+     * @class RdfJs._TripleFilter
      * @interface
      * @mixes dojo._base.declare
      */
     return declare([], {
         /**
          * Runs this Filter against a Triple
-         * @param {jazzHands.rdf.Triple} Triple
-         * @return {jazzHands.rdf.Triple}
+         * @param {RdfJs.Triple} Triple
+         * @return {RdfJs.Triple}
          */
         test: function (Triple) {
             return Triple

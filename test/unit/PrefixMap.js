@@ -2,10 +2,10 @@
  * Created by Akeron on 3/8/14.
  */
 define([
-    "qasht/package/Unit", "rdfjs/PrefixMap"
+    "qasht/package/Unit", "RdfJs/PrefixMap"
 ], function (TestPackage, PrefixMap) {
     return new TestPackage({
-        module: "rdfjs/PrefixMap",
+        module: "RdfJs/PrefixMap",
         tests: [
             {
                 name: "constructor: takes values and default params to initialize the new PrefixMap",

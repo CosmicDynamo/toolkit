@@ -2,10 +2,10 @@
  * Created by Akeron on 3/8/14.
  */
 define([
-    "qasht/package/Unit", "rdfjs/Profile", "dojo/_base/lang"
+    "qasht/package/Unit", "RdfJs/Profile", "dojo/_base/lang"
 ], function (TestPackage, Profile) {
     return new TestPackage({
-        module: "rdfjs/Profile",
+        module: "RdfJs/Profile",
         tests: [
             {
                 name: "constructor: if an input param is given, it will import the values",

@@ -21,16 +21,16 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.test.unit.query.Graph
+ * @module RdfJs.test.unit.TripleStore
  */
 define([
     "qasht/package/Unit",
-    "rdfjs/TripleStore",
-    "rdfjs/test/fake/Graph",
-    "rdfjs/test/fake/Triple"
+    "RdfJs/TripleStore",
+    "RdfJs/test/fake/Graph",
+    "RdfJs/test/fake/Triple"
 ], function (TestPackage, TripleStore, Graph, Triple) {
     return new TestPackage({
-        module: "rdfjs/TripleStore",
+        module: "RdfJs/TripleStore",
         tests: [
             {
                 name: "runOnGraphs: Runs input function with the requested Graph",
@@ -447,8 +447,6 @@ define([
                 }
                 return fn.apply(this, arguments);
             };
-        },
-        tearDown: function (test) {
         }
     });
 });

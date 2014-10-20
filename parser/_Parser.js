@@ -4,8 +4,7 @@
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
-    //"jazzHands/3pUtil/punycode",
-    "jazzHands/lang/String"
+    "polyfill/String"
 ], function (declare, lang) {
     return declare([], {
         keyWord: function (input, word, matchCase, ws) {

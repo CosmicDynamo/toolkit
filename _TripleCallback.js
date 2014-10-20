@@ -21,21 +21,21 @@
  * LIABILITY, WHETHER IN AN Callback OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.rdf._TripleCallback
+ * @module RdfJs._TripleCallback
  */
 define([
     "dojo/_base/declare"
 ], function (declare) {
     /**
-     * @class jazzHands.rdf._TripleCallback
+     * @class RdfJs._TripleCallback
      * @interface
      * @mixes dojo._base.declare
      */
     return declare([], {
         /**
          * Runs this Callback against a Triple
-         * @param {jazzHands.rdf.Triple} Triple
-         * @return {jazzHands.rdf.Triple}
+         * @param {RdfJs.Triple} Triple
+         * @return {RdfJs.Triple}
          */
         run: function (Triple) {
             return Triple

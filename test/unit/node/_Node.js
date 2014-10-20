@@ -2,10 +2,10 @@
  * Created by Akeron on 3/4/14.
  */
 define([
-    "qasht/package/Unit", "rdfjs/node/_Node"
+    "qasht/package/Unit", "RdfJs/node/_Node"
 ], function (TestPackage, _Node) {
     return new TestPackage({
-        module: "quash/rdf/node/_Node",
+        module: "RdfJs/node/_Node",
         tests: [
             {
                 name: "toString: returns the nominalValue",

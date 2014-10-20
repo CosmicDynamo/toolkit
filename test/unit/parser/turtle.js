@@ -3,17 +3,17 @@
  */
 define([
     "qasht/package/w3c/Unit",
-    "rdfjs/parser/turtle",
+    "RdfJs/parser/turtle",
     "dojo/when",
     "dojo/promise/all",
-    "rdfjs/Graph",
-    "rdfjs/Triple",
-    "rdfjs/test/unit/graph/compare"
+    "RdfJs/Graph",
+    "RdfJs/Triple",
+    "RdfJs/test/unit/graph/compare"
 ], function (TestPackage, Turtle, when, all, Graph, Triple, compare) {
     new TestPackage({
         prefix: {"rdf-test": "http://www.w3.org/ns/rdftest#"},
-        module: "rdfjs/parser/turtle",
-        manifest: "rdfjs/test/unit/parser/turtle/manifest.ttl",
+        module: "RdfJs/parser/turtle",
+        manifest: "RdfJs/test/unit/parser/turtle/manifest.ttl",
         'default': function (params) {
             params.setUp = this.testSetUp;
             params.loadResults = this.loadResults;
@@ -22,7 +22,7 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            "rdfjs/test/unit/parser/turtle/manifest.ttl#turtle-subm-01": true
+            "RdfJs/test/unit/parser/turtle/manifest.ttl#turtle-subm-01": true
         },
         excludeById: {
         },
