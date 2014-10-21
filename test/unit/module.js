@@ -1,5 +1,5 @@
 define([
-    "./Graph",
-    './Variable'
+    "./parser/module",
+    './query/module'
 ], function () {
 });
