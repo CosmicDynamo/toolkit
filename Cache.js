@@ -1,9 +1,14 @@
 /**
- * Created by Akeron on 3/9/14.
+ * Somehow this file was overwritten withthat in HashTable, and it appears to have happended during one of my git repository refactor efforts so I cannot find any of the original source
+ * TODO: put this back togeter
  */
 define([
     "dojo/_base/declare", "dojo/_base/lang"
 ], function (declare, lang) {
+    /**
+     * Supposed to be a module for handling the caching of data requests so that if an entry is not defined it will call an
+     * input get method your code can override
+     */
     return declare([], {
         _values: null,
         _pointer: null,
@@ -93,7 +98,7 @@ define([
                     out.push(idx);
                 }
             }
-            ;
+
             return out;
         }
     })
