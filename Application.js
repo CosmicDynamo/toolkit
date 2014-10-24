@@ -26,7 +26,7 @@
 define([
     "dojo/_base/declare",
     "dojo/when",
-    "dojo/promise/all"
+    "blocks/promise/all"
 ], function (declare, when, all) {
     /**
      * @class core.Applicaiton
@@ -43,15 +43,21 @@ define([
          * @returns {Promise<*>}
          */
         start: function(){
+            var app = this;
+
             var loadConfig = this._run("loadConfig");
 
             var init = when(loadConfig, function(){
                 return this._run("init");
             }.bind(this));
 
-            return this.started =  when(init, function(app){
-                return this._run("start", app);
+            var started =  when(init, function(){
+                return this._run("start");
             }.bind(this));
+
+            return this.started = when(started, function(){
+                return app;
+            })
         },
         /**
          *
@@ -60,17 +66,17 @@ define([
          * @protected
          */
         _run: function(method){
-            var config = this.config;
-            var names = Object.keys(config);
+            var app = this;
+            var names =  this.config.components || [];
             var defList = [];
             names.forEach(function(name){
-                var fn =app[name][method];
+                var fn = app[name][method];
                 if (fn){
-                    defList.push(fn(app, config));
+                    defList.push(fn(app, config[name]));
                 }
             });
 
-            return defList.length > 1?all(defList):defList[0];
+            return all(defList);
         }
     });
 });
