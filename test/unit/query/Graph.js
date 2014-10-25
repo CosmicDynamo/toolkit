@@ -30,7 +30,7 @@ define([
     "RdfJs/test/fake/Triple"
 ], function (TestPackage, QueryGraph, TripleStore, Triple) {
     return new TestPackage({
-        module: "jazzHands/Graph",
+        module: "jazzHands/query/Graph",
         tests: [
             {
                 name: "add: Adds Triple to a Graph",
