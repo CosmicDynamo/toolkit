@@ -21,44 +21,21 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.DataRow
+ * @module jazzHands.test.api.query.DataRow
  */
 define([
-    "dojo/_base/declare"
-], function (declare) {
+], function () {
     /**
-     * @class jazzHands.query.DataRow
-     * @mixes blocks.HashTable
-     * @mixes dojo.declare
+     * Method for testing if something is a DataRow
+     * @method jazzHands.test.api.query.DataRow
+     * @param {*} instance - The thing being tested
+     * @param {qasht.Test} test - The test harness
      */
-    return declare([], {
-        /** @property {Object}
-         * @private */
-        _values: null,
-        constructor: function () {
-            this._values = {};
-        },
-        /**
-         * Sets a column on this row
-         * @param {String} name - The Column Name
-         * @param {RdfJs.Node} value - Column Value
-         */
-        set: function (name, value) {
-            this._values[name] = value
-        },
-        /**
-         * Returns a column's value
-         * @returns {RdfJs.Node | null}
-         */
-        get: function (name) {
-            return this._values[name] || null;
-        },
-        /**
-         * Returns all columns in this row
-         * @returns {String[]}
-         */
-        columns: function () {
-            return Object.keys(this._values);
-        }
-    });
+    return function (instance, test) {
+        test.assertIsObject(instance);
+
+        test.assertIsFunction(instance.set, "Has set method");
+        test.assertIsFunction(instance.get, "Has get method");
+        test.assertIsFunction(instance.columns, "Has columns method");
+    }
 });

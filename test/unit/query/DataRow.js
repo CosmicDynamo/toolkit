@@ -44,6 +44,33 @@ define([
 
                     test.complete();
                 }
+            },
+            {
+                name: "columns: returns the list of columns on this row",
+                exec: function (test) {
+                    test.assertEqual(0, test.dataRow.columns().length, "Returns empty array before data is added");
+
+                    test.dataRow.set("aColumn1", new Node("<urn:value"));
+                    test.dataRow.set("aColumn2", new Node("<urn:value"));
+                    test.dataRow.set("aColumn3", new Node("<urn:value"));
+                    test.dataRow.set("aColumn4", new Node("<urn:value"));
+                    test.dataRow.set("aColumn4", new Node("<urn:SetAgain"));
+
+                    var columns = test.dataRow.columns();
+
+                    test.assertEqual(4, columns.length, "Four Columns were added");
+                    var values = {};
+                    columns.forEach(function (name) {
+                        values[name] = true;
+                    });
+
+                    test.assertTrue(values["aColumn1"], "Expected Column Found");
+                    test.assertTrue(values["aColumn2"], "Expected Column Found");
+                    test.assertTrue(values["aColumn3"], "Expected Column Found");
+                    test.assertTrue(values["aColumn4"], "Expected Column Found");
+
+                    test.complete();
+                }
             }
         ],
         setUp: function (test) {

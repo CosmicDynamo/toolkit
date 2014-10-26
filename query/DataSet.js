@@ -21,44 +21,57 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.DataRow
+ * @module jazzHands.query.DataSet
  */
 define([
-    "dojo/_base/declare"
-], function (declare) {
+    "dojo/_base/declare",
+    "./DataRow"
+], function (declare, DataRow) {
     /**
-     * @class jazzHands.query.DataRow
-     * @mixes blocks.HashTable
-     * @mixes dojo.declare
+     * @class jazzHands.query.DataSet
      */
     return declare([], {
-        /** @property {Object}
-         * @private */
-        _values: null,
+        /** @property {jazzHands.query.DataRow[]} */
+        _rows: null,
+        /** @property {Integer} length - The number of rows in this DataSet */
+        _length: null,
         constructor: function () {
-            this._values = {};
+            this._rows = [];
+            this.length = 0;
         },
         /**
-         * Sets a column on this row
-         * @param {String} name - The Column Name
-         * @param {RdfJs.Node} value - Column Value
+         * Runs an input function on each row
+         * @param {Function} fn
          */
-        set: function (name, value) {
-            this._values[name] = value
+        forEach: function (fn) {
+            this._rows.forEach(fn);
         },
         /**
-         * Returns a column's value
-         * @returns {RdfJs.Node | null}
+         * Creates a new row and adds it to the set
+         * @returns {DataRow}
          */
-        get: function (name) {
-            return this._values[name] || null;
+        add: function () {
+            var newRow = new DataRow();
+            this._rows.push(newRow);
+
+            this.length++;
+            return newRow;
         },
         /**
-         * Returns all columns in this row
-         * @returns {String[]}
+         * Returns the list of columns in this DataSet.
+         * @description Not every row will contain every column, so this function will return the list of all columns
+         * as they appear on any row
+         * @returns {String[]} The column names
          */
         columns: function () {
-            return Object.keys(this._values);
+            var columns = {};
+            this.forEach(function (row) {
+                row.columns().forEach(function (key) {
+                    columns[key] = true;
+                });
+            });
+
+            return Object.keys(columns);
         }
     });
 });
