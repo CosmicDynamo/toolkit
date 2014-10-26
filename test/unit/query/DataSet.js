@@ -28,8 +28,9 @@ define([
     "jazzHands/query/DataSet",
     "RdfJs/test/fake/Node",
     "jazzHands/test/api/query/DataSet",
-    "jazzHands/test/api/query/DataRow"
-], function (TestPackage, DataSet, Node, testSetApi, testRowApi) {
+    "jazzHands/test/api/query/DataRow",
+    "jazzHands/query/DataRow"
+], function (TestPackage, DataSet, Node, testSetApi, testRowApi, DataRow) {
     return new TestPackage({
         module: "jazzHands/query/DataSet",
         tests: [
@@ -51,6 +52,25 @@ define([
                     testRowApi(row, test);
 
                     test.assertEqual(1, test.dataSet.length);
+
+                    test.dataSet.forEach(function (actual) {
+                        test.assertEqual(row, actual);
+                    });
+
+                    test.complete();
+                }
+            },
+            {
+                name: "add: Takes and existing row and adds it to this set",
+                exec: function (test) {
+                    test.assertEqual(0, test.dataSet.length);
+
+                    var row = new DataRow();
+                    row.set("column", "value");
+
+                    var rtn = test.dataSet.add(row);
+
+                    test.assertEqual(row, rtn);
 
                     test.dataSet.forEach(function (actual) {
                         test.assertEqual(row, actual);

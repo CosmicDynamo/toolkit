@@ -48,14 +48,17 @@ define([
         },
         /**
          * Creates a new row and adds it to the set
+         * @param {jazzHands.query.DataRow} [row] - The row to be added
          * @returns {DataRow}
          */
-        add: function () {
-            var newRow = new DataRow();
-            this._rows.push(newRow);
+        add: function (row) {
+            if (!row) {
+                row = new DataRow();
+            }
+            this._rows.push(row);
 
             this.length++;
-            return newRow;
+            return row;
         },
         /**
          * Returns the list of columns in this DataSet.
