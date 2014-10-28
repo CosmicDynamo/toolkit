@@ -27,14 +27,14 @@ define([
     "dojo/_base/declare",
     "dojo/_base/lang",
     "./Graph",
-    "blocks/HashTable",
+    "blocks/Container",
     "blocks/Exception"
-], function (declare, lang, Graph, HashTable, Exception) {
+], function (declare, lang, Graph, Container, Exception) {
     /**
      * @class RdfJs.TripleStore
      */
     return declare([], {
-        /** @property {blocks.HashTable} The graphs stored in this sto*/
+        /** @property {blocks.Container} The graphs stored in this sto*/
         _graphData: null,
         /** @property {String|String[]} - Default Graph(s) */
         _default: null,
@@ -48,7 +48,7 @@ define([
             var defGraph = args.default || "urn:Default";
             this.setDefault(defGraph);
 
-            this._graphData = new HashTable();
+            this._graphData = new Container();
         },
         /**
          * Creates a new RDF Graph and adds it to the store
@@ -80,28 +80,26 @@ define([
             var gNames = store._resolveGraphs(graphs);
 
             gNames.forEach(function (gName) {
-                var graph = store.getGraph(gName);
-                if (graph) {
-                    method.apply(store, [graph]);
-                }
+                var graph = store.getGraph(gName) || store.addGraph(gName);
+                method.apply(store, [graph]);
             });
         },
         /**
          * Takes a list of Graphs and returns a list of realized names
          * @description Removes duplicates to avoid redundant calls, as well as handling the DEFAULT and ALL keywords
          * @param {String[]} list - The list of desired names
-         * @param {blocks.HashTable} [mix] - Hash of graph names used internally by _resolveGraphs
+         * @param {blocks.Container} [mix] - Hash of graph names used internally by _resolveGraphs
          * @returns {Array}
          * @private
          */
         _resolveGraphs: function (list, mix) {
             var store = this;
-            var selected = mix || new HashTable();
+            var selected = mix || new Container();
 
             for (var idx = 0; idx < list.length; idx++) {
                 var item = list[idx];
                 if (item === "ALL") {
-                    store._resolveGraphs(this._graphData.getHashValues(), selected);
+                    store._resolveGraphs(this._graphData.keys(), selected);
                 } else if (item === "DEFAULT") {
                     store._resolveGraphs(store._default, selected);
                 } else {
@@ -109,7 +107,7 @@ define([
                 }
             }
 
-            return selected.getHashValues();
+            return selected.keys();
         },
         /**
          * Sets the default graph(s)
@@ -249,6 +247,17 @@ define([
          */
         getGraph: function (name) {
             return this._graphData.get(name);
+        },
+        /**
+         * Removes a Graph from the Store
+         * @param {String|String[]} name - the Graph(s) to remove
+         */
+        removeGraph: function (name) {
+            var list = this._resolveGraphs(name);
+
+            list.forEach(function (name) {
+                this._graphData.remove(name);
+            }.bind(this));
         }
     });
 });

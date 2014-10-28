@@ -2,11 +2,11 @@
  * @module qash.rdf.Graph
  */
 define([
-    "blocks/Cache",
+    "blocks/HashTable",
     "./Triple",
     "dojo/_base/declare",
     "dojo/_base/lang"
-], function (Cache, Triple, declare, lang) {
+], function (HashTable, Triple, declare, lang) {
     /* Implementation of <http://www.w3.org/TR/rdf-interfaces/#idl-def-Graph> */
 
     /**
@@ -22,12 +22,12 @@ define([
             lang.mixin(this, params);
 
             this.TripleCtr = this.TripleCtr || Triple;
-            this._triples = new Cache({
+            this._triples = new HashTable({
                 getObjectId: function (t) {
                     return [t.s, t.o, t.p].join("-");
                 }
             });
-            this._node = new Cache({
+            this._node = new HashTable({
                 getObjectId: function (node) {
                     return lang.isObject(node) ? node.toNT() : node;
                 }
