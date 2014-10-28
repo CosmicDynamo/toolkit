@@ -21,23 +21,22 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.DataRow
+ * @module jazzHands.test.api._QueryPlan
  */
 define([
-    "dojo/_base/declare",
-    "blocks/Container"
-], function (declare, Container) {
+    "RdfJs/test/api/TripleStore"
+], function (testTripleStoreApi) {
     /**
-     * @class jazzHands.query.DataRow
-     * @mixes blocks.Container
+     * Method for testing if something is a DataSet
+     * @method jazzHands.test.api._QueryPlan
+     * @param {*} instance - The thing being tested
+     * @param {qasht.Test} test - The test harness
      */
-    return declare([Container], {
-        /**
-         * Returns all columns in this row
-         * @returns {String[]}
-         */
-        columns: function () {
-            return this.keys();
-        }
-    });
+    return function (instance, test) {
+        test.assertIsObject(instance);
+
+        test.assertIsFunction(instance.execute, "Has set method");
+
+        testTripleStoreApi(instance.store, "store is attached");
+    }
 });

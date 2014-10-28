@@ -21,23 +21,31 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.DataRow
+ * @module jazzHands.query.opr.Move
  */
 define([
     "dojo/_base/declare",
-    "blocks/Container"
-], function (declare, Container) {
+    "dojo/Stateful"
+], function (declare, Stateful) {
     /**
-     * @class jazzHands.query.DataRow
-     * @mixes blocks.Container
+     * @class jazzHands.query.opr.Move
+     * @implements jazzHands._QueryPlan
      */
-    return declare([Container], {
+    return declare([Stateful], {
+        /** @property {jazzHands.query.Graph} */
+        source: null,
+        /** @property {jazzHands.query.Graph} */
+        destination: null,
         /**
-         * Returns all columns in this row
-         * @returns {String[]}
+         * @override
          */
-        columns: function () {
-            return this.keys();
+        execute: function () {
+            //Clear Destination Graph
+            this.destination.removeMatches(null, null, null);
+            //Move Triples From Source To Destination
+            this.destination.addAll(this.source);
+            //Drop Source
+            this.store.removeGraph(this.source.target);
         }
     });
 });

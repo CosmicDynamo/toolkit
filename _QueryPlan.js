@@ -21,23 +21,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.DataRow
+ * @module jazzHands._QueryPlan
  */
 define([
-    "dojo/_base/declare",
-    "blocks/Container"
-], function (declare, Container) {
+    "dojo/_base/declare"
+], function (declare) {
     /**
-     * @class jazzHands.query.DataRow
-     * @mixes blocks.Container
+     * @class jazzHands._QueryPlan
+     * @interface
      */
-    return declare([Container], {
+    return declare([], {
+        /** @property {RdfJs.TripleStore} */
+        store: null,
         /**
-         * Returns all columns in this row
-         * @returns {String[]}
+         * Executes a query and returns the result
+         * @returns {jazzHands.query.DataSet | RdfJs.Node}
          */
-        columns: function () {
-            return this.keys();
+        execute: function () {
+
         }
     });
 });
