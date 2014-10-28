@@ -3,103 +3,56 @@
  * TODO: put this back togeter
  */
 define([
-    "dojo/_base/declare", "dojo/_base/lang"
-], function (declare, lang) {
+    "dojo/_base/declare",
+    "dojo/_base/lang",
+    "./Container"
+], function (declare, lang, Container) {
     /**
      * Supposed to be a module for handling the caching of data requests so that if an entry is not defined it will call an
      * input get method your code can override
      */
-    return declare([], {
-        _values: null,
+    return declare([Container], {
         _pointer: null,
         _empty: null,
-        constructor: function (p) {
-            this._values = [];
-            this._pointer = {};
-            this._empty = [];
+        constructor: function (parent, fnName) {
+            this.parent = parent;
+            this.fnName = fnName;
 
-            if (p && p.getObjectId) {
-                this.getObjectId = p.getObjectId;
+            if (parent.getObjectId) {
+                this.getObjectId = parent.getObjectId;
             }
         },
-        get: function (ptr) {
-            return this._values[ptr];
-        },
-        getPointer: function (value) {
-            var id = this.getObjectId(value);
-            var info = this._pointer[id];
-            if (info) {
-                return info.ptr;
-            }
-            return null;
-        },
-        add: function (value) {
-            var idx;
-            var id = this.getObjectId(value);
-            var info = this._pointer[id];
-            if (info) {
-                info.ct++;
-                return info.ptr;
-            }
+        /**
+         * Gets a value
+         * @param {String} name
+         * @return {*} value
+         */
+        get: function (name) {
+            arguments[0] = this.getObjectId(name);
 
-            if (this._empty.length > 0) {
-                idx = this._empty.splice(0, 1)[0];
-            } else {
-                idx = this._values.length;
+            var val = this.inherited(arguments);
+            if (val === null) {
+                return this.parent[this.fnName](name);
             }
-            this._values[idx] = value;
-            this._pointer[id] = {
-                ptr: idx,
-                ct: 1
-            };
-
-            this.onChange();
-
-            return idx
         },
-        remove: function (ptr) {
-            if (lang.isArray(ptr)) {
-                ptr.forEach(function (val) {
-                    this.remove(val);
-                }.bind(this))
-            }
+        /**
+         * Sets a value
+         * @param {String} name
+         * @param {*} value
+         */
+        set: function (name, value) {
+            arguments[0] = this.getObjectId(name);
 
-            var val = this.getObjectId(this._values[ptr]);
-            var info = this._pointer[val];
-            if (info && --info.ct == 0) {
-                this._empty.push(ptr);
-                this._values[ptr] = null;
-                delete this._pointer[val];
-            }
-
-            this.onChange();
+            this.inherited(arguments)
         },
-        getObjectId: function (value) {
-            return value.toString();
-        },
-        onChange: function () {
-            this.length = this._values.length - this._empty.length;
-        },
-        forEach: function (fn) {
-            return this._values.forEach(function (val) {
-                if (val != null) {
-                    fn(val);
-                }
-            });
-        },
-        getAllPointers: function (limit) {
-            var out = [];
-            if (limit == null) {
-                limit = this._values.length;
-            }
-            for (var idx = 0; idx < this._values.length && out.length < limit; idx++) {
-                var val = this._values[idx];
-                if (val != null) {
-                    out.push(idx);
-                }
-            }
-
-            return out;
+        /**
+         * Creates a Hash from an input object
+         * @description Intended to be overridden by more complex Caches
+         * @param {String} name
+         * @return {String}
+         */
+        getObjectId: function (name) {
+            return name;
         }
     })
 });

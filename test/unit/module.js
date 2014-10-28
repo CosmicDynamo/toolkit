@@ -1,3 +1,4 @@
 define([
+    "./Container"
 ], function () {
 });
