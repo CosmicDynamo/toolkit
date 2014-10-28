@@ -24,7 +24,7 @@
  */
 var polyfill = [];
 if (!String.prototype.codePointAt) {
-    polyfill.push("jazzHands/polyfill/String/codePointAt")
+    polyfill.push("polyfill/String/codePointAt")
 }
 
 define(polyfill, function () {
