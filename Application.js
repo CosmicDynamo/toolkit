@@ -21,41 +21,49 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module core.Applicaiton
+ * @module core.Application
  */
 define([
     "dojo/_base/declare",
     "dojo/when",
-    "blocks/promise/all"
-], function (declare, when, all) {
+    "blocks/promise/all",
+    "RdfJs/TripleStore"
+], function (declare, when, all, TripleStore) {
     /**
-     * @class core.Applicaiton
+     * @class core.Application
      */
     return declare([], {
+        /** @property {String[]} */
+        components: null,
+        /** @param {Object} */
+        config: null,
+        /** @property {Boolean | Promise} */
         started: false,
-        constructor: function(config){
-            this.config = config;
+        constructor: function (params) {
+            params = params || {};
+            this.config = params.config || {};
+            this.components = [];
 
-            //TODO: Attach standard app components
+            this.store = new TripleStore();
         },
         /**
          * Starts the application
          * @returns {Promise<*>}
          */
-        start: function(){
+        start: function () {
             var app = this;
 
             var loadConfig = this._run("loadConfig");
 
-            var init = when(loadConfig, function(){
+            var init = when(loadConfig, function () {
                 return this._run("init");
             }.bind(this));
 
-            var started =  when(init, function(){
+            var started = when(init, function () {
                 return this._run("start");
             }.bind(this));
 
-            return this.started = when(started, function(){
+            return this.started = when(started, function () {
                 return app;
             })
         },
@@ -65,14 +73,14 @@ define([
          * @returns {Promise<*>}
          * @protected
          */
-        _run: function(method){
+        _run: function (method) {
             var app = this;
-            var names =  this.config.components || [];
+            var names = this.components || [];
             var defList = [];
-            names.forEach(function(name){
+            names.forEach(function (name) {
                 var fn = app[name][method];
-                if (fn){
-                    defList.push(fn(app, config[name]));
+                if (fn) {
+                    defList.push(fn(app, app.config[name]));
                 }
             });
 
