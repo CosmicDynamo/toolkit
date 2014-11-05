@@ -24,13 +24,14 @@
  * @module jazzHands.parser.turtle
  */
 define([
-    "../../dojo/_base/declare",
+    "dojo/_base/declare",
+    "dojo/_base/kernel",
     "dojo/_base/lang",
     "dojo/_base/Deferred",
     "./_Parser",
     "dojo/when",
     "RdfJs/Environment"
-], function (declare, lang, Deferred, _Parser, when, rdfEnv) {
+], function (declare, kernel, lang, Deferred, _Parser, when, rdfEnv) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -39,7 +40,8 @@ define([
     return declare([_Parser], {
         parse: function (text) {
             try {
-                var base = window.location.origin + window.location.pathname;
+                var loc = kernel.global.location;
+                var base = loc ? (loc.origin + loc.pathname) : "";
                 var input = new rdfEnv({
                     value: text,
                     pos: 0,

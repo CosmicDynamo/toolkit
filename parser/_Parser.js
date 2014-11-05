@@ -26,7 +26,7 @@
 define([
     "../../dojo/_base/declare",
     "dojo/_base/lang",
-    "polyfill/String"
+    "polyfill/has!String.codePointAt"
 ], function (declare, lang) {
     /**
      * @class jazzHands.parser._Parser

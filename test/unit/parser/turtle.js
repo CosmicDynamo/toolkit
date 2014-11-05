@@ -13,7 +13,7 @@ define([
     new TestPackage({
         prefix: {"rdf-test": "http://www.w3.org/ns/rdftest#"},
         module: "RdfJs/parser/turtle",
-        manifest: "RdfJs/test/unit/parser/turtle/manifest.ttl",
+        manifest: "jazzHands/test/unit/parser/turtle/manifest.ttl",
         'default': function (params) {
             params.setUp = this.testSetUp;
             params.loadResults = this.loadResults;
@@ -22,7 +22,7 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            "RdfJs/test/unit/parser/turtle/manifest.ttl#turtle-subm-01": true
+            "jazzHands/test/unit/parser/turtle/manifest.ttl#turtle-subm-01": true
         },
         excludeById: {
         },
