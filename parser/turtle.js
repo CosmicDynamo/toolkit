@@ -39,37 +39,45 @@ define([
      */
     return declare([_Parser], {
         parse: function (text) {
-            try {
-                var loc = kernel.global.location;
-                var base = loc ? (loc.origin + loc.pathname) : "";
-                var input = new rdfEnv({
-                    value: text,
-                    pos: 0,
-                    done: new Deferred(),
-                    base: this._base || base.substr(0, base.lastIndexOf("/") + 1),
-                    callback: function (input, err) {
-                        if (err) {
-                            this.done.reject(err);
-                        } else {
-                            this.done.resolve(input);
-                        }
+            var error = null;
+            var loc = kernel.global.location;
+            var base = loc ? (loc.origin + loc.pathname) : "";
+            var input = new rdfEnv({
+                value: text,
+                pos: 0,
+                done: new Deferred(),
+                base: this._base || base.substr(0, base.lastIndexOf("/") + 1),
+                callback: function (input, err) {
+                    if (err) {
+                        this.done.reject(err);
+                    } else {
+                        this.done.resolve(input);
                     }
-                });
-                input.graph = input.createGraph();
+                }
+            });
+            input.graph = input.createGraph();
+            try {
                 this.turtleDoc(input);
-                return input.graph;
             } catch (err) {
-                var wP = "";
-                var error = lang.mixin({
-                    failed: true,
-                    whileParsing: wP ? wP : "turtle document"
-                }, err);
-                error.msg = error.message;
-                error.message = 'Parsing Error ' + error.msg + " while parsing " + error.whileParsing;
-                error.input = text;
-
-                throw error;
+                error = err;
             }
+            if (!error) {
+                if (input.pos < input.value.length) {
+                    error = { message: "Statement found after end of valid turtle"};
+                } else {
+                    return input.graph;
+                }
+            }
+
+            var wP = "";
+            error = lang.mixin({
+                failed: true,
+                whileParsing: wP ? wP : "turtle document"
+            }, error);
+            error.msg = error.message;
+            error.message = 'Parsing Error ' + error.msg + " while parsing " + error.whileParsing;
+            error.input = text;
+            throw error;
         },
         setBase: function (iri) {
             this._base = iri;
@@ -178,7 +186,7 @@ define([
             //[8]	objectList	::=	object (',' object)*
             return this.oneOrMore(input, function (scoped) {
                 return this.object(scoped);
-            }, ",", true);
+            }, ",", false);
         },
         verb: function (input) {
             //[9]	verb	::=	predicate | 'a'
@@ -323,7 +331,11 @@ define([
             if (value == null) {
                 input.pos = start;
             } else {
-                value = "<" + input.resolve(value) + ">";
+                var exp = input.resolve(value);
+                if (exp === value){
+                    throw { message: "Prefix not supplied: " + value.split(":")[0]};
+                }
+                value = "<" + exp + ">";
             }
             return value;
         },
@@ -375,14 +387,18 @@ define([
         },
         bNodeLabel: function (input) {
             //[141s]	BLANK_NODE_LABEL	::=	'_:' (PN_CHARS_U | [0-9]) ((PN_CHARS | '.')* PN_CHARS)?
+            var value = null;
             if (this.keyWord(input, "_:")) {
-                var value = this.pnCharsU(input) || this.matchChar(input, "[0-9]");
+                value = this.pnCharsU(input) || this.matchChar(input, "[0-9]");
                 value += this.zeroOrMore(input, function (scoped) {
                     return this.pnChars(scoped) || this.hasChar(scoped, ".");
                 }).join("");
-                return "_:" + value + (this.pnChars(input) || "");
+                value = "_:" + value + (this.pnChars(input) || "");
+                if (value[value.length - 1] === "."){
+                    throw { message: "Blank Node cannot end in '.'"};
+                }
             }
-            return null;
+            return value;
         },
         langTag: function (input) {
             //[144s]	LANGTAG	::=	'@' [a-zA-Z]+ ('-' [a-zA-Z0-9]+)*
@@ -418,7 +434,7 @@ define([
             //[23]	STRING_LITERAL_SINGLE_QUOTE	::=	"'" ([^#x27#x5C#xA#xD] | ECHAR | UCHAR)* "'" /* #x27=' #x5C=\ #xA=new line #xD=carriage return */
             var start = this.matchChar(input, "['\"]", true), value = start;
             if (start) {
-                var except = "[^\x5C\x0A\x0D" + start + "]";
+                var except = "[^\x5C\x5C\x0A\x0D" + start + "]";
                 value += this.zeroOrMore(input, function (scoped) {
                     return this.eChar(scoped) || this.uChar(scoped, except) || this.matchChar(input, except);
                 }).join("");
@@ -497,9 +513,12 @@ define([
                         return "\\";
                     case "f":
                         return "\f";
-                    default:
+                    //case "u": //handled somewhere else, but still valid
+                   //     input.pos = start;
+                    //    break;
+                   default:
+                    //    throw {message: "invalid escape character: " + ch};
                         input.pos = start;
-
                 }
             }
             return null;

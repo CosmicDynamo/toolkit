@@ -22,7 +22,6 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            "jazzHands/test/unit/parser/turtle/manifest.ttl#turtle-subm-01": true
         },
         excludeById: {
         },
