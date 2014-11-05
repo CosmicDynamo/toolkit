@@ -21,23 +21,21 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.DataRow
+ * @module jazzHands.test.api.query.DataRow
  */
 define([
-    "dojo/_base/declare",
-    "blocks/Container"
-], function (declare, Container) {
+], function () {
     /**
-     * @class jazzHands.query.DataRow
-     * @mixes blocks.Container
+     * Method for testing if something is a DataRow
+     * @method jazzHands.test.api.query.DataRow
+     * @param {*} instance - The thing being tested
+     * @param {qasht.Test} test - The test harness
      */
-    return declare([Container], {
-        /**
-         * Returns all columns in this row
-         * @returns {String[]}
-         */
-        columns: function () {
-            return this.keys();
-        }
-    });
+    return function (instance, test) {
+        test.assertIsObject(instance);
+
+        test.assertIsFunction(instance.set, "Has set method");
+        test.assertIsFunction(instance.get, "Has get method");
+        test.assertIsFunction(instance.columns, "Has columns method");
+    }
 });

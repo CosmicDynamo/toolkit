@@ -21,23 +21,37 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.DataRow
+ * @module jazzHands.query.out.Offset
  */
 define([
     "dojo/_base/declare",
-    "blocks/Container"
-], function (declare, Container) {
+    "dojo/Stateful",
+    "jazzHands/query/DataSet"
+], function (declare, Stateful, DataSet) {
     /**
-     * @class jazzHands.query.DataRow
-     * @mixes blocks.Container
+     * Removes offset values from the beginning of the DataSet
+     * @class jazzHands.query.out.Offset
+     * @mixes dojo.declare
+     * @mixes dojo.Stateful
      */
-    return declare([Container], {
+    return declare([Stateful], {
+        /** @property {jazzHands.rdf.node.Literal<Integer>} - */
+        offset: null,
         /**
-         * Returns all columns in this row
-         * @returns {String[]}
+         * @public
+         * @param {jazzHands.query.DataSet} dataSet - The data being offset
+         * @return {jazzHands.query.DataSet}
          */
-        columns: function () {
-            return this.keys();
+        modify: function (dataSet) {
+            var offset = this.offset.valueOf();
+            var out = new DataSet();
+            dataSet.forEach(function (row, idx) {
+                if (idx >= offset) {
+                    out.add(row);
+                }
+            });
+
+            return out;
         }
     });
 });
