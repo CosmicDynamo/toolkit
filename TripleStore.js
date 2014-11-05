@@ -252,6 +252,17 @@ define([
         getGraph: function (name, create) {
             name = (name === "DEFAULT") ? this._default : name;
             return this._graphData.get(name) || (create ? this.addGraph(name) : null);
+        },
+        /**
+         * Removes a Graph from the Store
+         * @param {String|String[]} name - the Graph(s) to remove
+         */
+        removeGraph: function (name) {
+            var list = this._resolveGraphs(name);
+
+            list.forEach(function (name) {
+                this._graphData.remove(name);
+            }.bind(this));
         }
     });
 });

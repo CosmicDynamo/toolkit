@@ -26,11 +26,27 @@
 define([
 ], function () {
     /**
+     * Method for testing if something is a DataSet
      * @method RdfJs.test.api.TripleStore
-     * @param {*} instance
-     * @param {qasht.Test} test
+     * @param {*} instance - The thing being tested
+     * @param {qasht.Test} test - The test harness
      */
     return function (instance, test) {
         test.assertIsObject(instance);
+
+        test.assertIsFunction(instance.addGraph, "Triple Store must have an addGraph method");
+        test.assertIsFunction(instance.runOnGraphs, "Triple Store must have an runOnGraphs method");
+        test.assertIsFunction(instance.setDefault, "Triple Store must have an setDefault method");
+        test.assertIsFunction(instance.add, "Triple Store must have an add method");
+        test.assertIsFunction(instance.addAll, "Triple Store must have an addAll method");
+        test.assertIsFunction(instance.remove, "Triple Store must have an remove method");
+        test.assertIsFunction(instance.removeMatches, "Triple Store must have an removeMatches method");
+        test.assertIsFunction(instance.toArray, "Triple Store must have an toArray method");
+        test.assertIsFunction(instance.some, "Triple Store must have an some method");
+        test.assertIsFunction(instance.every, "Triple Store must have an every method");
+        test.assertIsFunction(instance.filter, "Triple Store must have an filter method");
+        test.assertIsFunction(instance.forEach, "Triple Store must have an forEach method");
+        test.assertIsFunction(instance.match, "Triple Store must have an match method");
+        test.assertIsFunction(instance.getGraph, "Triple Store must have an getGraph method");
     }
 });

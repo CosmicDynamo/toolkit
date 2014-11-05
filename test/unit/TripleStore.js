@@ -27,11 +27,20 @@ define([
     "qasht/package/Unit",
     "RdfJs/TripleStore",
     "RdfJs/test/fake/Graph",
-    "RdfJs/test/fake/Triple"
-], function (TestPackage, TripleStore, Graph, Triple) {
+    "RdfJs/test/fake/Triple",
+    "RdfJs/test/api/TripleStore"
+], function (TestPackage, TripleStore, Graph, Triple, testStoreApi) {
     return new TestPackage({
         module: "RdfJs/TripleStore",
         tests: [
+            {
+                name: "API",
+                exec: function (test) {
+                    testStoreApi(test.tStore, test);
+
+                    test.complete();
+                }
+            },
             {
                 name: "runOnGraphs: Runs input function with the requested Graph",
                 exec: function (test) {
