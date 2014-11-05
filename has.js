@@ -21,12 +21,32 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
+ * @module polyfill.has
  */
-var polyfill = [];
-if (!String.prototype.codePointAt) {
-    polyfill.push("jazzHands/polyfill/String/codePointAt")
-}
-
-define(polyfill, function () {
-
+define(["dojo/_base/kernel"], function (kernal) {
+    /**
+     * @instance polyfill.has
+     */
+    return {
+        /**
+         *  Conditional loading of AMD modules based on a has feature test value.
+         *  @param {String} id - Gives the resolved module id to load.
+         *  @param {Function} parentRequire -  The loader require function with respect to the module that contained the plugin resource in it's dependency list.
+         *  @param {Function} loaded - Callback to loader that consumes result of plugin demand.
+         */
+        load: function (id, parentRequire, loaded) {
+            var parts = id.split(".");
+            if (parts.length !== 2) {
+                return loaded("Invalid param");
+            }
+            var Ctor = kernal.global[parts[0]];
+            if (Ctor == null) {
+                return loaded("Unsupported Constructor")
+            }
+            else if (Ctor.prototype[parts[1]] == undefined) {
+                return parentRequire(["polyfill/" + parts.join("/")], loaded);
+            }
+            return loaded();
+        }
+    };
 });
