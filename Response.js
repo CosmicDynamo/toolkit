@@ -21,31 +21,39 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module service.Application
+ * @module server.Response
  */
 define([
     "dojo/_base/declare",
-    "core/Application",
-    "./Router",
-    "core/converter",
-    "service/io/file"
-], function (declare, Application, Router, converter, file) {
+    "service/io/Builder"
+], function (declare, Builder) {
     /**
-     * @class service.Application
-     * @mixes core.Application
+     * @class server.Response
+     * @mixes service.io.Builder
      */
-    return declare([Application], {
-        /** @property {service.config} */
-        config: null,
-        constructor: function () {
-            this.components.push("router");
-            this.router = new Router({app: this});
-            this.file = file;
-
-            var convert = this.config.converter;
-            if (convert) {
-                converter.register(convert);
-            }
+    return declare([Builder], {
+        request: null,
+        response: null,
+        /** @property {String} */
+        rawBody: null,
+        /** @property {String | RdfJs.Graph} */
+        body: null,
+        /** @property {String} */
+        output: null,
+        /** @property {Number} */
+        statusCode: null,
+        /** @property {service.builder} */
+        builder: null,
+        constructor: function (req, res) {
+            this.request = req;
+            this.response = res;
+            this.output = "";
+        },
+        write: function () {
+            this.statusCode = this.statusCode || 200; //TODO: consider exceptions
+            this.response.writeHead(this.statusCode, response.headers);
+            this.response.write(this.output);
+            this.response.end();
         }
     });
 });

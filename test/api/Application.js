@@ -21,31 +21,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module service.Application
+ * @module $<class>$
  */
 define([
-    "dojo/_base/declare",
-    "core/Application",
     "./Router",
-    "core/converter",
-    "service/io/file"
-], function (declare, Application, Router, converter, file) {
+    "./io/file"
+], function (testRouterApi, testFileApi) {
     /**
-     * @class service.Application
-     * @mixes core.Application
+     * @method service.test.api.Applicaiton
+     * @param {*} instance
+     * @param {qasht.Test} test
      */
-    return declare([Application], {
-        /** @property {service.config} */
-        config: null,
-        constructor: function () {
-            this.components.push("router");
-            this.router = new Router({app: this});
-            this.file = file;
+    return function (instance, test) {
+        test.assertIsObject(instance);
 
-            var convert = this.config.converter;
-            if (convert) {
-                converter.register(convert);
-            }
-        }
-    });
+        test.assertIsObject(instance.router);
+        testRouterApi(instance.router, test);
+
+        test.assertIsObject(instance.file);
+        testFileApi(instance.file, test);
+    }
 });

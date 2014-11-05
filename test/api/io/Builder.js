@@ -21,31 +21,31 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module service.Application
+ * @module service.test.api.io.Builder
  */
 define([
-    "dojo/_base/declare",
-    "core/Application",
-    "./Router",
-    "core/converter",
-    "service/io/file"
-], function (declare, Application, Router, converter, file) {
+    "RdfJs/test/api/TripleStore"
+], function (testStoreApi) {
     /**
-     * @class service.Application
-     * @mixes core.Application
+     * @method service.test.api.io.Builder
+     * @param {*} instance
+     * @param {qasht.Test} test
      */
-    return declare([Application], {
-        /** @property {service.config} */
-        config: null,
-        constructor: function () {
-            this.components.push("router");
-            this.router = new Router({app: this});
-            this.file = file;
+    return function (instance, test) {
+        test.assertIsObject(instance);
 
-            var convert = this.config.converter;
-            if (convert) {
-                converter.register(convert);
-            }
+        testStoreApi(instance.store, test);
+
+        if (instance.subject) {
+            test.assertIsString(instance.subject, "Builder requires subject be a String");
         }
-    });
+        test.assertIsString(instance.graphName, "Builder requires a String graph name");
+
+        test.assertIsFunction(instance.exception, "Builder requires an exception function");
+        test.assertIsFunction(instance.addObject, "Builder requires an addObject function");
+        test.assertIsFunction(instance.addType, "Builder requires an addType function");
+        test.assertIsFunction(instance.setValue, "Builder requires an setValue function");
+        test.assertIsFunction(instance.addTriple, "Builder requires an addTriple function");
+        test.assertIsFunction(instance.removeValue, "Builder requires an removeValue function");
+    }
 });
