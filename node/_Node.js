@@ -10,7 +10,7 @@ define([
             nominalValue: lang.isObject(params) ? ( params.nominalValue != null ? params.nominalValue : params.value) :
                 params,
             interfaceName: null,
-            toString: function (prefixMap) {
+            toString: function () {
                 /* http://www.w3.org/TR/rdf-interfaces/#widl-RDFNode-toString-DOMString */
 
                 return this.nominalValue;
@@ -37,7 +37,7 @@ define([
 
                 return this.valueOf() === toCompare;
             },
-            /* Argo Helper method */
+            /* Helper method */
             isBlank: function () {
                 // summary:
                 //           Helper method to identify if this node is a bNode

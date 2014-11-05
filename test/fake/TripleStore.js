@@ -25,52 +25,163 @@
  */
 define([
     "dojo/_base/declare",
+    "dojo/_base/lang",
     "qasht/_Fake",
-    "./Graph"
-], function (declare, _Fake, Graph) {
+    "RdfJs/TripleStore",
+    "RdfJs/test/api/Triple",
+    "RdfJs/test/api/_TripleFilter",
+    "RdfJs/test/api/_TripleCallback"
+], function (declare, lang, _Fake, TripleStore, testTripleApi, testFilterApi, testCallbackApi) {
     /**
      * @class RdfJs.test.fake.TripleStore
      * @mixes qasht._Fake
+     * @mixes dojo.declare
      * @mixes RdfJs.TripleStore
      */
-    return declare([_Fake], {
-        /** @property {Object} */
-        graphs: null,
-        constructor: function () {
-            this.graphs = this.graphs || {};
-        },
-        /**
-         * Creates a new RDF Graph and adds it to the store
-         * @param {String} name - Name of this new graph
-         * @return {RdfJs.Graph}
-         */
-        create: function (name) {
+    return declare([_Fake, TripleStore], {
+        constructor: function (args) {
             var test = this.test;
 
-            test.assertEqual(1, arguments.length);
-            test.assertIsString(name);
-
-            var graph = new Graph(test);
-
-            return this.graphs[name] = graph;
+            args = args || {};
+            if (args.GraphCtor) {
+                test.assertIsFunction(args.GraphCtor, "GraphCtor must be a function");
+            }
+            if (args.default) {
+                test.assertIsString(args.default, "default must be a String");
+            }
         },
-        setDefault: function (name) {
+        addGraph: function (name) {
             var test = this.test;
+            test.assertEqual(1, arguments.length, "TripleStore.addGraph: only takes one argument");
+            test.assertIsString(name, "TripleStore.addGraph: name must be a String");
 
-            test.assertEqual(1, arguments.length);
-            test.assertIsString(name);
+            return this.inherited(arguments);
+        },
+        runOnGraphs: function (method, graphs, create) {
+            var test = this.test;
+            var ct = arguments.length;
+            test.assertTrue(ct > 0 && ct < 4, "TripleStore.runOnGraphs: takes one - three argument");
 
-            this.default = name;
+            graphs = graphs || "DEFAULT";
+            if (!lang.isArray(graphs)) {
+                graphs = [graphs];
+            }
 
-            return this.getGraph(name);
+            test.assertIsFunction(method, "TripleStore.runOnGraphs: method MUST be a Function");
+            graphs.forEach(function (graph) {
+                test.assertIsString(graph, "TripleStore.runOnGraphs: graph MUST be a String | String[]");
+            });
+            if (create !== undefined) {
+                test.assertTrue(create === true || create === false, "TripleStore.runOnGraphs: Optional create MUST be a Boolean");
+            }
+            return this.inherited(arguments);
+        },
+        setDefault: function (value) {
+            var test = this.test;
+            test.assertEqual(1, arguments.length, "TripleStore.setDefault: takes one argument");
+            if (!lang.isArray(value)) {
+                value = [value];
+            }
+            value.forEach(function (graph) {
+                test.assertIsString(graph, "TripleStore.setDefault: value MUST be a String | String[]");
+            });
+            return this.inherited(arguments);
+        },
+        add: function (triple, graphName) {
+            var test = this.test;
+            test.assertEqual(2, arguments.length, "TripleStore.add: takes two arguments");
+            testTripleApi(triple, test);
+
+            return this.inherited(arguments);
+        },
+        addAll: function (graph, graphName) {
+            var test = this.test;
+            test.assertEqual(2, arguments.length, "TripleStore.addAll: takes two arguments");
+
+            test.assertIsFunction(graph.forEach, "TripleStore.addAll: graph must have a forEach method");
+            return this.inherited(arguments);
+        },
+        remove: function (triple, graphName) {
+            var test = this.test;
+            test.assertEqual(2, arguments.length, "TripleStore.remove: takes two arguments");
+            testTripleApi(triple, test);
+
+            return this.inherited(arguments);
+        },
+        removeMatches: function (subject, predicate, object, graphName) {
+            var test = this.test;
+            var ct = arguments.length;
+            test.assertTrue(ct > 2 && ct < 5, "TripleStore.runOnGraphs: takes three or four argument");
+            if (subject) {
+                test.assertIsString(subject, "TripleStore.removeMatches: subject MUST be a String");
+            }
+            if (predicate) {
+                test.assertIsString(predicate, "TripleStore.removeMatches: predicate MUST be a String");
+            }
+            if (object) {
+                test.assertIsString(object, "TripleStore.removeMatches: object MUST be a String");
+            }
+
+
+            return this.inherited(arguments);
+        },
+        toArray: function (graphName) {
+            var test = this.test;
+            test.assertEqual(1, arguments.length, "TripleStore.remove: takes one arguments");
+
+            return this.inherited(arguments);
+        },
+        some: function (tFilter, graphName) {
+            var test = this.test;
+            test.assertEqual(2, arguments.length, "TripleStore.some: takes two arguments");
+            testFilterApi(triple, test);
+
+            return this.inherited(arguments);
+        },
+        every: function (tFilter, graphName) {
+            var test = this.test;
+            test.assertEqual(2, arguments.length, "TripleStore.every: takes two arguments");
+            testFilterApi(triple, test);
+
+            return this.inherited(arguments);
+        },
+        filter: function (tFilter, graphName) {
+            var test = this.test;
+            test.assertEqual(2, arguments.length, "TripleStore.filter: takes two arguments");
+            testFilterApi(triple, test);
+
+            return this.inherited(arguments);
+        },
+        forEach: function (tCallback, graphName) {
+            var test = this.test;
+            test.assertEqual(2, arguments.length, "TripleStore.forEach: takes two arguments");
+            testCallbackApi(triple, test);
+
+            return this.inherited(arguments);
+        },
+        match: function (subject, predicate, object, graphName) {
+            var test = this.test;
+            var ct = arguments.length;
+            test.assertTrue(ct > 2 && ct < 5, "TripleStore.match: takes three or four argument");
+            if (subject) {
+                test.assertIsString(subject, "TripleStore.match: subject MUST be a String");
+            }
+            if (predicate) {
+                test.assertIsString(predicate, "TripleStore.match: predicate MUST be a String");
+            }
+            if (object) {
+                test.assertIsString(object, "TripleStore.match: object MUST be a String");
+            }
+
+
+            return this.inherited(arguments);
         },
         getGraph: function (name) {
-            if (name === "DEFAULT") {
-                return this.getGraph(this.default);
-            }
-            if (name === "ALL") {
+            var test = this.test;
 
-            }
+            test.assertIsString(name, "TripleStore.getGraph: name MUST be a String");
+
+            return this.inherited(arguments);
         }
     });
 });

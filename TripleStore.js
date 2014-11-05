@@ -27,14 +27,14 @@ define([
     "dojo/_base/declare",
     "dojo/_base/lang",
     "./Graph",
-    "blocks/HashTable",
+    "blocks/Container",
     "blocks/Exception"
-], function (declare, lang, Graph, HashTable, Exception) {
+], function (declare, lang, Graph, Container, Exception) {
     /**
      * @class RdfJs.TripleStore
      */
     return declare([], {
-        /** @property {blocks.HashTable} The graphs stored in this sto*/
+        /** @property {blocks.Container} The graphs stored in this sto*/
         _graphData: null,
         /** @property {String|String[]} - Default Graph(s) */
         _default: null,
@@ -48,7 +48,7 @@ define([
             var defGraph = args.default || "urn:Default";
             this.setDefault(defGraph);
 
-            this._graphData = new HashTable();
+            this._graphData = new Container();
         },
         /**
          * Creates a new RDF Graph and adds it to the store
@@ -69,8 +69,9 @@ define([
          * Executes a Method on the requested graphs
          * @param {Function} method - The method to execute
          * @param {String|String[]} graphs - The Graphs being executed against
+         * @param {Boolean} [create] - Create a graph if it does not exist
          */
-        runOnGraphs: function (method, graphs) {
+        runOnGraphs: function (method, graphs, create) {
             var store = this;
             graphs = graphs || "DEFAULT";
             if (!lang.isArray(graphs)) {
@@ -80,7 +81,7 @@ define([
             var gNames = store._resolveGraphs(graphs);
 
             gNames.forEach(function (gName) {
-                var graph = store.getGraph(gName);
+                var graph = store.getGraph(gName, create);
                 if (graph) {
                     method.apply(store, [graph]);
                 }
@@ -90,18 +91,18 @@ define([
          * Takes a list of Graphs and returns a list of realized names
          * @description Removes duplicates to avoid redundant calls, as well as handling the DEFAULT and ALL keywords
          * @param {String[]} list - The list of desired names
-         * @param {blocks.HashTable} [mix] - Hash of graph names used internally by _resolveGraphs
+         * @param {blocks.Container} [mix] - Hash of graph names used internally by _resolveGraphs
          * @returns {Array}
          * @private
          */
         _resolveGraphs: function (list, mix) {
             var store = this;
-            var selected = mix || new HashTable();
+            var selected = mix || new Container();
 
             for (var idx = 0; idx < list.length; idx++) {
                 var item = list[idx];
                 if (item === "ALL") {
-                    store._resolveGraphs(this._graphData.getHashValues(), selected);
+                    store._resolveGraphs(this._graphData.keys(), selected);
                 } else if (item === "DEFAULT") {
                     store._resolveGraphs(store._default, selected);
                 } else {
@@ -109,7 +110,7 @@ define([
                 }
             }
 
-            return selected.getHashValues();
+            return selected.keys();
         },
         /**
          * Sets the default graph(s)
@@ -129,7 +130,7 @@ define([
         add: function (triple, graphName) {
             this.runOnGraphs(function (graph) {
                 graph.add(triple);
-            }, graphName);
+            }, graphName, true);
         },
         /**
          * Adds all Triples from input Graph to the specified Graph
@@ -139,7 +140,7 @@ define([
         addAll: function (graph, graphName) {
             this.runOnGraphs(function (destGraph) {
                 destGraph.addAll(graph);
-            }, graphName);
+            }, graphName, true);
         },
         /**
          * Removes a Triple from the specified Graph
@@ -245,10 +246,12 @@ define([
         /**
          * Gets a Graph from the Store
          * @param {String} name - Name of the Graph to get
+         * @param {Boolean} [create] - Create a graph if it does not exist
          * @returns {RdfJs.Graph}
          */
-        getGraph: function (name) {
-            return this._graphData.get(name);
+        getGraph: function (name, create) {
+            name = (name === "DEFAULT") ? this._default : name;
+            return this._graphData.get(name) || (create ? this.addGraph(name) : null);
         }
     });
 });

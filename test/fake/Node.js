@@ -1,12 +1,11 @@
 /**
  * Created by Akeron on 3/22/14.
  */
-define([], function(){
+define([
+    "RdfJs/Node"
+], function (RealNode) {
     return function (val) {
-        return {
-            toNT: function () {
-                return val;
-            }
-        }
+        //TODO: Add param validation
+        return RealNode(val);
     };
 });
