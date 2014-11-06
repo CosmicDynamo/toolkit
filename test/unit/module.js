@@ -1,4 +1,7 @@
 define([
-    "./Container"
+    "./Cache",
+    "./Container",
+    "./Exception",
+    "./HashTable"
 ], function () {
 });

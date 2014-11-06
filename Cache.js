@@ -35,48 +35,58 @@ define([
      * @mixes dojo.declare
      * @mixes blocks.Container
      */
-    return declare([Container], {
-        _pointer: null,
-        _empty: null,
-        constructor: function (parent, fnName) {
-            this.parent = parent;
-            this.fnName = fnName;
+    return declare([], {
+        /** @property {blocks.Container} */
+        _values: null,
+        constructor: function (args) {
+            this._values = new Container();
 
-            if (parent.getObjectId) {
-                this.getObjectId = parent.getObjectId;
+            this.load = args.load;
+            if (args.getHash) {
+                this.getHash = args.getHash;
             }
         },
         /**
-         * Gets a value
-         * @param {String} name
-         * @return {*} value
+         * Gets a value from the cache
+         * @param {*} key
+         * @return {*}
          */
-        get: function (name) {
-            arguments[0] = this.getObjectId(name);
+        get: function (key) {
+            var id = this.getHash(key);
 
-            var val = this.inherited(arguments);
-            if (val === null) {
-                return this.parent[this.fnName](name);
+            var val = this._values.get(id);
+            if (val == null){
+                val = this.load(key);
+                this._values.set(id, val);
             }
+
+            return val;
         },
         /**
-         * Sets a value
-         * @param {String} name
-         * @param {*} value
+         * Loads a value that is not already in the cache
+         * @param {*} id
+         * @return {null}
          */
-        set: function (name, value) {
-            arguments[0] = this.getObjectId(name);
-
-            this.inherited(arguments)
+        load: function(id){
+            return null;
         },
         /**
          * Creates a Hash from an input object
          * @description Intended to be overridden by more complex Caches
-         * @param {String} name
+         * @param {String | Object} key
          * @return {String}
          */
-        getObjectId: function (name) {
-            return name;
+        getHash: function (key) {
+            if (lang.isObject(key)){
+                var out = [];
+                var keys = Object.keys(key).sort();
+
+                keys.forEach(function(prop){
+                    out.push(prop + ":" + this.getHash(key[prop]));
+                }.bind(this));
+                key = "{" + out.join(",") + "}";
+            }
+            return key;
         }
     })
 });
