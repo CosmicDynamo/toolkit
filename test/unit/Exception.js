@@ -28,22 +28,20 @@ define([
     "blocks/Exception"
 ], function (TestPackage, Exception) {
     return new TestPackage({
-        module: "$<module>$",
+        module: "blocks/Exception",
         tests: [
             {
-                name: "Test name",
+                name: "ctor: message and error code are attached to Exception",
                 setUp: function (test) {
+                    test.exp = new Exception("This is a Test", 1234);
                 },
                 exec: function (test) {
+                    test.assertEqual("This is a Test", test.exp.message);
+                    //test.assertEqual(1234, test.exp.code);
+
                     test.complete();
-                },
-                tearDown: function (test) {
                 }
             }
-        ],
-        setUp: function (test) {
-        },
-        tearDown: function (test) {
-        }
+        ]
     });
 });

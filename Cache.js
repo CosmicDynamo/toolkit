@@ -25,39 +25,39 @@
  */
 define([
     "dojo/_base/declare",
-    "dojo/_base/lang",
-    "./Container"
-], function (declare, lang, Container) {
+    "./Container",
+    "./HashTable"
+], function (declare, Container, HashTable) {
     /**
      * Supposed to be a module for handling the caching of data requests so that if an entry is not defined it will call an
      * input get method your code can override
      * @class blocks.Cache
      * @mixes dojo.declare
-     * @mixes blocks.Container
      */
     return declare([], {
+        /** @property {blocks.HashTable} */
+        _keys: null,
         /** @property {blocks.Container} */
         _values: null,
         constructor: function (args) {
+            this._keys = new HashTable(args);
             this._values = new Container();
 
             this.load = args.load;
-            if (args.getHash) {
-                this.getHash = args.getHash;
-            }
         },
         /**
          * Gets a value from the cache
-         * @param {*} key
+         * @param {*} value
          * @return {*}
          */
-        get: function (key) {
-            var id = this.getHash(key);
+        get: function (value) {
+            var key = this._keys.lookup(value);
 
-            var val = this._values.get(id);
+            var val = this._values.get(key);
             if (val == null){
-                val = this.load(key);
-                this._values.set(id, val);
+                val = this.load(value);
+                key = this._keys.add(value);
+                this._values.set(key, val);
             }
 
             return val;
@@ -71,22 +71,14 @@ define([
             return null;
         },
         /**
-         * Creates a Hash from an input object
-         * @description Intended to be overridden by more complex Caches
-         * @param {String | Object} key
-         * @return {String}
+         * Removes a value from the cache so it can be re-loaded
+         * @param {*} key - The key that identifies this object
          */
-        getHash: function (key) {
-            if (lang.isObject(key)){
-                var out = [];
-                var keys = Object.keys(key).sort();
+        remove: function(key){
+            var hash = this._keys.lookup(key);
 
-                keys.forEach(function(prop){
-                    out.push(prop + ":" + this.getHash(key[prop]));
-                }.bind(this));
-                key = "{" + out.join(",") + "}";
-            }
-            return key;
+            this._values.remove(hash);
+            this._keys.remove(hash);
         }
     })
 });

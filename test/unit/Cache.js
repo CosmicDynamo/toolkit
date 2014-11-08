@@ -38,7 +38,7 @@ define([
                 exec: function (test) {
                     test.cache.get("anId");
 
-                    test.assertEqual("anId", test.cache.__requestedId);
+                    test.assertEqual("anId", test.__requestedId);
 
                     test.complete();
                 }
@@ -63,13 +63,13 @@ define([
                     return "expected";
                 },
                 exec: function (test) {
-                    test.cache.__called = 0;
+                    test.__called = 0;
                     var actual = test.cache.get("anId");
-                    test.assertEqual(1, test.cache.__called);
+                    test.assertEqual(1, test.__called);
                     test.assertEqual("expected", actual);
 
                     actual = test.cache.get("anId");
-                    test.assertEqual(1, test.cache.__called);
+                    test.assertEqual(1, test.__called);
                     test.assertEqual("expected", actual);
 
                     test.complete();
@@ -82,13 +82,13 @@ define([
                     return id.object.nested;
                 },
                 exec: function (test) {
-                    test.cache.__called = 0;
+                    test.__called = 0;
                     var actual = test.cache.get({
                         "one": "somewhere",
                         "object": { "nested": "value1" },
                         "value": "property"
                     });
-                    test.assertEqual(1, test.cache.__called);
+                    test.assertEqual(1, test.__called);
                     test.assertEqual("value1", actual);
 
                     actual = test.cache.get({
@@ -96,7 +96,7 @@ define([
                         "object": { "nested": "value2" },
                         "value": "property"
                     });
-                    test.assertEqual(2, test.cache.__called);
+                    test.assertEqual(2, test.__called);
                     test.assertEqual("value2", actual);
 
                     actual = test.cache.get({
@@ -104,7 +104,7 @@ define([
                         "value": "property",
                         "object": { "nested": "value1" }
                     });
-                    test.assertEqual(2, test.cache.__called);
+                    test.assertEqual(2, test.__called);
                     test.assertEqual("value1", actual);
 
                     actual = test.cache.get({
@@ -112,7 +112,7 @@ define([
                         "value": "property",
                         "object": { "nested": "value2" }
                     });
-                    test.assertEqual(2, test.cache.__called);
+                    test.assertEqual(2, test.__called);
                     test.assertEqual("value2", actual);
 
                     test.complete();
@@ -129,10 +129,10 @@ define([
                     test.cache.get("id1");
                     test.cache.get("id2");
 
-                    test.assertEqual(2, test.cache.__called.length);
+                    test.assertEqual(2, test.__called.length);
 
-                    test.assertEqual("id1", test.cache.__called[0]);
-                    test.assertEqual("id2", test.cache.__called[1]);
+                    test.assertEqual("id1", test.__called[0]);
+                    test.assertEqual("id2", test.__called[1]);
 
 
                     test.complete();
@@ -145,26 +145,45 @@ define([
                     return null;
                 },
                 exec: function (test) {
-                    test.cache.__called = 0;
+                    test.__called = 0;
 
                     var actual = test.cache.get("anId");
-                    test.assertEqual(1, test.cache.__called);
+                    test.assertEqual(1, test.__called);
                     test.assertNull(actual);
 
                     actual = test.cache.get("anId");
-                    test.assertEqual(2, test.cache.__called);
+                    test.assertEqual(2, test.__called);
                     test.assertNull(actual);
 
                     test.cache.get("anId");
-                    test.assertEqual(3, test.cache.__called);
+                    test.assertEqual(3, test.__called);
 
                     test.complete();
                 }
             },
+            {
+                name: "remove: will clear a value from the cache",
+                load: function(){
+                    return this.__called++;
+                },
+                exec: function(test){
+                    test.__called = 0;
+                    var key = "The Key";
+
+                    test.assertEqual(0, test.cache.get(key));
+                    test.assertEqual(0, test.cache.get(key));
+
+                    test.cache.remove(key);
+
+                    test.assertEqual(1, test.cache.get(key));
+
+                    test.complete();
+                }
+            }
         ],
         setUp: function (test) {
             test.cache = new Cache({
-                load: test.load
+                load: test.load.bind(test)
             })
         }
     });

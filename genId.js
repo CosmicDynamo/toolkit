@@ -2,9 +2,14 @@
  * Created by Akeron on 2/16/14.
  */
 define([], function () {
-    var id = [-1, 0, 0, 0, 0];
-    var codes = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    return function () {
+    /**
+     * Helper method for generating a Unique Alpha-Numeric Id
+     * @return {String}
+     */
+    var genId = function () {
+        var id = genId.id;
+        var codes = genId.codes;
+
         var idx = 0;
         id[idx]++;
         while (id[idx] >= codes.length) {
@@ -21,4 +26,8 @@ define([], function () {
         }
         return out;
     };
+    genId.id = [-1];
+    genId.codes = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+    return genId;
 })
