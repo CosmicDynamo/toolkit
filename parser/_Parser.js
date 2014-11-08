@@ -63,11 +63,11 @@ define([
             return null;
         },
         hasChar: function (input, ch, matchCase, ws) {
+            var start = input.pos;
+            if (ws) {
+                this.ws(input);
+            }
             if (input.pos < input.value.length) {
-                var start = input.pos;
-                if (ws) {
-                    this.ws(input);
-                }
                 var has = input.value[input.pos];
                 var comp = has;
                 if (!matchCase) {
@@ -78,8 +78,8 @@ define([
                     input.pos++;
                     return has;
                 }
-                input.pos = start;
             }
+            input.pos = start;
             return null;
         },
         hasAnyChar: function (input, opts, matchCase, ws) {

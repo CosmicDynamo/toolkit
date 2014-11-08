@@ -466,14 +466,16 @@ define([
             var key = this.keyWord(input, "\\u");
             if (key) {
                 var ct = key[1] === "u" ? 4 : 8;
-                var val = this.range(input, this.hex, ct, ct).join("");
-                var ch = this.utf16Encode("0x" + val);
-                if (minus && !(new RegExp(minus)).test(ch)) {
-                    input.pos = start;
-                    return null;
+                var list = this.range(input, this.hex, ct, ct);
+                if (list) {
+                    var val = list.join("");
+                    var ch = this.utf16Encode("0x" + val);
+                    if (!minus || (new RegExp(minus)).test(ch)) {
+                        return ch;
+                    }
                 }
-                return ch
             }
+            input.pos = start;
             return null;
         },
         utf16Encode: function (value) {
