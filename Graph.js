@@ -126,18 +126,34 @@ define([
             spo[n][p][n] = rem(tPtr, spo[n][p][n]);
             spo[n][n][o] = rem(tPtr, spo[n][n][o]);
             spo[n][n][n] = rem(tPtr, spo[n][n][n]);
-            this._node.remove([s, p, o]);
+            if (!this._inUse(s)){
+                this._node.remove(s);
+            }
+            if (!this._inUse(p)){
+                this._node.remove(p);
+            }
+            if (!this._inUse(o)){
+                this._node.remove(o);
+            }
+        },
+        _inUse: function(node){
+            var spo = this.spo;
+            var n = -1;
+            var inList = function(s, p, o){
+                return ((spo[s] && spo[s][p] && spo[s][p][o]) || []).length > 0;
+            };
+            return inList(node, n, n) || inList(n, node, n) || inList(n, n, node);
         },
         _remove: function (triple) {
             /* http://www.w3.org/TR/rdf-interfaces/#widl-Graph-remove-Graph-Triple-triple */
             var spo = this.spo;
 
             var count = 0;
-            var s = triple.s ? triple.s : this._node.getPointer(triple.subject.toNT());
+            var s = triple.s ? triple.s : this._node.lookup(triple.subject.toNT());
             if (s != null && spo[s]) {
-                var p = triple.p ? triple.p : this._node.getPointer(triple.predicate.toNT());
+                var p = triple.p ? triple.p : this._node.lookup(triple.predicate.toNT());
                 if (p != null && spo[s][p]) {
-                    var o = triple.o ? triple.o : this._node.getPointer(triple.object.toNT());
+                    var o = triple.o ? triple.o : this._node.lookup(triple.object.toNT());
                     if (o != null && o in spo[s][p]) {
                         var ptr = spo[s][p][o];
                         this._removeByPtr(ptr);
@@ -180,7 +196,7 @@ define([
         },
         some: function (tFilter) {
             /* http://www.w3.org/TR/rdf-interfaces/#widl-Graph-some-boolean-TripleFilter-callback */
-            var lst = this._triples.getAllPointers();
+            var lst = this._triples.keys();
             for (var idx = 0; idx < lst.length; idx++) {
                 if (tFilter.test(this._ptrToTriple(lst[idx]), this) === true) {
                     return true;
@@ -208,7 +224,7 @@ define([
             /* http://www.w3.org/TR/rdf-interfaces/#widl-Graph-filter-Graph-TripleFilter-filter */
             var results = this._newGraph();
 
-            var lst = this._triples.getAllPointers();
+            var lst = this._triples.keys();
             for (var idx = 0; idx < lst.length; idx++) {
                 var t = this._ptrToTriple(lst[idx]);
                 if (tFilter.test(t, this) === true) {
@@ -267,9 +283,9 @@ define([
             return results;
         },
         _match: function (subject, predicate, object) {
-            var s = subject && this._node.getPointer(subject);
-            var p = predicate && this._node.getPointer(predicate);
-            var o = object && this._node.getPointer(object);
+            var s = subject && this._node.lookup(subject);
+            var p = predicate && this._node.lookup(predicate);
+            var o = object && this._node.lookup(object);
             if (subject == null) {
                 s = -1;
             }
