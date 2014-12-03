@@ -25,7 +25,7 @@
  */
 define([
     "dojo/_base/declare",
-    "dojo/when"
+    "./when"
 ], function (declare, when) {
     /**
      * Helps with synchronizing async functions by allowing you to setup a queue where each function will execute after the last' promise resolves

@@ -26,7 +26,7 @@
 define([
     "dojo/_base/lang",
     "dojo/_base/Deferred",
-    "dojo/when"
+    "./when"
 ], function (lang, Deferred, when) {
     /**
      * @function blocks.promise.all
