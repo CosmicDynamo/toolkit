@@ -25,16 +25,33 @@
  */
 define([
     "dojo/_base/lang",
-    "dojo/promise/all"
-], function (lang, all) {
+    "dojo/_base/Deferred",
+    "dojo/when"
+], function (lang, Deferred, when) {
     /**
      * @function blocks.promise.all
-     * @param {Promise | Promise[]} defList
+     * @param {Promise | * | Array} valueOrArray
+     * @return {Array<*> || Promise}
      */
-    return function(defList){
-        if (!lang.isArray(defList)){
-            defList = [defList];
-        }
-        return defList.length > 1?all(defList) : defList[0];
+    return function(valueOrArray){
+        var array = lang.isArray(valueOrArray)?valueOrArray:[valueOrArray];
+
+        var results = [];
+
+        var deferred = new Deferred();
+
+        var waiting = array.length;
+        array.forEach(function(valueOrPromise, index){
+            when(valueOrPromise, function(value){
+                if(!deferred.isFulfilled()){
+                    results[index] = value;
+                    if(--waiting === 0){
+                        deferred.resolve(results);
+                    }
+                }
+            }, deferred.reject);
+            return deferred.isFulfilled();
+        });
+        return waiting > 0?deferred.promise:results;	// dojo/promise/Promise
     };
 });

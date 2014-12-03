@@ -33,8 +33,10 @@ define([
      */
     return declare([], {
         last: null,
-        constructor: function (scope) {
+        constructor: function (scope, onError, onProgress) {
             this.scope = scope;
+            this.onError = onError?onError.bind(scope):null;
+            this.onProgress = onProgress?onProgress.bind(scope):null;
         },
         /**
          * Queues the next Function for execution
@@ -43,9 +45,17 @@ define([
          */
         enqueue: function (fn, args) {
             var scope = this.scope;
-            return this.last = when(this.last, function (results) {
-                return fn.call(scope, args || results);
+            this.last = when(this.last, function (results) {
+                return fn.apply(scope, args || [results]);
             });
+
+            if (this.onError || this.onProgress) {
+                this.last = when(this.last, function (out) {
+                    return out;
+                }, this.onError, this.onProgress);
+            }
+
+            return this.last;
         }
     });
 });
