@@ -29,7 +29,7 @@ define([
     "client/test/api/Application"
 ], function (TestPackage, Application, testApi) {
     return new TestPackage({
-        module: "$<module>$",
+        module: "client/Application",
         tests: [
             {
                 name: "API",
