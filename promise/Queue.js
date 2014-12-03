@@ -39,11 +39,12 @@ define([
         /**
          * Queues the next Function for execution
          * @param {Function} fn - Next function to run
+         * @param {Array<*>} [args] - Function execution arguments
          */
-        enqueue: function (fn) {
+        enqueue: function (fn, args) {
             var scope = this.scope;
-            this.last = when(this.last, function (results) {
-                return fn.call(scope, results);
+            return this.last = when(this.last, function (results) {
+                return fn.call(scope, args || results);
             });
         }
     });
