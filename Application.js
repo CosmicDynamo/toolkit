@@ -25,10 +25,10 @@
  */
 define([
     "dojo/_base/declare",
-    "dojo/when",
     "blocks/promise/all",
+    "blocks/promise/Queue",
     "RdfJs/TripleStore"
-], function (declare, when, all, TripleStore) {
+], function (declare, all, Queue, TripleStore) {
     /**
      * @class core.Application
      */
@@ -53,17 +53,13 @@ define([
         start: function () {
             var app = this;
 
-            var loadConfig = this._run("loadConfig");
+            var lifecycle = new Queue(this);
 
-            var init = when(loadConfig, function () {
-                return this._run("init");
-            }.bind(this));
+            lifecycle.enqueue(this._run, ["loadConfig"]);
+            lifecycle.enqueue(this._run, ["init"]);
+            lifecycle.enqueue(this._run, ["start"]);
 
-            var started = when(init, function () {
-                return this._run("start");
-            }.bind(this));
-
-            return this.started = when(started, function () {
+            return lifecycle.enqueue(function () {
                 return app;
             })
         },
@@ -76,12 +72,10 @@ define([
         _run: function (method) {
             var app = this;
             var names = this.components || [];
-            var defList = [];
-            names.forEach(function (name) {
+            var defList = names.map(function (name) {
                 var fn = app[name][method];
-                if (fn) {
-                    defList.push(fn(app, app.config[name]));
-                }
+
+                return fn?fn.call(app[name], app, app.config[name]):null;
             });
 
             return all(defList);
