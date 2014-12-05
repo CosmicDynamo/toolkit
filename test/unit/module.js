@@ -4,6 +4,7 @@ define([
     "./Container",
     "./Exception",
     "./genId",
-    "./HashTable"
+    "./HashTable",
+    "./require"
 ], function () {
 });
