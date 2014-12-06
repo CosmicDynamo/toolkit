@@ -2,10 +2,10 @@
  * Created by Akeron on 3/8/14.
  */
 define([
-    "../../../../qasht/package/w3c/Unit",
+    "qasht/package/w3c/Unit",
     "jazzHands/parser/turtle",
     "dojo/when",
-    "dojo/promise/all",
+    "blocks/promise/all",
     "RdfJs/Graph",
     "RdfJs/Triple",
     "RdfJs/test/unit/graph/compare"
@@ -22,6 +22,7 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
+            "<jazzHands/test/unit/parser/turtle/manifest.ttl#turtle-syntax-bad-LITERAL2_with_langtag_and_datatype>":true
         },
         excludeById: {
         },
@@ -41,22 +42,23 @@ define([
             params.testDetails = this.testDetails;
         },
         testSetUp: function (test) {
-            var action, result;
-
             test.parser = new Turtle();
-            action = when(test.getFile(test.action["@id"]), function (file) {
-                var name = test.action["@id"];
-                test.parser.setBase("http://www.w3.org/2013/TurtleTests" + name.substr(name.lastIndexOf("/")));
-                test.data = file;
-            }.bind(this));
+            var loadAction = test.get("mf:action").map(function(file){
+                var name = file.valueOf();
+                return test.loadText(name, function(data){
+                    test.parser.setBase("http://www.w3.org/2013/TurtleTests" + name.substr(name.lastIndexOf("/")));
+                    test.data = data;
+                })
+            });
 
-            if (test.result) {
-                result = when(test.getFile(test.result["@id"]), function (file) {
-                    test.expected = this.loadResults(file);
-                }.bind(this));
-            }
+            var loadResult = test.get("mf:result").map(function(file){
+                var name = file.valueOf();
+                return test.loadText(name, function(data){
+                    test.expected = test.loadResults(data);
+                })
+            });
 
-            return all([action, result]);
+            return all(loadAction.concat(loadResult));
         },
         loadResults: function (file) {
             var out = new Graph();
@@ -166,12 +168,22 @@ define([
             }
         },
         testDetails: function (test) {
-            var out = "\n";
-            out += "Test IRI: <" + test["@id"] + ">\n";
-            out += "Test Type: " + test["@type"] + "\n";
-            out += "Input File: " + test.action["@id"] + "\n";
-            out += "Expected Output: " + (test.result ? (test.result["@id"]) : "<No Output File Specified>") + "\n";
-            return out;
+            var out = [];
+            out.push("Test IRI: " + test.toNT());
+
+            out = out.concat(test.get("rdf:type").map(function(type){
+                return "Test Type: " + type.toNT();
+            }));
+
+            out = out.concat(test.get("mf:action").map(function(file){
+                return "Input File: " + file.toNT();
+            }));
+
+            out = out.concat(test.get("mf:result").map(function(file){
+                return "Output File: " + file.toNT();
+            }));
+
+            return "\n" + out.join("\n") + "\n";
         }
     });
 });
