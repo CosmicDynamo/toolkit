@@ -2,7 +2,7 @@
  * Created by Akeron on 3/8/14.
  */
 define([
-    "qasht/package/w3c/Unit",
+    "../../../../qasht/package/w3c/Unit",
     "jazzHands/parser/turtle",
     "dojo/when",
     "dojo/promise/all",
@@ -12,7 +12,7 @@ define([
 ], function (TestPackage, Turtle, when, all, Graph, Triple, compare) {
     new TestPackage({
         prefix: {"rdf-test": "http://www.w3.org/ns/rdftest#"},
-        module: "RdfJs/parser/turtle",
+        module: "jazzHands/parser/turtle",
         manifest: "jazzHands/test/unit/parser/turtle/manifest.ttl",
         'default': function (params) {
             params.setUp = this.testSetUp;
