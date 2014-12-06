@@ -25,8 +25,9 @@
  */
 define([
     "dojo/_base/Deferred",
-    "./Container"
-], function (Deferred, Container) {
+    "./Container",
+    "./promise/when"
+], function (Deferred, Container, when) {
     /**
      * Rejects the deferred i a timeout reached
      * @param {String[]} midList
@@ -70,21 +71,23 @@ define([
             }
         });
 
-        var done = function(fn, args){
-            if (fn){
-                fn.apply(this, args);
-            }
-
+        var done = function(fn, originalPromise, args, callDone){
             mids.forEach(function(mid){
                 promises.remove(require.toUrl(mid)+ ".js");
             });
+            var done = originalPromise;
+            if (fn){
+                done = fn.apply(this, args);
+            }
+            when(done, callDone.resolve, callDone.reject, callDone.progress);
         };
 
+        var callDone = new Deferred();
         promise.then(function(modules) {
-            done(callback, modules);
+            done(callback, promise, modules, callDone);
         }, function(err){
-            done(errback, [err]);
+            done(errback, promise, [err], callDone);
         });
-        return promise;
+        return callDone;
     };
 });

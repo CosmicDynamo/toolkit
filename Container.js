@@ -32,8 +32,16 @@ define([
      */
     return declare([], {
         _values: null,
-        constructor: function () {
+        constructor: function (args) {
             this._values = {};
+
+            if (args) {
+                for (var x in args) {
+                    if (args.hasOwnProperty(x)) {
+                        this.set(x, args[x]);
+                    }
+                }
+            }
         },
         /**
          * Removes an value from this Container
