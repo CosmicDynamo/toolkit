@@ -49,7 +49,11 @@ define([
                         deferred.resolve(results);
                     }
                 }
-            }, deferred.reject);
+            }, function(err){
+                if(!deferred.isFulfilled()){
+                    deferred.reject(err);
+                }
+            }, deferred.progress);
             return deferred.isFulfilled();
         });
         return waiting > 0?deferred.promise:results;	// dojo/promise/Promise
