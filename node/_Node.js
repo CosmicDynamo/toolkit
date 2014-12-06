@@ -5,26 +5,46 @@ define([
     "dojo/_base/lang"
 ], function (lang) {
     /* Implementation of <http://www.w3.org/TR/rdf-interfaces/#idl-def-RDFNode> */
+    /**
+     * @class RdfJs.Node
+     */
     return function (params) {
         var node = {
-            nominalValue: lang.isObject(params) ? ( params.nominalValue != null ? params.nominalValue : params.value) :
-                params,
+            /** @property {String} */
+            nominalValue: lang.isObject(params) ? ( params.nominalValue != null ? params.nominalValue : params.value) : params,
+            /** @property {String} */
             interfaceName: null,
+            /**
+             * Returns the String form of this Rdf Node
+             * @see  http://www.w3.org/TR/rdf-interfaces/#widl-RDFNode-toString-DOMString
+             * @return {String}
+             */
             toString: function () {
-                /* http://www.w3.org/TR/rdf-interfaces/#widl-RDFNode-toString-DOMString */
-
                 return this.nominalValue;
             },
+            /**
+             * Returns the native value of this Rdf Node
+             * @see  http://www.w3.org/TR/rdf-interfaces/#widl-RDFNode-valueOf-any
+             * @return {*}
+             */
             valueOf: function () {
-                /* http://www.w3.org/TR/rdf-interfaces/#widl-RDFNode-valueOf-any */
                 return this.nominalValue;
             },
+            /**
+             * Returns the NT form of this Rdf Node
+             * @see  http://www.w3.org/TR/rdf-interfaces/#widl-RDFNode-toNT-DOMString
+             * @return {String}
+             */
             toNT: function (prefixMap) {
-                /* http://www.w3.org/TR/rdf-interfaces/#widl-RDFNode-toNT-DOMString */
                 return this.toString(prefixMap);
             },
+            /**
+             * Compares this RDF Nodes to the input RDF Node or input native value
+             * @param {RdfJs.Node || *} toCompare
+             * @return {boolean}
+             * @see http://www.w3.org/TR/rdf-interfaces/#widl-RDFNode-equals-boolean-any-tocompare
+             */
             equals: function (toCompare) {
-                /* http://www.w3.org/TR/rdf-interfaces/#widl-RDFNode-equals-boolean-any-tocompare */
                 if (toCompare.interfaceName) {
                     var match = this.interfaceName === toCompare.interfaceName;
                     if (toCompare.valueOf) {
