@@ -30,12 +30,13 @@ define([
     /**
      * @class jazzHands.query.Quad
      * @mixes RdfJs.Triple
-     * @mixes dojo.declare
      */
     return declare([Triple], {
         /** @property {RdfJs.node.Named} */
         graph:null,
         postscript: function(){
+            this.inherited(arguments);
+
             this._validate("graph");
         },
         /**

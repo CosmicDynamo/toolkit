@@ -26,8 +26,9 @@
 define([
     "qasht/package/Unit",
     "jazzHands/query/Variable",
-    "RdfJs/test/fake/Node"
-], function (TestPackage, Variable, Node) {
+    "RdfJs/test/fake/Node",
+    "jazzHands/query/DataRow"
+], function (TestPackage, Variable, Node, DataRow) {
     return new TestPackage({
         module: "jazzHands/Variable",
         tests: [
@@ -58,20 +59,20 @@ define([
             {
                 name: "resolve: reads input data row for desired value",
                 setUp: function (test) {
-                    test.row = {
+                    test.row = new DataRow({
                         iri: new Node("<urn:Value>", test),
                         bNode: new Node("_:b1", test),
                         literal: new Node('"Hello World"', test)
-                    }
+                    });
                 },
                 exec: function (test) {
                     var iri = new Variable("?iri");
                     var bNode = new Variable("?bNode");
                     var literal = new Variable("?literal");
 
-                    test.assertEqual(test.row.iri, iri.resolve(test.row));
-                    test.assertEqual(test.row.bNode, bNode.resolve(test.row));
-                    test.assertEqual(test.row.literal, literal.resolve(test.row));
+                    test.assertEqual(test.row.get("iri"), iri.resolve(test.row));
+                    test.assertEqual(test.row.get("bNode"), bNode.resolve(test.row));
+                    test.assertEqual(test.row.get("literal"), literal.resolve(test.row));
 
                     test.complete();
                 }

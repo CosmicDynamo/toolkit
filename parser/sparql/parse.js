@@ -21,23 +21,15 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql
+ * @module $<class>$
  */
 define([
-    "blocks/promise/when",
-    "./sparql/parse"
-], function(when, parse){
+    "dojo/_base/declare"
+], function (declare) {
     /**
-     * Parses a SPARQL 1.1 Query and returns the results
-     * @param {String} input
-     * @param {Object} options
-     * @param {TripleStore} options.store
+     * @class $<class>$
      */
-    function sparql(input, options){
-        debugger;
-        return when(parse(input), function(queryPlan){
-            return queryPlan.execute(options);
-        })
-    }
-    return sparql
+    return declare([], {
+
+    });
 });

@@ -25,8 +25,9 @@
  */
 define([
     "dojo/_base/declare",
-    "jazzHands/query/Quad"
-], function (declare, Quad) {
+    "jazzHands/query/Quad",
+    "dojo/Stateful"
+], function (declare, Quad, Stateful) {
     /**
      * Used to form a Quad from a DataRow and variables
      * @description a Quad is a Triple with addition Graph information.  When the query is complete
@@ -34,31 +35,31 @@ define([
      * with the Graph name that was generated here
      * @class jazzHands.query.match.QuadPattern
      */
-    return declare([], {
-        /** @property {jazzHands.query.VariableNode | RdfJs.node.Named | RdfJs.node.Blank} */
+    return declare([Stateful], {
+        /** @property {jazzHands.query.Variable | RdfJs.node.Named | RdfJs.node.Blank} */
         subject:null,
-        /** @property {jazzHands.query.VariableNode | RdfJs.node.Named} */
+        /** @property {jazzHands.query.Variable | RdfJs.node.Named} */
         predicate:null,
         /** @property {jazzHands.rdf.Node} */
         object:null,
-        /** @property {jazzHands.query.VariableNode | RdfJs.node.Named} */
+        /** @property {jazzHands.query.Variable | RdfJs.node.Named} */
         graph:null,
         /**
          * @public
          * @param {jazzHands.query.DataRow} dataRow - The DataRow to use to fill this Pattern
          * @return {Quad} - A Quad with the VariableNodes replaced with values from the input DataRow
          */
-        create: function(dataRow){
-            var subject = this._resolve(this.subject, dataRow);
-            var predicate = this._resolve(this.predicate, dataRow);
-            var object = this._resolve(this.object, dataRow);
-            var graph = this._resolve(this.graph, dataRow);
-            return new Quad(subject, predicate, object, graph);
+        match: function(dataRow){
+            return new Quad({
+                subject:this._resolve(this.subject, dataRow),
+                predicate:this._resolve(this.predicate, dataRow),
+                object:this._resolve(this.object, dataRow),
+                graph:this._resolve(this.graph, dataRow)
+            });
         },
         _resolve:function(node, row) {
             if (node.interfaceName === "Variable"){
-                var col = node.toString();
-                return row.get(col);
+                return node.resolve(row);
             }
             return node;
         }

@@ -36,6 +36,7 @@ define([
         constructor: function (p) {
             this.symbol = p[0];
             this.nominalValue = p.substr(1);
+            this.interfaceName = "Variable";
         },
         /** @property {String} The original symbol that was used to create this variable */
         symbol: null,
@@ -59,7 +60,7 @@ define([
         resolve: function (dataRow) {
             var out;
             if (dataRow) {
-                out = dataRow[this.nominalValue];
+                out = dataRow.get(this.nominalValue);
             }
             return out || null;
         }

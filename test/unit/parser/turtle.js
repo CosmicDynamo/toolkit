@@ -22,7 +22,7 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            "<jazzHands/test/unit/parser/turtle/manifest.ttl#turtle-syntax-bad-LITERAL2_with_langtag_and_datatype>":true
+            //"<jazzHands/test/unit/parser/turtle/manifest.ttl#turtle-syntax-bad-LITERAL2_with_langtag_and_datatype>":true
         },
         excludeById: {
         },
@@ -43,19 +43,13 @@ define([
         },
         testSetUp: function (test) {
             test.parser = new Turtle();
-            var loadAction = test.get("mf:action").map(function(file){
-                var name = file.valueOf();
-                return test.loadText(name, function(data){
-                    test.parser.setBase("http://www.w3.org/2013/TurtleTests" + name.substr(name.lastIndexOf("/")));
-                    test.data = data;
-                })
+            var loadAction = test.loadText("mf:action", function(data, name){
+                test.parser.setBase("http://www.w3.org/2013/TurtleTests" + name.substr(name.lastIndexOf("/")));
+                test.data = data;
             });
 
-            var loadResult = test.get("mf:result").map(function(file){
-                var name = file.valueOf();
-                return test.loadText(name, function(data){
-                    test.expected = test.loadResults(data);
-                })
+            var loadResult = test.loadText("mf:result", function(data){
+                test.expected = test.loadResults(data);
             });
 
             return all(loadAction.concat(loadResult));

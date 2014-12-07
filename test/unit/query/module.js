@@ -1,4 +1,5 @@
 define([
+    "./match/module",
     "./opr/module",
     "./out/module",
     "./DataRow",
