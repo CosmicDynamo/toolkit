@@ -25,12 +25,14 @@
  */
 define([
     "dojo/_base/declare",
+    "dojo/_base/lang",
     "dojo/Stateful",
     "./Node"
-], function (declare, Stateful, Node) {
+], function (declare, lang, Stateful, Node) {
     /**
      * @class RdfJs.Triple
      * @mixes dojo.Stateful
+     * @mixes dojo.declare
      * @see http://www.w3.org/TR/rdf-interfaces/#idl-def-Triple
      */
     return declare([Stateful], {
@@ -67,7 +69,7 @@ define([
         /**
          * Converts a input from a String to an RDF Node
          * @param {String} name
-         * @private
+         * @protected
          */
         _validate: function (name) {
             var val = this[name];
