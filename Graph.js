@@ -10,7 +10,7 @@ define([
     /* Implementation of <http://www.w3.org/TR/rdf-interfaces/#idl-def-Graph> */
 
     /**
-     * @class qash.rdf.Graph
+     * @class RdfJs.Graph
      */
     var rdfGraph = declare([], {
         spo: null,
@@ -268,6 +268,14 @@ define([
                 TripleCtr: this.TripleCtr
             });
         },
+        /**
+         * Returns all triples which match the given input
+         * @param {RdfJs.Node} [subject]
+         * @param {RdfJs.Node} [predicate]
+         * @param {RdfJs.Node} [object]
+         * @param {Number} [limit] - Max number of results that can be returned
+         * @return {RdfJs.Triple[]}
+         */
         match: function (subject, predicate, object, limit) {
             var ptrArray = this._match(subject, predicate, object);
 
@@ -383,7 +391,7 @@ define([
          *              because it doesn't bother converting
          *              from pointers back to triples and then
          *              re-indexing
-         * @return {qash.rdf.Graph}
+         * @return {RdfJs.Graph}
          */
         clone: function () {
             var clone = new rdfGraph();

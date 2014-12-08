@@ -170,6 +170,9 @@ define([
             Triple.testApi(triple, test);
 
             return this.inherited(arguments);
+        },
+        __addTriple: function(s, p, o){
+            this.add(new Triple(s, p, o, this.test));
         }
     });
 
