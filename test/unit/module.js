@@ -1,5 +1,8 @@
 define([
+    "./app/module",
+    "./header/module",
     "./Application",
-    "./convert"
+    "./convert",
+    "./HandlerHub"
 ], function () {
 });

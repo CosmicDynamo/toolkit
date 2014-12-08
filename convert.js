@@ -35,6 +35,7 @@ define([
             return new Container();
         }
     });
+    var fileExt = new Container();
     /**
      * Runs the registered serializer, if able, on the input data
      * @param {String} fromType - mediaType of the input data
@@ -81,6 +82,15 @@ define([
         });
     };
     /**
+     * Registers a file extension to a specific mime type
+     * @param {String} ext - file extension
+     * @param {String} mimeType - mime type
+     */
+    convert.registerExtension = function(ext, mimeType){
+        fileExt.set(ext, mimeType);
+    };
+
+    /**
      * Removes a registered convert
      * @param {Object} config
      * @param {String} [config.type1] - mediaType string
@@ -114,6 +124,19 @@ define([
                     use: config[key]
                 }
             }).forEach(fn);
+    };
+
+    /**
+     * Loads a file directly to the target format
+     * @param {String} fileName - File to be loaded
+     * @param {String} to - detination format/mimeType
+     * @return {Promise<*>}
+     */
+    convert.loadFile = function(fileName, to){
+        var from = fileExt.get(fileName.split(".")[1]);
+        return require(["dojo/text!" + fileName], function(data) {
+            return convert(data, from, to)
+        });
     };
 
     return convert;

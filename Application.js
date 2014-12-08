@@ -75,7 +75,7 @@ define([
             var defList = names.map(function (name) {
                 var fn = app[name][method];
 
-                return fn?fn.call(app[name], app, app.config[name]):null;
+                return fn?fn.call(app[name], app.config[name]):null;
             });
 
             return all(defList);
