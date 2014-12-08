@@ -57,7 +57,7 @@ define([
         });
 
         if (fail.length > 0){
-            return rejected.get(fail[0])
+            return rejected.get(fail[0]).then(callback, errback);
         }
 
         var promise = new Deferred();

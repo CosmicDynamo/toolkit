@@ -61,6 +61,28 @@ define([
                 }
             },
             {
+                name: "require: errback fn called when AND modules fail to load",
+                exec: function(test){
+                    require([
+                        "bad/mid/repeat/errback"
+                    ], function(){
+                        test.assertFail("Callback Function should not be called")
+                    }, function(err1){
+                        test.assertIsObject(err1);
+
+                        require([
+                            "bad/mid/repeat/errback"
+                        ], function(){
+                            test.assertFail("Callback Function should not be called")
+                        }, function(err2){
+                            test.assertIsObject(err2);
+
+                            test.complete();
+                        });
+                    });
+                }
+            },
+            {
                 name: "require: returns promise resolved when module loads",
                 exec: function(test){
                     test.whenResolved(require([

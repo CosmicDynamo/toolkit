@@ -1,5 +1,6 @@
 define([
     "./promise/module",
+    "./require/module",
     "./Cache",
     "./Container",
     "./Exception",
