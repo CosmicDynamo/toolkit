@@ -24,36 +24,29 @@
  * @module jazzHands.query.function.numeric-unary-plus
  */
 define([
-    "dojo/_base/lang",
-    "RdfJs/Node",
-    "../exception/InvalidArgumentType"
-], function(lang, Node, InvalidArgumentType){
+    "./numeric-unary-plus"
+], function(unaryPlus){
     /**
-     * Verifies an expression is numeric and returns it with sign unchanged
+     * Negates a numeric expression
      * @see http://www.w3.org/TR/xpath-functions/#func-numeric-unary-plus
      * @param {RdfJs.Node | RdfJs.Node[]} node
      * @return {RdfJs.node.Literal<Number>}
      * @throws err:FORG0006, Invalid argument type
      */
-    function unaryPlus(node){
-        var valid = !lang.isArray(node) && node.isLiteral();
+    function unaryMinus(node){
+        var rtn = unaryPlus(node);
 
-        if (valid){
-            //This is where a complex reasoner belongs.  but instead I will rely on Rdf Literal Node to covert to a primitive
-            var value = node.valueOf();
-            valid = !(lang.isString(value) || isNaN(value));
-            if (!valid){
-                value = node.nominalValue;
-                valid = value === "INF" || value === "-INF" || value === "NaN";
+        var value = rtn.nominalValue;
+        if (value.indexOf("-") === 0){
+            value = value.substr(1);
+        } else {
+            if (value.indexOf("+") === 0){
+                value = value.substr(1);
             }
-
+            value = "-" + value;
         }
-
-        if (!valid){
-            throw new InvalidArgumentType({input: node, module: "jazzHands/query/expression/login/boolean"});
-        }
-
-        return new Node(node.toNT());
+        rtn.nominalValue =  value;
+        return rtn;
     }
-    return unaryPlus;
+    return unaryMinus;
 });
