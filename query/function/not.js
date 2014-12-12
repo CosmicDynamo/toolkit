@@ -24,38 +24,19 @@
  * @module jazzHands.query.function.boolean
  */
 define([
-    "dojo/_base/lang",
-    "RdfJs/Node",
-    "jazzHands/query/exception/InvalidArgumentType"
-], function(lang, Node, InvalidArgumentType){
-    var xsdBoolean = "http://www.w3.org/2001/XMLSchema#boolean";
+    "./boolean"
+], function(boolean){
     /**
-     * Converts an expression result to a Boolean Node
-     * @see http://www.w3.org/TR/xpath-functions/#func-boolean
+     * Negates a boolean RDF Literal Node
+     * @see http://www.w3.org/TR/xpath-functions/#func-not
      * @param {RdfJs.Node | RdfJs.Node[]} node
      * @return {RdfJs.node.Literal<Boolean>}
      * @throws err:FORG0006, Invalid argument type
      */
-    function boolean(node){
-        var out;
-        if (lang.isArray(node)){
-            out = node.length > 0;
-        } else if (node.isLiteral()) {
-            if (node.datatype === xsdBoolean){
-                return new Node(node.toNT());
-            }
-            var value = node.valueOf();
-            if (lang.isString(value)){
-                out = value.length > 0;
-            } else {
-                out = !isNaN(value) && value !== 0;
-            }
-        } else {
-            throw new InvalidArgumentType({ input: node, module: "jazzHands/query/expression/login/boolean" });
-        }
-        var text = out?"true":"false";
-
-        return new Node('"' + text + '"^^<' + xsdBoolean + '>');
+    function not(node){
+        var value = boolean(node);
+        value.nominalValue = value.valueOf()?"false":"true";
+        return value;
     }
-    return boolean;
+    return not;
 });
