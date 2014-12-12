@@ -229,6 +229,39 @@ define([
 
                     test.complete();
                 }
+            },
+            {
+                name: "Non Numeric -> Exception thrown",
+                exec: function(test){
+                    var input1 = new Node('<http://www.w3.org/2001/XMLSchema#boolean>', test);
+                    var input2 = new Node('_:asdf', test);
+
+                    try {
+                        unaryMinus(input1);
+                        test.assertFail();
+                    } catch(err) {
+                        test.assertIsObject(err, "exception was thrown");
+                        test.assertEqual("err:FORG0006",err.error);
+                        test.assertEqual("Invalid argument type", err.message);
+                        test.assertEqual("http://www.w3.org/TR/xpath-functions/#ERRFORG0006", err.see);
+                        test.assertEqual(input1, err.input);
+                        test.assertEqual("jazzHands/query/function/numeric-unary-plus", err.module);
+                    }
+
+                    try {
+                        unaryMinus(input2);
+                        test.assertFail();
+                    } catch(err) {
+                        test.assertIsObject(err, "exception was thrown");
+                        test.assertEqual("err:FORG0006",err.error);
+                        test.assertEqual("Invalid argument type", err.message);
+                        test.assertEqual("http://www.w3.org/TR/xpath-functions/#ERRFORG0006", err.see);
+                        test.assertEqual(input2, err.input);
+                        test.assertEqual("jazzHands/query/function/numeric-unary-plus", err.module);
+                    }
+
+                    test.complete();
+                }
             }
         ]
     });

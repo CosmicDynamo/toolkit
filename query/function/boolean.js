@@ -51,7 +51,7 @@ define([
                 out = !isNaN(value) && value !== 0;
             }
         } else {
-            throw new InvalidArgumentType({ input: node, module: "jazzHands/query/expression/login/boolean" });
+            throw new InvalidArgumentType({ input: node, module: "jazzHands/query/function/boolean" });
         }
         var text = out?"true":"false";
 

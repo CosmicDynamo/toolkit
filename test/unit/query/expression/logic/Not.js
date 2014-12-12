@@ -317,6 +317,11 @@ define([
                         test.assertFail();
                     } catch(err) {
                         test.assertIsObject(err, "exception was thrown");
+                        test.assertEqual("err:FORG0006",err.error);
+                        test.assertEqual("Invalid argument type", err.message);
+                        test.assertEqual("http://www.w3.org/TR/xpath-functions/#ERRFORG0006", err.see);
+                        test.assertEqual(input1, err.input);
+                        test.assertEqual("jazzHands/query/function/boolean", err.module);
                     }
 
                     try {
@@ -325,6 +330,11 @@ define([
                         test.assertFail();
                     } catch(err) {
                         test.assertIsObject(err, "exception was thrown");
+                        test.assertEqual("err:FORG0006",err.error);
+                        test.assertEqual("Invalid argument type", err.message);
+                        test.assertEqual("http://www.w3.org/TR/xpath-functions/#ERRFORG0006", err.see);
+                        test.assertEqual(input2, err.input);
+                        test.assertEqual("jazzHands/query/function/boolean", err.module);
                     }
 
                     test.complete();
