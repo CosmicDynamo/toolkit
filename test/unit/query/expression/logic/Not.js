@@ -21,7 +21,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.test.unit.query.function.boolean
+ * @module jazzHands.test.unit.query.expression.logic.Not
  */
 define([
     "qasht/package/Unit",
@@ -32,7 +32,7 @@ define([
       Return !not($arg)
     */
     return new TestPackage({
-        module: "jazzHands/query/function/not",
+        module: "jazzHands/query/expression/logic/not",
         tests: [
             {
                 name: "Empty array -> true",

@@ -1,4 +1,5 @@
 define([
-    "./logic/module"
+    "./logic/module",
+    "./Negate"
 ], function () {
 });
