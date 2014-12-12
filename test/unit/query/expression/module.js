@@ -1,0 +1,4 @@
+define([
+    "./logic/module"
+], function () {
+});

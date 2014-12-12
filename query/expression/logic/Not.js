@@ -21,24 +21,28 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module $<class>$
+ * @module jazzHands.query.expression.logic.Not
  */
 define([
     "dojo/_base/declare",
-    "dojo/Stateful"
-], function (declare, Stateful) {
+    "../../_Expression",
+    "jazzHands/query/function/not"
+], function (declare, _Expression, not) {
     /**
-     * @class jazzHands.query._Expression
-     * @interface
+     * Logical expression which returns the opposite of the given input expression's return
+     * @class jazzHands.query.expression.logic.Not
+     * @mixes jazzHands.query._Expression
      */
-    return declare([Stateful], {
+    return declare([_Expression], {
+        /** @property {jazzHands.query._Expression} - Numeric express to be negated */
+        expression: null,
         /**
-         * @param {jazzHands.query.DataRow} dataRow - single row to run the expression against
-         * @return {jazzHands.rdf.Node} - the results of this expression
-         * @public
+         * Returns the negative of the expression result
+         * @override jazzHands.query._Expression#resolve
+         * @return {RdfJs.node.Literal<Boolean>}
          */
         resolve: function(dataRow){
-
+            return not(this.expression.resolve(dataRow));
         }
     });
 });
