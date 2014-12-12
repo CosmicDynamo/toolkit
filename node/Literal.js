@@ -30,6 +30,15 @@ define([
         "http://www.w3.org/2001/XMLSchema#unsignedShort": "int",
         "http://www.w3.org/2001/XMLSchema#unsignedByte": "int"
     };
+    function numeric(value, parse){
+        if (value === "INF") {
+            return Number.POSITIVE_INFINITY;
+        }
+        if (value === "-INF"){
+            return Number.NEGATIVE_INFINITY;
+        }
+        return parse(value);
+    }
 
     return function (value, language, type) {
         var lNode = new _Node(value);
@@ -69,9 +78,9 @@ define([
             if (typeMap[this.datatype]) {
                 switch (typeMap[this.datatype]) {
                     case "int":
-                        return parseInt(nValue);
+                        return numeric(nValue, parseInt);
                     case "float":
-                        return parseFloat(nValue);
+                        return numeric(nValue, parseFloat);
                     case "iso8601":
                         return stamp.fromISOString(nValue);
                     case "boolean":
