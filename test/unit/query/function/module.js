@@ -2,6 +2,7 @@ define([
     "./boolean",
     "./not",
     "./numeric-unary-minus",
-    "./numeric-unary-plus"
+    "./numeric-unary-plus",
+    "./substring"
 ], function () {
 });

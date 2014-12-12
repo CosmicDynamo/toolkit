@@ -1,5 +1,6 @@
 define([
     "./logic/module",
-    "./Negate"
+    "./Negate",
+    "./Substring"
 ], function () {
 });
