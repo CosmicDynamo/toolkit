@@ -21,13 +21,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.test.unit.query.function.boolean
+ * @module jazzHands.test.unit.query.function.numeric-unary-plus
  */
 define([
     "qasht/package/Unit",
-    "jazzHands/query/function/boolean",
+    "jazzHands/query/function/numeric-unary-plus",
     "RdfJs/test/fake/Node"
-], function (TestPackage, boolean, Node) {
+], function (TestPackage, unaryPlus, Node) {
     /*
      If $arg is the empty sequence, fn:boolean returns false.
      If $arg is a sequence whose first item is a node, fn:boolean returns true.
@@ -35,96 +35,12 @@ define([
      If $arg is a singleton value of type xs:string or a type derived from xs:string, xs:anyURI or a type derived from xs:anyURI or xs:untypedAtomic, fn:boolean returns false if the operand value has zero length; otherwise it returns true.
      If $arg is a singleton value of any numeric type or a type derived from a numeric type, fn:boolean returns false if the operand value is NaN or is numerically equal to zero; otherwise it returns true.
      In all other cases, fn:boolean raises a type error [err:FORG0006].
-    */
+     */
     return new TestPackage({
-        module: "jazzHands/query/function/boolean",
+        module: "jazzHands/query/function/numeric-unary-plus",
         tests: [
             {
-                name: "Empty array -> false",
-                exec: function(test){
-                    var rtn = boolean([]);
-
-                    Node.testApi(rtn, test);
-                    test.assertFalse(rtn.valueOf());
-
-                    test.complete();
-                }
-            },
-            {
-                name: "Array with > 0 RDF Node -> true",
-                exec: function(test){
-                    var rtn1 = boolean([new Node("<>", test)]);
-                    var rtn2 = boolean([new Node("_:0", test)]);
-                    var rtn3 = boolean([new Node("''", test)]);
-
-                    Node.testApi(rtn1, test);
-                    test.assertTrue(rtn1.valueOf());
-                    Node.testApi(rtn2, test);
-                    test.assertTrue(rtn2.valueOf());
-                    Node.testApi(rtn3, test);
-                    test.assertTrue(rtn3.valueOf());
-
-                    test.complete();
-                }
-            },
-            {
-                name: "Boolean Node -> input Node",
-                exec: function(test){
-                    var input1 = new Node('"true"^^<http://www.w3.org/2001/XMLSchema#boolean>', test);
-                    var input2 = new Node('"false"^^<http://www.w3.org/2001/XMLSchema#boolean>', test);
-
-                    test.assertEqual(input1, boolean(input1));
-                    test.assertEqual(input2, boolean(input2));
-
-                    test.complete();
-                }
-            },
-            {
-                name: "Empty String -> false",
-                exec: function(test){
-                    var input1 = new Node('""', test);
-                    var input2 = new Node('""^^<http://www.w3.org/2001/XMLSchema#string>', test);
-
-                    test.assertFalse(boolean(input1).valueOf());
-                    test.assertFalse(boolean(input2).valueOf());
-
-                    test.complete();
-                }
-            },
-            {
-                name: "String with length > 0 -> true",
-                exec: function(test){
-                    var input1 = new Node('"false"', test);
-                    var input2 = new Node('"false"^^<http://www.w3.org/2001/XMLSchema#string>', test);
-
-                    test.assertTrue(boolean(input1).valueOf());
-                    test.assertTrue(boolean(input2).valueOf());
-
-                    test.complete();
-                }
-            },
-            {
-                name: "Empty anyURI -> false",
-                exec: function(test){
-                    var input = new Node('""^^<http://www.w3.org/2001/XMLSchema#anyURI>', test);
-
-                    test.assertFalse(boolean(input).valueOf());
-
-                    test.complete();
-                }
-            },
-            {
-                name: "anyURI with length > 0 -> true",
-                exec: function(test){
-                    var input = new Node('"http://example.com/"^^<http://www.w3.org/2001/XMLSchema#anyURI>', test);
-
-                    test.assertTrue(boolean(input).valueOf());
-
-                    test.complete();
-                }
-            },
-            {
-                name: "Numeric = 0 -> false",
+                name: "Numeric = 0 -> returned as is",
                 exec: function(test){
                     var input01 = new Node('"0"^^<http://www.w3.org/2001/XMLSchema#byte>', test);
                     var input02 = new Node('"0"^^<http://www.w3.org/2001/XMLSchema#decimal>', test);
@@ -141,26 +57,26 @@ define([
                     var input13 = new Node('"0"^^<http://www.w3.org/2001/XMLSchema#unsignedShort>', test);
                     var input14 = new Node('"0"^^<http://www.w3.org/2001/XMLSchema#unsignedByte>', test);
 
-                    test.assertFalse(boolean(input01).valueOf());
-                    test.assertFalse(boolean(input02).valueOf());
-                    test.assertFalse(boolean(input03).valueOf());
-                    test.assertFalse(boolean(input04).valueOf());
-                    test.assertFalse(boolean(input05).valueOf());
-                    test.assertFalse(boolean(input06).valueOf());
-                    test.assertFalse(boolean(input07).valueOf());
-                    test.assertFalse(boolean(input08).valueOf());
-                    test.assertFalse(boolean(input09).valueOf());
-                    test.assertFalse(boolean(input10).valueOf());
-                    test.assertFalse(boolean(input11).valueOf());
-                    test.assertFalse(boolean(input12).valueOf());
-                    test.assertFalse(boolean(input13).valueOf());
-                    test.assertFalse(boolean(input14).valueOf());
+                    test.assertEqual(input01, unaryPlus(input01));
+                    test.assertEqual(input02, unaryPlus(input02));
+                    test.assertEqual(input03, unaryPlus(input03));
+                    test.assertEqual(input04, unaryPlus(input04));
+                    test.assertEqual(input05, unaryPlus(input05));
+                    test.assertEqual(input06, unaryPlus(input06));
+                    test.assertEqual(input07, unaryPlus(input07));
+                    test.assertEqual(input08, unaryPlus(input08));
+                    test.assertEqual(input09, unaryPlus(input09));
+                    test.assertEqual(input10, unaryPlus(input10));
+                    test.assertEqual(input11, unaryPlus(input11));
+                    test.assertEqual(input12, unaryPlus(input12));
+                    test.assertEqual(input13, unaryPlus(input13));
+                    test.assertEqual(input14, unaryPlus(input14));
 
                     test.complete();
                 }
             },
             {
-                name: "Numeric NAN -> false",
+                name: "Numeric NAN -> returned as is",
                 exec: function(test){
                     var input01 = new Node('"NaN"^^<http://www.w3.org/2001/XMLSchema#byte>', test);
                     var input02 = new Node('"NaN"^^<http://www.w3.org/2001/XMLSchema#decimal>', test);
@@ -177,26 +93,26 @@ define([
                     var input13 = new Node('"NaN"^^<http://www.w3.org/2001/XMLSchema#unsignedShort>', test);
                     var input14 = new Node('"NaN"^^<http://www.w3.org/2001/XMLSchema#unsignedByte>', test);
 
-                    test.assertFalse(boolean(input01).valueOf());
-                    test.assertFalse(boolean(input02).valueOf());
-                    test.assertFalse(boolean(input03).valueOf());
-                    test.assertFalse(boolean(input04).valueOf());
-                    test.assertFalse(boolean(input05).valueOf());
-                    test.assertFalse(boolean(input06).valueOf());
-                    test.assertFalse(boolean(input07).valueOf());
-                    test.assertFalse(boolean(input08).valueOf());
-                    test.assertFalse(boolean(input09).valueOf());
-                    test.assertFalse(boolean(input10).valueOf());
-                    test.assertFalse(boolean(input11).valueOf());
-                    test.assertFalse(boolean(input12).valueOf());
-                    test.assertFalse(boolean(input13).valueOf());
-                    test.assertFalse(boolean(input14).valueOf());
+                    test.assertTrue(isNaN(unaryPlus(input01)));
+                    test.assertTrue(isNaN(unaryPlus(input02)));
+                    test.assertTrue(isNaN(unaryPlus(input03)));
+                    test.assertTrue(isNaN(unaryPlus(input04)));
+                    test.assertTrue(isNaN(unaryPlus(input05)));
+                    test.assertTrue(isNaN(unaryPlus(input06)));
+                    test.assertTrue(isNaN(unaryPlus(input07)));
+                    test.assertTrue(isNaN(unaryPlus(input08)));
+                    test.assertTrue(isNaN(unaryPlus(input09)));
+                    test.assertTrue(isNaN(unaryPlus(input10)));
+                    test.assertTrue(isNaN(unaryPlus(input11)));
+                    test.assertTrue(isNaN(unaryPlus(input12)));
+                    test.assertTrue(isNaN(unaryPlus(input13)));
+                    test.assertTrue(isNaN(unaryPlus(input14)));
 
                     test.complete();
                 }
             },
             {
-                name: "Numeric < 0 -> true",
+                name: "Numeric < 0 -> returned as is",
                 exec: function(test){
                     var input1 = new Node('"-1"^^<http://www.w3.org/2001/XMLSchema#byte>', test);
                     var input2 = new Node('"-1"^^<http://www.w3.org/2001/XMLSchema#decimal>', test);
@@ -207,20 +123,20 @@ define([
                     var input7 = new Node('"-1"^^<http://www.w3.org/2001/XMLSchema#nonPositiveInteger>', test);
                     var input8 = new Node('"-1"^^<http://www.w3.org/2001/XMLSchema#short>', test);
 
-                    test.assertTrue(boolean(input1).valueOf());
-                    test.assertTrue(boolean(input2).valueOf());
-                    test.assertTrue(boolean(input3).valueOf());
-                    test.assertTrue(boolean(input4).valueOf());
-                    test.assertTrue(boolean(input5).valueOf());
-                    test.assertTrue(boolean(input6).valueOf());
-                    test.assertTrue(boolean(input7).valueOf());
-                    test.assertTrue(boolean(input8).valueOf());
+                    test.assertEqual(input1, unaryPlus(input1));
+                    test.assertEqual(input2, unaryPlus(input2));
+                    test.assertEqual(input3, unaryPlus(input3));
+                    test.assertEqual(input4, unaryPlus(input4));
+                    test.assertEqual(input5, unaryPlus(input5));
+                    test.assertEqual(input6, unaryPlus(input6));
+                    test.assertEqual(input7, unaryPlus(input7));
+                    test.assertEqual(input8, unaryPlus(input8));
 
                     test.complete();
                 }
             },
             {
-                name: "Numeric > 0 -> true",
+                name: "Numeric > 0 -> returned as is",
                 exec: function(test){
                     var input01 = new Node('"1"^^<http://www.w3.org/2001/XMLSchema#byte>', test);
                     var input02 = new Node('"1"^^<http://www.w3.org/2001/XMLSchema#decimal>', test);
@@ -235,41 +151,54 @@ define([
                     var input13 = new Node('"1"^^<http://www.w3.org/2001/XMLSchema#unsignedShort>', test);
                     var input14 = new Node('"1"^^<http://www.w3.org/2001/XMLSchema#unsignedByte>', test);
 
-                    test.assertTrue(boolean(input01).valueOf());
-                    test.assertTrue(boolean(input02).valueOf());
-                    test.assertTrue(boolean(input03).valueOf());
-                    test.assertTrue(boolean(input04).valueOf());
-                    test.assertTrue(boolean(input05).valueOf());
-                    test.assertTrue(boolean(input07).valueOf());
-                    test.assertTrue(boolean(input09).valueOf());
-                    test.assertTrue(boolean(input10).valueOf());
-                    test.assertTrue(boolean(input11).valueOf());
-                    test.assertTrue(boolean(input12).valueOf());
-                    test.assertTrue(boolean(input13).valueOf());
-                    test.assertTrue(boolean(input14).valueOf());
+                    test.assertEqual(input01, unaryPlus(input01));
+                    test.assertEqual(input02, unaryPlus(input02));
+                    test.assertEqual(input03, unaryPlus(input03));
+                    test.assertEqual(input04, unaryPlus(input04));
+                    test.assertEqual(input05, unaryPlus(input05));
+                    test.assertEqual(input07, unaryPlus(input07));
+                    test.assertEqual(input09, unaryPlus(input09));
+                    test.assertEqual(input10, unaryPlus(input10));
+                    test.assertEqual(input11, unaryPlus(input11));
+                    test.assertEqual(input12, unaryPlus(input12));
+                    test.assertEqual(input13, unaryPlus(input13));
+                    test.assertEqual(input14, unaryPlus(input14));
 
                     test.complete();
                 }
             },
             {
-                name: "Invalid type => Exception",
+                name: "Numeric = INF -> returned as is",
                 exec: function(test){
-                    var input1 = new Node('<http://www.w3.org/2001/XMLSchema#boolean>', test);
-                    var input2 = new Node('_:asdf', test);
+                    var input01 = new Node('"INF"^^<http://www.w3.org/2001/XMLSchema#byte>', test);
+                    var input02 = new Node('"INF"^^<http://www.w3.org/2001/XMLSchema#decimal>', test);
+                    var input03 = new Node('"INF"^^<http://www.w3.org/2001/XMLSchema#int>', test);
+                    var input04 = new Node('"INF"^^<http://www.w3.org/2001/XMLSchema#integer>', test);
+                    var input05 = new Node('"INF"^^<http://www.w3.org/2001/XMLSchema#long>', test);
+                    var input06 = new Node('"INF"^^<http://www.w3.org/2001/XMLSchema#negativeInteger>', test);
+                    var input07 = new Node('"INF"^^<http://www.w3.org/2001/XMLSchema#nonNegativeInteger>', test);
+                    var input08 = new Node('"-INF"^^<http://www.w3.org/2001/XMLSchema#nonPositiveInteger>', test);
+                    var input09 = new Node('"-INF"^^<http://www.w3.org/2001/XMLSchema#positiveInteger>', test);
+                    var input10 = new Node('"INF"^^<http://www.w3.org/2001/XMLSchema#short>', test);
+                    var input11 = new Node('"INF"^^<http://www.w3.org/2001/XMLSchema#unsignedLong>', test);
+                    var input12 = new Node('"INF"^^<http://www.w3.org/2001/XMLSchema#unsignedInt>', test);
+                    var input13 = new Node('"INF"^^<http://www.w3.org/2001/XMLSchema#unsignedShort>', test);
+                    var input14 = new Node('"INF"^^<http://www.w3.org/2001/XMLSchema#unsignedByte>', test);
 
-                    try {
-                        boolean(input1);
-                        test.assertFail();
-                    } catch(err) {
-                        test.assertIsObject(err, "exception was thrown");
-                    }
-
-                    try {
-                        boolean(input2);
-                        test.assertFail();
-                    } catch(err) {
-                        test.assertIsObject(err, "exception was thrown");
-                    }
+                    test.assertEqual(input01, unaryPlus(input01));
+                    test.assertEqual(input02, unaryPlus(input02));
+                    test.assertEqual(input03, unaryPlus(input03));
+                    test.assertEqual(input04, unaryPlus(input04));
+                    test.assertEqual(input05, unaryPlus(input05));
+                    test.assertEqual(input06, unaryPlus(input06));
+                    test.assertEqual(input07, unaryPlus(input07));
+                    test.assertEqual(input08, unaryPlus(input08));
+                    test.assertEqual(input09, unaryPlus(input09));
+                    test.assertEqual(input10, unaryPlus(input10));
+                    test.assertEqual(input11, unaryPlus(input11));
+                    test.assertEqual(input12, unaryPlus(input12));
+                    test.assertEqual(input13, unaryPlus(input13));
+                    test.assertEqual(input14, unaryPlus(input14));
 
                     test.complete();
                 }
