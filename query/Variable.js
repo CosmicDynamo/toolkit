@@ -49,6 +49,12 @@ define([
         /**
          * @override
          */
+        valueOf: function () {
+            return this.nominalValue;
+        },
+        /**
+         * @override
+         */
         toNT: function () {
             return null;
         },
