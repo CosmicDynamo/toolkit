@@ -2,8 +2,8 @@ define([
 ], function(){
     /**
      * Compares to RDF Graphs
-     * @param {qash.rdf.Graph} left
-     * @param {qash.rdf.Graph} right
+     * @param {RdfJs.Graph} left
+     * @param {RdfJs.Graph} right
      */
     return function(left, right){
         if (left.length !== right.length){

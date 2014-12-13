@@ -1,5 +1,5 @@
 ﻿/**
- * @module qash.rdf.Graph
+ * @module RdfJs.Graph
  */
 define([
     "blocks/HashTable",
