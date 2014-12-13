@@ -423,11 +423,15 @@ define([
                 },
                 exec: function (test) {
                     var p1 = new Graph({test: test});
-                    p1.add(new Triple({subject: "<urn:ThirdGraph>", predicate: "<urn:hasValue>", object: '"G3"'}, test));
+                    var s = "<urn:ThirdGraph>";
+                    var p = "<urn:hasValue>";
+                    var o = '"G3"';
+                    p1.add(new Triple({subject: s, predicate: p, object: o}, test));
                     test.tStore.addAll(p1);
 
                     test.assertEqual("DEFAULT", test.runOnGraphsCalled, "runOnGraphs method was used to execute this request");
-                    test.assertEqual(p1, test.added, "input Graph was passed to target Graph#addAll");
+                    test.assertEqual(p1.length, test.added.length, "input Graph was passed to target Graph#addAll");
+                    test.assertEqual(1, test.added.match(s, p, o).length);
 
                     test.complete();
                 }

@@ -345,6 +345,7 @@ define([
                 this.forEach(tAction);
             }
         },
+        /*
         equals: function (graph) {
             if (graph.length === this.length) {
                 var left = new rdfGraph(this);
@@ -384,7 +385,7 @@ define([
 
             }
             return false;
-        },
+        },*/
         /**
          * Makes a clone of the current graph
          * @description Faster than creating a new graph
