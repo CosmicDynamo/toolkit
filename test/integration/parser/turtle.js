@@ -2,18 +2,19 @@
  * Created by Akeron on 3/8/14.
  */
 define([
-    "qasht/package/w3c/Unit",
+    "qasht/package/w3c",
     "jazzHands/parser/turtle",
     "dojo/when",
     "blocks/promise/all",
     "RdfJs/Graph",
     "RdfJs/Triple",
-    "RdfJs/test/unit/graph/compare"
-], function (TestPackage, Turtle, when, all, Graph, Triple, compare) {
+    "RdfJs/test/unit/graph/compare",
+    "RdfJs/test/api/Graph"
+], function (TestPackage, Turtle, when, all, Graph, Triple, compare, testGraphApi) {
     new TestPackage({
         prefix: {"rdf-test": "http://www.w3.org/ns/rdftest#"},
         module: "jazzHands/parser/turtle",
-        manifest: "jazzHands/test/unit/parser/turtle/manifest.ttl",
+        manifest: "jazzHands/test/integration/parser/turtle/manifest.ttl",
         'default': function (params) {
             params.setUp = this.testSetUp;
             params.loadResults = this.loadResults;
@@ -144,6 +145,7 @@ define([
                     if (fn) {
                         return fn(results);
                     }
+                    testGraphApi(results, test);
                     test.complete();
                 });
             } catch (err) {

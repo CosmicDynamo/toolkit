@@ -21,37 +21,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.Data
+ * @module jazzHands.parser.match.required
  */
 define([
-    "dojo/_base/declare",
-    "RdfJs/PrefixMap",
-    "dojo/Stateful"
-], function (declare, PrefixMap, Stateful) {
+    "jazzHands/parser/exception/MissingRequired"
+], function (MissingRequired) {
     /**
-     * Class used to store and transfer RDF string parsing information
-     * @class jazzHands.parser.Data
-     * @interface jazzHands.parser.Data
+     * Method to be used if the parser has gone down a path where only one possibility exists, and there is a value that MUST be present to fulfill it
+     * @method required
+     * @param {Promise<* | null> | * | null} value - The output from another parsing function.  Will handle the promise and validate if a result was returned
+     * @param {String} message - Exception message should the required attribute be mixxing
+     * @return {Promise<*> | *}
+     * @throws {jazzHands.parser.exception.MissingRequired}
      */
-    return declare([Stateful], {
-        /** @property {String} the input string being parsed */
-        input:null,
-        /** @property {jazzHands.rdf.PrefixMap} a map to be used for resolving curies */
-        prefixMap: null,
-        /** @property {Number} the current parser location*/
-        pos:null,
-        constructor: function(){
-            this.prefixMap = new PrefixMap();
-            this.pos = 0
-        },
-        getCh: function(){
-            return this.input[this.pos];
-        },
-        next: function(){
-            return this.input[this.pos++];
-        },
-        isEnd: function() {
-            return this.pos >= this.input.length;
+    function required(value, message) {
+        if (value === null) {
+            throw new MissingRequired(message);
         }
-    });
+        return value;
+    }
+    return required;
 });

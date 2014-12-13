@@ -21,37 +21,38 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.Data
+ * @module jazzHands.parser.match.find
  */
 define([
-    "dojo/_base/declare",
-    "RdfJs/PrefixMap",
-    "dojo/Stateful"
-], function (declare, PrefixMap, Stateful) {
+    "dojo/_base/lang",
+    "blocks/AsyncArray",
+    "blocks/promise/when",
+    "blocks/require"
+], function (lang, AsyncArray, when, require) {
     /**
-     * Class used to store and transfer RDF string parsing information
-     * @class jazzHands.parser.Data
-     * @interface jazzHands.parser.Data
+     * This method will execute each of the input modules in order until one returns a success result
+     * @param {jazzHands.parser.Data} data - Information about the parsing process
+     * @param {Array<String | jazzHands.parser._Parser>} parsers -  list of module ids or instances to be tried
+     * @param {Number} idx - start index
+     * @return {Promise<*> | * | null} - Promise might be created if the module needs to be required in
      */
-    return declare([Stateful], {
-        /** @property {String} the input string being parsed */
-        input:null,
-        /** @property {jazzHands.rdf.PrefixMap} a map to be used for resolving curies */
-        prefixMap: null,
-        /** @property {Number} the current parser location*/
-        pos:null,
-        constructor: function(){
-            this.prefixMap = new PrefixMap();
-            this.pos = 0
-        },
-        getCh: function(){
-            return this.input[this.pos];
-        },
-        next: function(){
-            return this.input[this.pos++];
-        },
-        isEnd: function() {
-            return this.pos >= this.input.length;
+    function find(data, parsers, idx){
+        idx = idx || 0;
+        function go(parse){
+            var ready = parse(data);
+            return when(ready, function(result){
+                if (result !== null){
+                    return result;
+                }
+                return find(data, parsers, idx+1);
+            })
         }
-    });
+
+        var parser = parsers[idx];
+        if (lang.isString(parser)){
+            return require([parser], go);
+        }
+        return go(parser);
+    }
+    return find;
 });

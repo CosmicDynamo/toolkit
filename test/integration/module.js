@@ -1,3 +1,4 @@
 define([
+    "./parser/module"
 ], function () {
 });

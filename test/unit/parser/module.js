@@ -1,5 +1,4 @@
 define([
-    "./sparql",
-    "./turtle"
+    "./match/module"
 ], function () {
 });

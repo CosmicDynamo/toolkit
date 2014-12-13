@@ -21,37 +21,22 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.Data
+ * @module jazzHands.parser.match.comment
  */
 define([
-    "dojo/_base/declare",
-    "RdfJs/PrefixMap",
-    "dojo/Stateful"
-], function (declare, PrefixMap, Stateful) {
+], function () {
     /**
-     * Class used to store and transfer RDF string parsing information
-     * @class jazzHands.parser.Data
-     * @interface jazzHands.parser.Data
+     * Strips off an RDF comment from the input string
+     * @param {jazzHands.parser.Data} data - Information about the parsing process
+     * @return {*}
      */
-    return declare([Stateful], {
-        /** @property {String} the input string being parsed */
-        input:null,
-        /** @property {jazzHands.rdf.PrefixMap} a map to be used for resolving curies */
-        prefixMap: null,
-        /** @property {Number} the current parser location*/
-        pos:null,
-        constructor: function(){
-            this.prefixMap = new PrefixMap();
-            this.pos = 0
-        },
-        getCh: function(){
-            return this.input[this.pos];
-        },
-        next: function(){
-            return this.input[this.pos++];
-        },
-        isEnd: function() {
-            return this.pos >= this.input.length;
+    function comment(data) {
+        if (data.getCh() !== "#") {
+            return null;
         }
-    });
+        while (!data.isEnd() && data.next() != "\n"){}
+
+        return "#";
+    }
+    return comment;
 });

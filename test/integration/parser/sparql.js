@@ -2,7 +2,7 @@
  * Created by Akeron on 3/8/14.
  */
 define([
-    "qasht/package/w3c/Unit",
+    "qasht/package/w3c",
     "jazzHands/parser/sparql",
     "blocks/promise/when",
     "blocks/promise/all",
@@ -30,7 +30,7 @@ define([
             "ut":"http://www.w3.org/2009/sparql/tests/test-update#"
         },
         module: "jazzHands/parser/sparql",
-        manifest: "jazzHands/test/unit/parser/sparql11-test-suite/manifest-all.ttl",
+        manifest: "jazzHands/test/integration/parser/sparql11-test-suite/manifest-all.ttl",
         "mf:UpdateEvaluationTest": function (testDef, params, getFile) {
             return updateTest(testDef, params, getFile, true);
         },
