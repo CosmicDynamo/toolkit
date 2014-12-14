@@ -190,8 +190,10 @@ define([
                         return data.next();
                     }, ",");
 
-                    test.assertNull(out);
-                    test.assertEqual(0, test.data.pos);
+                    test.assertIsArray(out);
+                    test.assertEqual(2, out.length);
+                    test.assertEqual("Th", out.join(""));
+                    test.assertEqual(4, test.data.pos);
 
                     test.complete();
                 }

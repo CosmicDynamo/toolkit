@@ -23,7 +23,7 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            //"<jazzHands/test/unit/parser/turtle/manifest.ttl#turtle-syntax-bad-LITERAL2_with_langtag_and_datatype>":true
+            //"<jazzHands/test/integration/parser/turtle/manifest.ttl#turtle-syntax-prefix-09>":true
         },
         excludeById: {
         },

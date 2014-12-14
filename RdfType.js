@@ -29,7 +29,7 @@ define([
     /**
      * Will have to generate an RDF Node for rdf:type often enough to make this useful
      */
-    return function(){
-        return new Node("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>");
+    return function(term){
+        return new Node("<http://www.w3.org/1999/02/22-rdf-syntax-ns#" + (term || "type") + ">");
     }
 });

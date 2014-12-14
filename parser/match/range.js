@@ -41,10 +41,10 @@ define([
     function range(data, min, max, fn, separator, optional){
         var start = data.pos;
         var list = [], keepOn = true;
-        while (keepOn && !data.isEnd()) {
+        while (keepOn && !data.isEnd() && (list.length < max || max < 0)) {
             var val = fn.call(this, data);
-            if (val !== null) {
-                keepOn = true;
+            keepOn = val !== null;
+            if (keepOn) {
                 if (lang.isArray(val)) {
                     list = list.concat(val);
                 } else {
@@ -62,7 +62,7 @@ define([
             }
         }
 
-        if (list.length < min || (list.length > max && max >= 0)) {
+        if (list.length < min) {
             data.pos = start;
             return null;
         }

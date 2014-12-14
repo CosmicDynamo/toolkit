@@ -21,37 +21,25 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.match.find
+ * @module jazzHands.parser.match.anyKeyWord
  */
 define([
-    "dojo/_base/lang",
-    "blocks/promise/when",
-    "blocks/require"
-], function (lang, when, require) {
+    "./hasChar",
+    "polyfill/has!Array.find"
+], function (hasChar) {
     /**
-     * This method will execute each of the input modules in order until one returns a success result
+     * Loops through the input key words for any successful matches
+     * @public
      * @param {jazzHands.parser.Data} data - Information about the parsing process
-     * @param {Array<String | jazzHands.parser._Parser>} parsers -  list of module ids or instances to be tried
-     * @param {Number} idx - start index
-     * @return {Promise<*> | * | null} - Promise might be created if the module needs to be required in
+     * @param {String[]} chars - A list of possible characters that should/could be next in the string
+     * @param {Boolean} [caseSensitive=false] - indicates if case should be considered in the strings value
+     * @param {Boolean} [whiteSpace=false] - indicates if case should ignore leading white space
+     * @return {String | null} - the matched keyWord as it appeared in the input; or null if keyWord was not found
      */
-    function find(data, parsers, idx){
-        idx = idx || 0;
-        function go(parse){
-            var ready = parse(data);
-            return when(ready, function(result){
-                if (result !== null){
-                    return result;
-                }
-                return find(data, parsers, idx+1);
-            })
-        }
-
-        var parser = parsers[idx];
-        if (lang.isString(parser)){
-            return require([parser], go);
-        }
-        return go(parser);
+    function hasAnyChar(data, chars, caseSensitive, whiteSpace){
+        return chars.find(function(ch){
+            return hasChar(data, ch, caseSensitive, whiteSpace);
+        }) || null;
     }
-    return find;
+    return hasAnyChar;
 });

@@ -25,7 +25,7 @@
  */
 define([
     "RdfJs/Node"
-], function () {
+], function (Node) {
     /**
      * Will have to generate an xsd:??? type Node often enough to make this useful
      */
