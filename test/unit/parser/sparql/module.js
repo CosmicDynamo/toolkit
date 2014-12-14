@@ -1,4 +1,4 @@
 define([
-    "./graph/module"
+    "./optionalGraphPattern"
 ], function () {
 });

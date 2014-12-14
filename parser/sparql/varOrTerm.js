@@ -21,30 +21,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module {ClassName}
+ * @module jazzHands.parser.sparql.varOrTerm
  */
 define([
-    "jazzHands/parser/match/keyWord",
-    "jazzHands/parser/match/required",
-    "jazzHands/parser/match/find",
-    "blocks/promise/when",
-    "blocks/require/create"
-], function (keyWord, required, find, when, create) {
+], function () {
     /**
-     * [57] OptionalGraphPattern ::= 'OPTIONAL' GroupGraphPattern
-     * @method jazzHands.parser.sparql.graph#optional
-     * @see http://www.w3.org/TR/sparql11-query/#rOptionalGraphPattern
      */
-    function optionalGraphPattern(data){
-        var key = keyWord(data, 'OPTIONAL', false, true);
-        if (key){
-            return when(required(find(data, ["jazzHands/parser/sparql/graph/group"]), "'OPTIONAL' GroupGraphPattern"), function(graphPattern){
-                return create("jazzHands/query/match/OptionalGraph", {
-                    graphPattern: graphPattern
-                })
-            });
-        }
-        return key;
+    return function(){
+        //TODO: This
     }
-    return optionalGraphPattern;
 });

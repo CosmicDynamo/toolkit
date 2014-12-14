@@ -25,11 +25,11 @@
  */
 define([
     "qasht/package/Unit",
-    "jazzHands/parser/sparql/graph/optional",
+    "jazzHands/parser/sparql/optionalGraphPattern",
     "jazzHands/parser/Data"
 ], function (TestPackage, optional, Data) {
     return new TestPackage({
-        module: "jazzHands/parser/sparql/graph/optional",
+        module: "jazzHands/parser/sparql/optionalGraphPattern",
         tests: [
             {
                 name: "Return null if OPTIONAL key word not present",
