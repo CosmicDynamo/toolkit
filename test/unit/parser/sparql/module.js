@@ -1,0 +1,4 @@
+define([
+    "./graph/module"
+], function () {
+});

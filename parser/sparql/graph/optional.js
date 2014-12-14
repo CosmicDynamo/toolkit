@@ -21,27 +21,30 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.match.required
+ * @module {ClassName}
  */
 define([
-    "jazzHands/parser/exception/MissingRequired",
-    "blocks/promise/when"
-], function (MissingRequired, when) {
+    "jazzHands/parser/match/keyWord",
+    "jazzHands/parser/match/required",
+    "jazzHands/parser/match/find",
+    "blocks/promise/when",
+    "blocks/require/create"
+], function (keyWord, required, find, when, create) {
     /**
-     * Method to be used if the parser has gone down a path where only one possibility exists, and there is a value that MUST be present to fulfill it
-     * @method required
-     * @param {Promise<* | null> | * | null} value - The output from another parsing function.  Will handle the promise and validate if a result was returned
-     * @param {String} message - Exception message should the required attribute be mixxing
-     * @return {Promise<*> | *}
-     * @throws {jazzHands.parser.exception.MissingRequired}
+     * [57] OptionalGraphPattern ::= 'OPTIONAL' GroupGraphPattern
+     * @method jazzHands.parser.sparql.graph#optional
+     * @see http://www.w3.org/TR/sparql11-query/#rOptionalGraphPattern
      */
-    function required(value, message) {
-        return when(value, function(hasValue){
-            if (hasValue == null) {
-                throw new MissingRequired(message);
-            }
-            return hasValue;
-        });
+    function optionalGraphPattern(data){
+        var key = keyWord(data, 'OPTIONAL', false, true);
+        if (key){
+            return when(required(find(data, ["jazzHands/parser/sparql/graph/group"]), "'OPTIONAL' GroupGraphPattern"), function(graphPattern){
+                return create("jazzHands/query/match/OptionalGraph", {
+                    graphPattern: graphPattern
+                })
+            });
+        }
+        return key;
     }
-    return required;
+    return optionalGraphPattern;
 });

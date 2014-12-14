@@ -24,7 +24,7 @@
  * @module jazzHands.query.Variable
  */
 define([
-    "../../dojo/_base/declare",
+    "dojo/_base/declare",
     "RdfJs/node/_Node"
 ], function (declare, _Node) {
     /**

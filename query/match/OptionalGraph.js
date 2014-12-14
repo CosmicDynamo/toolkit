@@ -21,27 +21,17 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.match.required
+ * @module jazzHands.query.match.OptionalGraph
  */
 define([
-    "jazzHands/parser/exception/MissingRequired",
-    "blocks/promise/when"
-], function (MissingRequired, when) {
+    "dojo/_base/declare"
+], function (declare) {
     /**
-     * Method to be used if the parser has gone down a path where only one possibility exists, and there is a value that MUST be present to fulfill it
-     * @method required
-     * @param {Promise<* | null> | * | null} value - The output from another parsing function.  Will handle the promise and validate if a result was returned
-     * @param {String} message - Exception message should the required attribute be mixxing
-     * @return {Promise<*> | *}
-     * @throws {jazzHands.parser.exception.MissingRequired}
+     * @class jazzHands.query.match.OptionalGraph
      */
-    function required(value, message) {
-        return when(value, function(hasValue){
-            if (hasValue == null) {
-                throw new MissingRequired(message);
-            }
-            return hasValue;
-        });
-    }
-    return required;
+    return declare([], {
+        /** @property {jazzHands.query.match.GroupGraph} */
+        graphPattern:null
+        //TODO: This
+    });
 });

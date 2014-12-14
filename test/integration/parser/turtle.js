@@ -23,10 +23,9 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            //"<jazzHands/test/integration/parser/turtle/manifest.ttl#turtle-syntax-prefix-09>":true
+            //tu"<jazzHands/test/integration/parser/turtle/manifest.ttl#literal_with_LINE_FEED>":true
         },
-        excludeById: {
-        },
+        excludeById: {},
         "rdf-test:TestTurtleNegativeSyntax": function (params) {
             params.setUp = this.testSetUp;
             params.exec = this.negative;
