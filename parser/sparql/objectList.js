@@ -21,19 +21,20 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.graphNode
+ * @module jazzHands.parser.sparql.objectList
  */
 define([
-    "../match/find"
-], function (find) {
+    "../match/range",
+    "./object"
+], function (range, object) {
     /**
-     * [104] GraphNode ::= VarOrTerm |	TriplesNode
-     * @see http://www.w3.org/TR/sparql11-query/#rGraphNode
+     * [79] ObjectList ::= Object ( ',' Object )*
+     * @see http://www.w3.org/TR/sparql11-query/#rObjectList
      * @property {jazzHands.parser.Data} data
      * @return {Promise<*> | *}
      */
-    function graphNode(data){
-        return find(data, ["jazzHands/parser/sparql/varOrTerm", "jazzHands/parser/sparql/triplesNode"]);
+    function objectList(data){
+        return range(data, 1, -1, object, ",");
     }
-    return graphNode;
+    return objectList;
 });
