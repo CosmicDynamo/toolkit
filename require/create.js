@@ -21,15 +21,21 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module $<class>$
+ * @module blocks.require.create
  */
 define([
-    "dojo/_base/declare"
-], function (declare) {
+    "../require"
+], function (require) {
     /**
-     * @class $<class>$
+     * Loads a module and returns an instance of it created with the input params
+     * @param {String} mid
+     * @param {Object} ctorParams
+     * @returns {Promise<Object>}
      */
-    return declare([], {
-        status: "pass"
-    });
+    function create(mid, ctorParams){
+        return require([mid], function(Ctor){
+            return new Ctor(ctorParams)
+        });
+    }
+    return create
 });

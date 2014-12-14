@@ -34,7 +34,7 @@ define([
                 name: "genId: uses each code",
                 exec: function (test) {
                     for(var idx = 0; idx < genId.codes.length; idx++){
-                        test.assertEqual( genId.codes[idx], genId(), "code " + idx + "used");
+                        test.assertEqual( "x" + genId.codes[idx], genId(), "code " + idx + "used");
                     }
 
                     test.complete();
@@ -63,7 +63,7 @@ define([
                 exec: function (test) {
                     for(var idx1 = 0; idx1 < genId.codes.length; idx1++){
                         for(var idx = 0; idx < genId.codes.length; idx++){
-                            var expected = genId.codes[idx1] + genId.codes[idx];
+                            var expected = "x" + genId.codes[idx1] + genId.codes[idx];
                             test.assertEqual(expected, genId(), "code " + expected + "used");
                         }
                     }
@@ -72,7 +72,7 @@ define([
                 }
             }
         ],
-        setUp: function (test) {
+        setUp: function () {
             genId.id = [-1];
         }
     });

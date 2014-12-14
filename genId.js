@@ -24,7 +24,7 @@ define([], function () {
         for (var pos = id.length; pos > 0; pos--) {
             out += codes.charAt(id[pos - 1]);
         }
-        return out;
+        return "x" + out;
     };
     genId.id = [-1];
     genId.codes = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
