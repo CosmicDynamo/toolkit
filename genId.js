@@ -30,4 +30,4 @@ define([], function () {
     genId.codes = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
     return genId;
-})
+});
