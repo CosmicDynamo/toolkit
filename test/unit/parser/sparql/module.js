@@ -1,4 +1,5 @@
 define([
-    "./optionalGraphPattern"
+    "./optionalGraphPattern",
+    "./pathMod"
 ], function () {
 });
