@@ -21,25 +21,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module {ClassName}
+ * @module $<class>$
  */
 define([
-    "blocks/promise/when",
-    "./pathPrimary",
-    "./pathMod"
-], function (when, pathPrimary, pathMod) {
+], function () {
     /**
-     * [91] PathElt ::= PathPrimary PathMod?
-     * @see http://www.w3.org/TR/sparql11-query/#rPathElt
-     * @property {jazzHands.parser.Data} data
-     * @return {Promise<*> | *}
      */
-    return function(data){
-        return when(pathPrimary(data), function(primary) {
-            if (primary) {
-                primary.mod = pathMod(data)
-            }
-            return primary;
-        });
+    function pathPrimary(data){
+        //TODO: this
     }
+    return pathPrimary
 });
