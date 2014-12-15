@@ -21,18 +21,19 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.triplesNode
+ * @module $<class>$
  */
 define([
-    "../match/find"
-], function (find) {
+], function () {
     /**
      * [98] TriplesNode ::= Collection | BlankNodePropertyList
      * @see http://www.w3.org/TR/sparql11-query/#rTriplesNode
      * @property {jazzHands.parser.Data} data
      * @return {Promise<*> | *}
      */
-    return function(data){
-        return find(data, ["jazzHands/parser/sparql/collection", "jazzHands/parser/sparql/blankNodePropertyList"]);
+    function blankNodePropertyList(data){
+        //TODO: This
+        throw { message :"Not Implemented: blankNodePropertyList"};
     }
+    return blankNodePropertyList;
 });
