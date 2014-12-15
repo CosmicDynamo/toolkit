@@ -21,37 +21,15 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.unaryExpression
+ * @module jazzHands.RdfType
  */
 define([
-    "blocks/promise/when",
-    "blocks/require/create",
-    "../match/hasChar",
-    "./primaryExpression"
-], function (when, create, hasChar, primaryExpression) {
+    "RdfJs/Node"
+], function (Node) {
     /**
-     * [118] UnaryExpression ::= ['!' | '+' | '-']? PrimaryExpression
-     * @see http://www.w3.org/TR/sparql11-query/#rUnaryExpression
-     * @property {jazzHands.parser.Data} data
-     * @return {Promise<*> | *}
+     * Will have to generate an xsd:??? type Node often enough to make this useful
      */
-    function unaryExpression(data){
-        var start = data.pos;
-        var mod = hasChar(data, ['!', '+', '-']);
-        return when(primaryExpression(data), function(result){
-            if (!result){
-                data.pos = start;
-                return null;
-            }
-
-            var arg = { expression: result };
-            if (mod === "!"){
-                return create("jazzHands/query/expression/logic/Not", arg);
-            } else if (mod === "-"){
-                return create("jazzHands/query/expression/Negate", arg);
-            }
-            return result
-        })
+    return function(value, type){
+        return new Node(value + "^^<http://www.w3.org/2001/XMLSchema#" + type + ">");
     }
-    return unaryExpression;
 });

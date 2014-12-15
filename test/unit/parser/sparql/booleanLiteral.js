@@ -21,22 +21,22 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.test.unit.parser.sparql.optionalGraphPattern
+ * @module jazzHands.test.unit.parser.sparql.booleanLiteral
  */
 define([
     "qasht/package/Unit",
-    "jazzHands/parser/sparql/optionalGraphPattern",
+    "jazzHands/parser/sparql/booleanLiteral",
     "jazzHands/parser/Data",
-    "jazzHands/test/api/query/match/OptionalGraph"
-], function (TestPackage, optional, Data, testApi) {
+    "RdfJs/test/api/Node"
+], function (TestPackage, booleanLiteral, Data, testNodeApi) {
     return new TestPackage({
-        module: "jazzHands/parser/sparql/optionalGraphPattern",
+        module: "jazzHands/parser/sparql/booleanLiteral",
         tests: [
             {
-                name: "Return null if OPTIONAL key word not present",
+                name: "Return null if 'true' or 'false' key words not present",
                 input: "{ ?s ?p ?o }",
                 exec: function(test){
-                    var out = optional(test.data);
+                    var out = booleanLiteral(test.data);
 
                     test.assertNull(out);
 
@@ -44,31 +44,27 @@ define([
                 }
             },
             {
-                name: "Exception thrown 'OPTIONAL' without valid GroupGraphPattern",
-                input: "OPTIONAL ?s ?p ?o",
+                name: "Returns literal node when 'true' is found",
+                input: "true asdf",
                 exec: function(test){
-                    try {
-                        var out = optional(test.data);
+                    var out = booleanLiteral(test.data);
 
-                        test.whenRejected(out, function(err){
-                            test.assertIsObject(err, "Promise rejected with error");
+                    testNodeApi(out, test);
+                    test.assertEqual('"true"^^<http://www.w3.org/2001/XMLSchema#boolean>', out.toNT());
+                    test.assertEqual(4, test.data.pos);
 
-                            test.complete();
-                        });
-                    } catch (err){
-                        test.assertIsObject(err, "Exception was thrown");
-
-                        test.complete();
-                    }
+                    test.complete();
                 }
             },
             {
-                name: "SPARQL Optional created when valid syntax found",
-                input: "OPTIONAL { ?s ?p ?o }",
+                name: "Returns literal node when 'false' is found",
+                input: "false 134}",
                 exec: function(test){
-                    var out = optional(test.data);
+                    var out = booleanLiteral(test.data);
 
-                    testApi(out, test);
+                    testNodeApi(out, test);
+                    test.assertEqual('"false"^^<http://www.w3.org/2001/XMLSchema#boolean>', out.toNT());
+                    test.assertEqual(5, test.data.pos);
 
                     test.complete();
                 }

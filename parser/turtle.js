@@ -41,9 +41,10 @@ define([
     "./match/anyKeyWord",
     "./match/rdfType",
     "../RdfType",
-    "../XsdType",
+    "./XsdLiteral",
+    "./sparql/booleanLiteral",
     "polyfill/has!String.codePointAt"
-], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar, whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, XsdType) {
+], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar, whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, XsdLiteral, booleanLiteral) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -223,7 +224,7 @@ define([
         },
         literal: function (input) {
             //[13]	literal	::=	RDFLiteral | NumericLiteral | BooleanLiteral
-            return this.rdfLiteral(input) || this.numeric(input) || this.boolean(input);
+            return this.rdfLiteral(input) || this.numeric(input) || booleanLiteral(input);
         },
         bNodePropList: function (input) {
             //[14]	blankNodePropertyList	::=	'[' predicateObjectList ']'
@@ -301,7 +302,7 @@ define([
             }
             if (dt) {
                 whole = whole || "0";
-                return '"' + whole + dec + exp + '"^^' + XsdType(dt).toNT();
+                return XsdLiteral('"' + whole + dec + exp + '"', dt);
             }
             input.pos = start;
             return null;
@@ -317,14 +318,6 @@ define([
                 return value + lang + dt;
             }
             return null;
-        },
-        boolean: function (input) {
-            //[133s]	BooleanLiteral	::=	'true' | 'false'
-            var value = anyKeyWord(input, ['true', 'false']);
-            if (value) {
-                value = '"' + value + '"^^' + XsdType("boolean").toNT();
-            }
-            return value;
         },
         string: function (input) {
             //[17]	String	::=	STRING_LITERAL_QUOTE | STRING_LITERAL_SINGLE_QUOTE | STRING_LITERAL_LONG_SINGLE_QUOTE | STRING_LITERAL_LONG_QUOTE

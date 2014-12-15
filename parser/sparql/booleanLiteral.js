@@ -21,15 +21,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.RdfType
+ * @module jazzHands.parser.sparql.booleanLiteral
  */
 define([
-    "RdfJs/Node"
-], function (Node) {
+    "../match/anyKeyWord",
+    "../XsdLiteral"
+], function (anyKeyWord, XsdLiteral) {
     /**
-     * Will have to generate an xsd:??? type Node often enough to make this useful
+     * [134] BooleanLiteral ::= 'true' | 'false'
+     * @see http://www.w3.org/TR/sparql11-query/#rBooleanLiteral
+     * @property {jazzHands.parser.Data} data
+     * @return {Promise<*> | *}
      */
-    return function(type){
-        return new Node("<http://www.w3.org/2001/XMLSchema#" + type + ">");
+    function booleanLiteral(data){
+        var match = anyKeyWord(data, ["true", "false"]);
+        if (match){
+            return new XsdLiteral('"' + match + '"', "boolean");
+        }
+        return match;
     }
+    return booleanLiteral;
 });
