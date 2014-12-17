@@ -47,9 +47,11 @@ define([
     "./char/uChar",
     "./char/utf16Encode",
     "./char/hex",
+    "./sparql/baseDecl",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
-    , whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, XsdLiteral, booleanLiteral, iriRef, uChar, utf16Encode, hex) {
+    , whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, XsdLiteral, booleanLiteral, iriRef, uChar, utf16Encode, hex
+    , baseDecl) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -117,7 +119,7 @@ define([
         },
         directive: function (input) {
             //[3]	directive	::=	prefixID | base | sparqlPrefix | sparqlBase
-            return this.prefixId(input) || this.base(input) || this.sPrefix(input) || this.sBase(input);
+            return this.prefixId(input) || this.base(input) || this.sPrefix(input) || baseDecl(input);
         },
         prefixId: function (input) {
             //[4]	prefixID	::=	'@prefix' PNAME_NS IRIREF '.'
@@ -141,16 +143,6 @@ define([
                 var iri = required(iriRef(input), key, "iri");
                 input.base = iri.toString();
                 required(hasChar(input, ".", false, true), key, ".");
-            }
-            return key;
-        },
-        sBase: function (input) {
-            //[5s]	sparqlBase	::=	"BASE" IRIREF
-            var key = keyWord(input, "base", false, true);
-            if (key) {
-                whiteSpace(input);
-                var iri = required(iriRef(input), key, "iri");
-                input.base = iri.toString();
             }
             return key;
         },

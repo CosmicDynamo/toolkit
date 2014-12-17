@@ -1,4 +1,5 @@
 define([
+    "./baseDecl",
     "./booleanLiteral",
     "./iriRef",
     "./optionalGraphPattern",
