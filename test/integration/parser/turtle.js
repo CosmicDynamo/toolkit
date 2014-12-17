@@ -23,7 +23,7 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            //tu"<jazzHands/test/integration/parser/turtle/manifest.ttl#literal_with_LINE_FEED>":true
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#IRIREF_datatype>":true
         },
         excludeById: {},
         "rdf-test:TestTurtleNegativeSyntax": function (params) {

@@ -43,8 +43,13 @@ define([
     "../RdfType",
     "./XsdLiteral",
     "./sparql/booleanLiteral",
+    "./sparql/iriRef",
+    "./char/uChar",
+    "./char/utf16Encode",
+    "./char/hex",
     "polyfill/has!String.codePointAt"
-], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar, whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, XsdLiteral, booleanLiteral) {
+], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
+    , whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, XsdLiteral, booleanLiteral, iriRef, uChar, utf16Encode, hex) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -121,10 +126,10 @@ define([
                 whiteSpace(input);
                 var pfx = required(this.pNameNs(input), key, "prefix name");
                 whiteSpace(input);
-                var iri = required(this.iriRef(input), key, "iri");
+                var iri = required(iriRef(input), key, "iri");
                 required(hasChar(input, ".", false, true), key, ".");
 
-                input.setPrefix(pfx.substr(0, pfx.length - 1), iri.substr(1, iri.length - 2));
+                input.setPrefix(pfx.substr(0, pfx.length - 1), iri.toString());
             }
             return key;
         },
@@ -133,8 +138,8 @@ define([
             var key = keyWord(input, "@base", true, true);
             if (key) {
                 whiteSpace(input);
-                var iri = required(this.iriRef(input), key, "iri");
-                input.base = iri.substr(1, iri.length - 2);
+                var iri = required(iriRef(input), key, "iri");
+                input.base = iri.toString();
                 required(hasChar(input, ".", false, true), key, ".");
             }
             return key;
@@ -144,8 +149,8 @@ define([
             var key = keyWord(input, "base", false, true);
             if (key) {
                 whiteSpace(input);
-                var iri = required(this.iriRef(input), key, "iri");
-                input.base = iri.substr(1, iri.length - 2);
+                var iri = required(iriRef(input), key, "iri");
+                input.base = iri.toString();
             }
             return key;
         },
@@ -156,9 +161,9 @@ define([
                 whiteSpace(input);
                 var pfx = required(this.pNameNs(input), key, "prefix name");
                 whiteSpace(input);
-                var iri = required(this.iriRef(input), key, "iri");
+                var iri = required(iriRef(input), key, "iri");
 
-                input.setPrefix(pfx.substr(0, pfx.length - 1), iri.substr(1, iri.length - 2));
+                input.setPrefix(pfx.substr(0, pfx.length - 1), iri.toString());
             }
             return key;
         },
@@ -265,7 +270,7 @@ define([
                     rest = subject;
                     subject = bNode();
                 }
-                return [rest];
+                return rest;
             }
             return r;
         },
@@ -313,7 +318,8 @@ define([
             if (value) {
                 var dt = "", lang = this.langTag(input) || "";
                 if (lang === "" && keyWord(input, "^^", false, false)) {
-                    dt = "^^" + this.iri(input);
+                    dt = this.iri(input);
+                    dt = "^^" + ((dt.toNT && dt.toNT()) || dt)
                 }
                 return value + lang + dt;
             }
@@ -325,7 +331,7 @@ define([
         },
         iri: function (input) {
             //[135s]	iri	::=	IRIREF | PrefixedName
-            return this.iriRef(input) || this.prefixName(input);
+            return iriRef(input) || this.prefixName(input);
         },
         prefixName: function (input) {
             //[136s]	PrefixedName	::=	PNAME_LN | PNAME_NS
@@ -346,30 +352,6 @@ define([
         bNode: function (input) {
             //[137s]	BlankNode	::=	BLANK_NODE_LABEL | ANON
             return this.bNodeLabel(input) || this.anon(input);
-        },
-        iriRef: function (input) {
-            //[18]	IRIREF	::=	'<' ([^#x00-#x20<>"{}|^`\] | UCHAR)* '>' /* #x00=NULL #01-#x1F=control codes #x20=space */
-            var value = keyWord(input, '<', true, true);
-            if (value) {
-                var except = '[^\x00-\x20<>"{}\\|^`\\\\]';
-                value += range(input, 0, -1, function (scoped) {
-                    return matchChar(scoped, except) || this.uChar(scoped, except);
-                }.bind(this)).join("");
-                value += required(keyWord(input, '>'), 'uri', '>');
-
-                if (value.indexOf(":") === -1) {
-                    value = value.substr(1, value.length - 2);
-                    if (value[1] === "/") {
-                        value = input.base.substr(0, input.base.indexOf("/") + 1) + value;
-                    } else if (value.length == 0 || value[0] === "#") {
-                        value = input.base + value;
-                    } else {
-                        value = input.base.substr(0, input.base.lastIndexOf("/") + 1) + value;
-                    }
-                    value = "<" + value + ">";
-                }
-            }
-            return value;
         },
         pNameNs: function (input) {
             //[139s]	PNAME_NS	::=	PN_PREFIX? ':'
@@ -440,7 +422,7 @@ define([
             if (start) {
                 var except = "[^\x5C\x5C\x0A\x0D" + start + "]";
                 value += range(input, 0, -1, function (scoped) {
-                    return this.eChar(scoped) || this.uChar(scoped, except) || matchChar(input, except);
+                    return this.eChar(scoped) || uChar(scoped, except) || matchChar(input, except);
                 }.bind(this)).join("");
                 value += required(hasChar(input, start), "string literal", start);
             }
@@ -455,7 +437,7 @@ define([
                 var except = "[^" + start[0] + "\\\\]";
                 value += range(input, 0, -1, function (scoped) {
                     if (scoped.input.indexOf(start, scoped.pos) !== scoped.pos) {
-                        return hasAnyChar(input, ['"', "'"]) || this.eChar(input) || this.uChar(input, except) || matchChar(input, "[^\\'\\\\]");
+                        return hasAnyChar(input, ['"', "'"]) || this.eChar(input) || uChar(input, except) || matchChar(input, "[^\\'\\\\]");
                     }
                     return null;
                 }.bind(this)).join("");
@@ -463,39 +445,6 @@ define([
                 value += required(keyWord(input, start), "long string", start);
             }
             return value;
-        },
-        uChar: function (input, minus) {
-            //[26]	UCHAR	::=	'\u' HEX HEX HEX HEX | '\U' HEX HEX HEX HEX HEX HEX HEX HEX
-            var start = input.pos;
-            var key = anyKeyWord(input, ["\\u", "\\U"], true);
-            if (key) {
-                var ct = key[1] === "u" ? 4 : 8;
-                var list = range(input, ct, ct, this.hex.bind(this));
-                if (list) {
-                    var val = list.join("");
-                    var ch = this.utf16Encode("0x" + val);
-                    if (!minus || (new RegExp(minus)).test(ch)) {
-                        return ch;
-                    }
-                }
-            }
-            input.pos = start;
-            return null;
-        },
-        utf16Encode: function (value) {
-            var output = [];
-
-            if ((value & 0xF800) === 0xD800) {
-                throw new RangeError("UTF-16(encode): Illegal UTF-16 value");
-            }
-            if (value > 0xFFFF) {
-                value -= 0x10000;
-                output.push(String.fromCharCode(((value >>> 10) & 0x3FF) | 0xD800));
-                value = 0xDC00 | (value & 0x3FF);
-            }
-            output.push(String.fromCharCode(value));
-
-            return output.join("");
         },
         eChar: function (input) {
             //[159s]	ECHAR	::=	'\' [tbnrf"'\]
@@ -548,7 +497,7 @@ define([
                 var code = input.input.codePointAt(input.pos);
                 if (code >= 0x10000 && code <= 0xEFFFF) {
                     input.pos += 2;
-                    return this.utf16Encode("0x" + code.toString(16));
+                    return utf16Encode("0x" + code.toString(16));
                 }
             }
             return ch;
@@ -609,13 +558,9 @@ define([
         percent: function (input) {
             //[170s]	PERCENT	::=	'%' HEX HEX
             if (hasChar(input, "%")) {
-                return "%" + required(range(input, 2, 2, this.hex.bind(this)), "%", "2 Hex digets").join("");
+                return "%" + required(range(input, 2, 2, hex), "%", "2 Hex digets").join("");
             }
             return null;
-        },
-        hex: function (input) {
-            //[171s]	HEX	::=	[0-9] | [A-F] | [a-f]
-            return matchChar(input, "[0-9]|[a-f]|[A-F]");
         },
         pnLocalEsc: function (input) {
             //[172s]	PN_LOCAL_ESC	::=	'\' ('_' | '~' | '.' | '-' | '!' | '$' | '&' | "'" | '(' | ')' | '*' | '+' | ',' | ';' | '=' | '/' | '?' | '#' | '@' | '%')
@@ -633,8 +578,11 @@ define([
         _genTriples: function (input, subject, pObjectList) {
             var has = false;
 
-            subject = subject.toString();
-            if (subject.indexOf("_:") !== 0 && !(new RegExp("^<.*>$").test(subject))) {
+            var isLiteral = subject.isLiteral && subject.isLiteral();
+            if (lang.isString(subject)){
+                isLiteral =subject.indexOf("_:") !== 0 && !(new RegExp("^<.*>$").test(subject));
+            }
+            if (isLiteral) {
                 throw "Subject must be an iri or blank";
             }
 

@@ -31,15 +31,22 @@ define([
     /**
      * This method will execute each of the input modules in order until one returns a success result
      * @method jazzHands.parser.match#find
-     * @param {jazzHands.parser.Data} data - Information about the parsing process
+     * @param {jazzHands.parser.Data | Array<*>} data - Information about the parsing process
      * @param {Array<String | jazzHands.parser._Parser>} parsers -  list of module ids or instances to be tried
      * @param {Number} [idx ]- start index
      * @return {Promise<*> | * | null} - Promise might be created if the module needs to be required in
      */
     function find(data, parsers, idx){
+        if (!lang.isArray(data)){
+            data = [data];
+        }
+
         idx = idx || 0;
+        if (idx >= parsers.length){
+            return null;
+        }
         function go(parse){
-            var ready = parse(data);
+            var ready = parse.apply(null, data);
             return when(ready, function(result){
                 if (result !== null){
                     return result;
