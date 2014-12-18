@@ -27,13 +27,13 @@ define([
     "./matchChar"
 ], function (matchChar) {
     /**
-     * [26] UCHAR ::= '\u' HEX HEX HEX HEX | '\U' HEX HEX HEX HEX HEX HEX HEX HEX
+     * [172] HEX ::= [0-9] | [A-F] | [a-f]
      * @property {jazzHands.parser.Data} data
      * @return {Promise<*> | *}
      */
-    function uChar(data) {
+    function hex(data) {
         return matchChar(data, "[0-9]|[a-f]|[A-F]");
     }
 
-    return uChar;
+    return hex;
 });
