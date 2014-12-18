@@ -2,25 +2,21 @@
  * Created by Akeron on 2/26/14.
  */
 define([
-    "dojo/_base/lang", "./node/Named", "./node/Literal", "./node/Blank"
-], function (lang, nNode, lNode, bNode) {
-    function isEscaped(str, pos){
-        var odd = false;
-        while(str[--pos] == "\\"){
-            odd = !odd;
-        }
-        return odd;
-    }
-
+    "dojo/_base/lang",
+    "blocks/parser/Data",
+    "./parser/iriRef",
+    "./node/Literal",
+    "./node/Blank"
+], function (lang, Data, iriRef, lNode, bNode) {
     return function (value) {
         if (value == null){
             return new bNode();
         }
 
         if (lang.isString(value)) {
-            if (/^<.*>$/.test(value)) {
-                return nNode(value.substr(1, value.length - 2));
-            }
+            var data = new Data({
+                input: value
+            });
             if (/^_\:/.test(value)) {
                 return bNode(value.substr(2));
             }
@@ -72,8 +68,10 @@ define([
             if (/^[$|?]/.test(value)) {
                 return new vNode(value.substr(1));
             }
+
+            return iriRef(data);
         }
 
         return null;
     }
-})
+});

@@ -37,7 +37,13 @@ define([
         /** @property {RdfJs.PrefixMap} */
         prefixes: null,
         constructor: function(iri, graph){
-            lang.mixin(this, new Node(iri));
+            var node = new Node(iri);
+            this.nominalValue = node.nominalValue;
+            this.interfacename = node.interfaceName;
+            this.toString = node.toString;
+            this.valueOf = node.valueOf;
+            this.toNT = node.toNT;
+
             this.graph = graph;
 
             this.prefixes = new PrefixMap({ values:{

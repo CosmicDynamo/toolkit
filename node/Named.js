@@ -26,9 +26,9 @@
 define([
     "./_Node"
 ], function (_Node) {
-    /* Implementation of <http://www.w3.org/TR/rdf-interfaces/#idl-def-NamedNode> */
     /**
      * @class RdfJs.node.Named
+     * @see http://www.w3.org/TR/rdf-interfaces/#idl-def-NamedNode
      */
     return function (params) {
         var nNode = new _Node(params);
