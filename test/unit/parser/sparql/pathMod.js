@@ -26,7 +26,7 @@
 define([
     "qasht/package/Unit",
     "jazzHands/parser/sparql/pathMod",
-    "jazzHands/parser/Data"
+    "blocks/parser/Data"
 ], function (TestPackage, pathMod, Data) {
     return new TestPackage({
         module: "jazzHands/parser/sparql/pathMod",

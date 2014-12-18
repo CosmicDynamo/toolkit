@@ -24,7 +24,7 @@
  * @module jazzHands.parser.sparql.pathAlternative
  */
 define([
-    "../match/range",
+    "blocks/parser/range",
     "./pathSequence"
 ], function (range, pathSequence) {
     /**

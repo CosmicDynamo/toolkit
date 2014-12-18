@@ -24,9 +24,9 @@
  * @module {ClassName}
  */
 define([
-    "../match/keyWord",
-    "jazzHands/parser/match/required",
-    "jazzHands/parser/match/find",
+    "blocks/parser/keyWord",
+    "blocks/parser/required",
+    "blocks/parser/find",
     "blocks/promise/when",
     "blocks/require/create"
 ], function (keyWord, required, find, when, create) {
@@ -38,7 +38,7 @@ define([
     function optionalGraphPattern(data){
         var key = keyWord(data, 'OPTIONAL', false, true);
         if (key){
-            return when(required(find(data, ["jazzHands/parser/sparql/graph/group"]), "'OPTIONAL' GroupGraphPattern"), function(graphPattern){
+            return when(required(find(data, ["jazzHands/parser/sparql/groupGraphPattern"]), "'OPTIONAL' GroupGraphPattern"), function (graphPattern) {
                 return create("jazzHands/query/match/OptionalGraph", {
                     graphPattern: graphPattern
                 })

@@ -25,8 +25,8 @@
  */
 define([
     "qasht/package/Unit",
-    "jazzHands/parser/sparql/iriRef",
-    "jazzHands/parser/Data",
+    "RdfJs/parser/iriRef",
+    "blocks/parser/Data",
     "RdfJs/test/api/Node"
 ], function (TestPackage, iriRef, Data,testNodeApi) {
     return new TestPackage({

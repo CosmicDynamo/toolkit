@@ -25,8 +25,8 @@
  */
 define([
     "blocks/promise/when",
-    "../match/hasChar",
-    "../match/required",
+    "blocks/parser/hasChar",
+    "blocks/parser/required",
     "./pathElt"
 ], function (when, hasChar, required, pathElt) {
     /**

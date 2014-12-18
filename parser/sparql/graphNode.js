@@ -24,7 +24,7 @@
  * @module jazzHands.parser.sparql.graphNode
  */
 define([
-    "../match/find"
+    "blocks/parser/find"
 ], function (find) {
     /**
      * [104] GraphNode ::= VarOrTerm |	TriplesNode

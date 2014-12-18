@@ -26,7 +26,7 @@
 define([
     "qasht/package/Unit",
     "jazzHands/parser/sparql/booleanLiteral",
-    "jazzHands/parser/Data",
+    "blocks/parser/Data",
     "RdfJs/test/api/Node"
 ], function (TestPackage, booleanLiteral, Data, testNodeApi) {
     return new TestPackage({

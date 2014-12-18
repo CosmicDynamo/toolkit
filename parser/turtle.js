@@ -30,28 +30,29 @@ define([
     "dojo/_base/Deferred",
     "dojo/when",
     "RdfJs/Environment",
-    "./Data",
-    "./match/range",
-    "./match/required",
-    "./match/hasChar",
-    "./match/matchChar",
-    "./match/hasAnyChar",
-    "./match/whiteSpace",
-    "./match/keyWord",
-    "./match/anyKeyWord",
-    "./match/rdfType",
+    "blocks/parser/Data",
+    "blocks/parser/range",
+    "blocks/parser/required",
+    "blocks/parser/hasChar",
+    "blocks/parser/matchChar",
+    "blocks/parser/hasAnyChar",
+    "RdfJs/parser/whiteSpace",
+    "blocks/parser/keyWord",
+    "blocks/parser/anyKeyWord",
+    "RdfJs/parser/rdfType",
     "../RdfType",
     "./XsdLiteral",
     "./sparql/booleanLiteral",
-    "./sparql/iriRef",
-    "./char/uChar",
-    "./char/utf16Encode",
-    "./char/hex",
+    "RdfJs/parser/iriRef",
+    "blocks/parser/uChar",
+    "blocks/parser/utf16Encode",
+    "blocks/parser/hex",
     "./sparql/baseDecl",
+    "RdfJs/parser/langTag",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
     , whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, XsdLiteral, booleanLiteral, iriRef, uChar, utf16Encode, hex
-    , baseDecl) {
+    , baseDecl, langTag) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -74,6 +75,7 @@ define([
                     }
                 }
             }));
+            input.whiteSpace = whiteSpace;
             input.graph = input.createGraph();
             try {
                 this.turtleDoc(input);
@@ -308,7 +310,7 @@ define([
             //[128s]	RDFLiteral	::=	String (LANGTAG | '^^' iri)?
             var value = this.string(input);
             if (value) {
-                var dt = "", lang = this.langTag(input) || "";
+                var dt = "", lang = langTag(input) || "";
                 if (lang === "" && keyWord(input, "^^", false, false)) {
                     dt = this.iri(input);
                     dt = "^^" + ((dt.toNT && dt.toNT()) || dt)
@@ -374,24 +376,6 @@ define([
                 value = "_:" + value + (this.pnChars(input) || "");
                 if (value[value.length - 1] === "."){
                     throw { message: "Blank Node cannot end in '.'"};
-                }
-            }
-            return value;
-        },
-        langTag: function (input) {
-            //[144s]	LANGTAG	::=	'@' [a-zA-Z]+ ('-' [a-zA-Z0-9]+)*
-            var value = hasChar(input, '@', true, true);
-            if (value) {
-                value += required(range(input, 1, -1, function (scope) {
-                    return matchChar(scope, "[a-zA-Z]");
-                }), "@", "alpha sequence").join("");
-
-                if (hasChar(input, "-")) {
-                    value += "-" + range(input, 1, -1, function (scoped) {
-                        return required(range(scoped, 1, -1, function (iScope) {
-                            return matchChar(iScope, "[a-zA-Z0-9]");
-                        }), "-", "alpha numeric string").join("");
-                    }, "-", false).join("-");
                 }
             }
             return value;

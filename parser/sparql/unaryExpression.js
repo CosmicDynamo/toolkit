@@ -26,7 +26,7 @@
 define([
     "blocks/promise/when",
     "blocks/require/create",
-    "../match/hasChar",
+    "blocks/parser/hasChar",
     "./primaryExpression"
 ], function (when, create, hasChar, primaryExpression) {
     /**

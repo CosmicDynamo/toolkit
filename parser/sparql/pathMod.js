@@ -24,7 +24,7 @@
  * @module jazzHands.parser.sparql.pathMod
  */
 define([
-    "../match/hasAnyChar"
+    "blocks/parser/hasAnyChar"
 ], function (hasAnyChar) {
     /**
      * [93] PathMod ::= '?' | '*' | '+'

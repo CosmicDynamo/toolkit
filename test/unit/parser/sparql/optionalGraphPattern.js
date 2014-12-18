@@ -26,7 +26,7 @@
 define([
     "qasht/package/Unit",
     "jazzHands/parser/sparql/optionalGraphPattern",
-    "jazzHands/parser/Data",
+    "blocks/parser/Data",
     "jazzHands/test/api/query/match/OptionalGraph"
 ], function (TestPackage, optional, Data, testApi) {
     return new TestPackage({
@@ -66,11 +66,11 @@ define([
                 name: "SPARQL Optional created when valid syntax found",
                 input: "OPTIONAL { ?s ?p ?o }",
                 exec: function(test){
-                    var out = optional(test.data);
+                    test.whenResolved(optional(test.data), function (out) {
+                        testApi(out, test);
 
-                    testApi(out, test);
-
-                    test.complete();
+                        test.complete();
+                    });
                 }
             }
         ],

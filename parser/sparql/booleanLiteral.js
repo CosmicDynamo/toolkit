@@ -24,7 +24,7 @@
  * @module jazzHands.parser.sparql.booleanLiteral
  */
 define([
-    "../match/anyKeyWord",
+    "blocks/parser/anyKeyWord",
     "../XsdLiteral"
 ], function (anyKeyWord, XsdLiteral) {
     /**

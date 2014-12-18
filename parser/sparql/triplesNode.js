@@ -24,7 +24,7 @@
  * @module jazzHands.parser.sparql.triplesNode
  */
 define([
-    "../match/find"
+    "blocks/parser/find"
 ], function (find) {
     /**
      * [98] TriplesNode ::= Collection | BlankNodePropertyList

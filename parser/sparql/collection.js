@@ -24,11 +24,11 @@
  * @module jazzHands.parser.sparql.collection
  */
 define([
-    "../match/hasChar",
+    "blocks/parser/hasChar",
     "blocks/promise/when",
-    "../match/range",
-    "../match/find",
-    "../match/required"
+    "blocks/parser/range",
+    "blocks/parser/find",
+    "blocks/parser/required"
 ], function (hasChar, when, range, find, required) {
     /**
      * [102] Collection ::= '(' GraphNode+ ')'

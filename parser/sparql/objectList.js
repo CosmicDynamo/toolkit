@@ -24,7 +24,7 @@
  * @module jazzHands.parser.sparql.objectList
  */
 define([
-    "../match/range",
+    "blocks/parser/range",
     "./object"
 ], function (range, object) {
     /**

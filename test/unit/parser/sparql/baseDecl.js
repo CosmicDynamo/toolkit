@@ -26,7 +26,7 @@
 define([
     "qasht/package/Unit",
     "jazzHands/parser/sparql/baseDecl",
-    "jazzHands/parser/Data",
+    "blocks/parser/Data",
     "RdfJs/test/api/Node"
 ], function (TestPackage, baseDecl, Data, testNodeApi) {
     return new TestPackage({
@@ -76,7 +76,10 @@ define([
         ],
         setUp: function (test) {
             test.data = new Data({
-                input: test.input
+                input: test.input,
+                whiteSpace: function (data) {
+                    data.pos++;
+                }
             })
         }
     });

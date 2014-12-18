@@ -24,9 +24,9 @@
  * @module $<class>$
  */
 define([
-    "../match/keyWord",
-    "../match/required",
-    "./iriRef"
+    "blocks/parser/keyWord",
+    "blocks/parser/required",
+    "./../../../RdfJs/parser/iriRef"
 ], function (keyWord, required, iriRef) {
     /**
      * [5] BaseDecl ::= 'BASE' IRIREF
