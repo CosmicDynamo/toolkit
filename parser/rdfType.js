@@ -21,15 +21,16 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.match.rdfType
+ * @module RdfJs.parser.rdfType
  */
 define([
-    "./../../blocks/parser/keyWord",
+    "blocks/parser/keyWord",
     "jazzHands/RdfType"
 ], function (keyWord, RdfType) {
     /**
      * Detects an 'a' term for rdf:type
      * @param {jazzHands.parser.Data} data - Information about the parsing process
+     * @return {RdfJs.node.Named | Null}
      */
     function type(data) {
         return keyWord(data, "a", true, true) ? RdfType() : null;

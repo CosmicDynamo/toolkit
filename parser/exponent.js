@@ -21,33 +21,29 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module RdfJs.parser.whiteSpace
+ * @module RdfJs.parser.exponent
  */
 define([
-    "./comment"
-], function (comment) {
+    "blocks/parser/matchChar",
+    "blocks/parser/required",
+    "blocks/parser/range"
+], function (matchChar, required, range) {
     /**
-     * Skips over any white space at the current input position
-     * [161s] WS ::= #x20 | #x9 | #xD | #xA /* #x20=space #x9=character tabulation #xD=carriage return #xA=new line
+     * [155] EXPONENT ::= [eE] [+-]? [0-9]+
+     * @see http://www.w3.org/TR/sparql11-query/#rEXPONENT
      * @param {jazzHands.parser.Data} data - Information about the parsing process
-     * @return {String}
+     * @return {String | Null}
      */
-    var regExp = new RegExp("[\x20|\x09|\x0D|\x0A]");
-
-    function whiteSpace(data) {
-        var out = "";
-        do {
-            var found = null;
-            if (regExp.test(data.getCh())) {
-                found = data.next();
-            }
-            found = found || comment(data);
-            if (found) {
-                out += found;
-            }
-        } while (found);
-        return out;
+    function exponent(data) {
+        var value = matchChar(data, '[eE]');
+        if (value) {
+            value += matchChar(data, "[+-]") || "";
+            return value + required(range(data, 1, -1, function () {
+                    return matchChar(data, "[0-9]");
+                }).join(""), "exponent missing value");
+        }
+        return null;
     }
 
-    return whiteSpace;
+    return exponent;
 });

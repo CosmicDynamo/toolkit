@@ -21,13 +21,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.match.comment
+ * @module RdfJs.parser.comment
  */
 define([], function () {
     /**
      * Strips off an RDF comment from the input string
      * @param {jazzHands.parser.Data} data - Information about the parsing process
-     * @return {*}
+     * @return {String | Null}
      */
     function comment(data) {
         if (data.getCh() !== "#") {
