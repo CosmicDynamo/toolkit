@@ -1,5 +1,6 @@
 define([
     "./comment",
+    "./decimal",
     "./exponent",
     "./integer",
     "./langTag",
