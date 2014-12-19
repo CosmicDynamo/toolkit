@@ -50,10 +50,11 @@ define([
     "./sparql/baseDecl",
     "RdfJs/parser/langTag",
     "RdfJs/parser/exponent",
+    "RdfJs/parser/integer",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
     , whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, XsdLiteral, booleanLiteral, iriRef, uChar, utf16Encode, hex
-    , baseDecl, langTag, exponent) {
+    , baseDecl, langTag, exponent, integer) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -276,16 +277,12 @@ define([
             //[21]	DOUBLE	::=	[+-]? ([0-9]+ '.' [0-9]* EXPONENT | '.' [0-9]+ EXPONENT | [0-9]+ EXPONENT)
             var start = input.pos;
             var whole = hasAnyChar(input, ['+', '-']) || "";
-            whole += range(input, 0, -1, function () {
-                return matchChar(input, "[0-9]");
-            }).join("");
+            whole += integer(input) || "";
 
             var endInt = input.pos;
             var dec = hasChar(input, ".") || "";
             if (dec) {
-                dec += range(input, 0, -1, function () {
-                    return matchChar(input, "[0-9]");
-                }).join("");
+                dec += integer(input) || "";
             }
             var exp = exponent(input) || "";
 

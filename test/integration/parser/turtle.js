@@ -23,7 +23,7 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            "<jazzHands/test/integration/parser/turtle/manifest.ttl#bareword_double>": true
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#bareword_double>": false
         },
         excludeById: {},
         "rdf-test:TestTurtleNegativeSyntax": function (params) {
