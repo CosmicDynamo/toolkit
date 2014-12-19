@@ -87,12 +87,12 @@ define([
                     test.row3 = test.dataSet.add();
                     test.row4 = test.dataSet.add();
 
-                    test.row1.set("aColumn1", new Node("<urn:value"));
-                    test.row2.set("aColumn2", new Node("<urn:value"));
-                    test.row3.set("aColumn3", new Node("<urn:value"));
-                    test.row4.set("aColumn4", new Node("<urn:value"));
+                    test.row1.set("aColumn1", new Node("<urn:value>"));
+                    test.row2.set("aColumn2", new Node("<urn:value>"));
+                    test.row3.set("aColumn3", new Node("<urn:value>"));
+                    test.row4.set("aColumn4", new Node("<urn:value>"));
 
-                    test.row1.set("aColumn4", new Node("<urn:SetAgain"));
+                    test.row1.set("aColumn4", new Node("<urn:SetAgain>"));
                 },
                 exec: function (test) {
                     var columns = test.dataSet.columns();
@@ -120,10 +120,10 @@ define([
                     test.rows.push(test.dataSet.add());
                     test.rows.push(test.dataSet.add());
 
-                    test.rows[0].set("aColumn1", new Node("<urn:value"));
-                    test.rows[1].set("aColumn2", new Node("<urn:value"));
-                    test.rows[2].set("aColumn3", new Node("<urn:value"));
-                    test.rows[3].set("aColumn4", new Node("<urn:value"));
+                    test.rows[0].set("aColumn1", new Node("<urn:value>"));
+                    test.rows[1].set("aColumn2", new Node("<urn:value>"));
+                    test.rows[2].set("aColumn3", new Node("<urn:value>"));
+                    test.rows[3].set("aColumn4", new Node("<urn:value>"));
                 },
                 exec: function (test) {
                     test.dataSet.forEach(function (actual, index) {

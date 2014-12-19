@@ -49,10 +49,11 @@ define([
     "blocks/parser/hex",
     "./sparql/baseDecl",
     "RdfJs/parser/langTag",
+    "RdfJs/parser/exponent",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
     , whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, XsdLiteral, booleanLiteral, iriRef, uChar, utf16Encode, hex
-    , baseDecl, langTag) {
+    , baseDecl, langTag, exponent) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -286,7 +287,7 @@ define([
                     return matchChar(input, "[0-9]");
                 }).join("");
             }
-            var exp = this.exponent(input) || "";
+            var exp = exponent(input) || "";
 
             var dt = "";
             if (exp) {
@@ -377,17 +378,6 @@ define([
                 if (value[value.length - 1] === "."){
                     throw { message: "Blank Node cannot end in '.'"};
                 }
-            }
-            return value;
-        },
-        exponent: function (input) {
-            //[154s]	EXPONENT	::=	[eE] [+-]? [0-9]+
-            var value = hasChar(input, 'e');
-            if (value) {
-                value += matchChar(input, "[+-]") || "";
-                value += required(range(input, 1, -1, function (scoped) {
-                    return matchChar(scoped, "[0-9]");
-                }), "exponent", "value");
             }
             return value;
         },

@@ -50,11 +50,11 @@ define([
                 exec: function (test) {
                     test.assertEqual(0, test.dataRow.columns().length, "Returns empty array before data is added");
 
-                    test.dataRow.set("aColumn1", new Node("<urn:value"));
-                    test.dataRow.set("aColumn2", new Node("<urn:value"));
-                    test.dataRow.set("aColumn3", new Node("<urn:value"));
-                    test.dataRow.set("aColumn4", new Node("<urn:value"));
-                    test.dataRow.set("aColumn4", new Node("<urn:SetAgain"));
+                    test.dataRow.set("aColumn1", new Node("<urn:value>"));
+                    test.dataRow.set("aColumn2", new Node("<urn:value>"));
+                    test.dataRow.set("aColumn3", new Node("<urn:value>"));
+                    test.dataRow.set("aColumn4", new Node("<urn:value>"));
+                    test.dataRow.set("aColumn4", new Node("<urn:SetAgain>"));
 
                     var columns = test.dataRow.columns();
 
