@@ -29,7 +29,7 @@ define([
     "blocks/parser/Data"
 ], function (TestPackage, whiteSpace, Data) {
     return new TestPackage({
-        module: "jazzHands/parser/match/whiteSpace",
+        module: "RdfJs/parser/whiteSpace",
         tests: [
             {
                 name: "Returns ' ' characters",
@@ -37,7 +37,7 @@ define([
                 exec: function (test) {
                     var out = whiteSpace(test.data);
 
-                    test.assertEqual(out, test.input);
+                    test.assertNull(out);
                     test.assertEqual(test.input.length, test.data.pos);
 
                     test.complete();
@@ -49,7 +49,7 @@ define([
                 exec: function (test) {
                     var out = whiteSpace(test.data);
 
-                    test.assertEqual(out, test.input);
+                    test.assertNull(out);
                     test.assertEqual(test.input.length, test.data.pos);
 
                     test.complete();
@@ -61,7 +61,7 @@ define([
                 exec: function (test) {
                     var out = whiteSpace(test.data);
 
-                    test.assertEqual(out, test.input);
+                    test.assertNull(out);
                     test.assertEqual(test.input.length, test.data.pos);
 
                     test.complete();
@@ -73,7 +73,7 @@ define([
                 exec: function (test) {
                     var out = whiteSpace(test.data);
 
-                    test.assertEqual(out, test.input);
+                    test.assertNull(out);
                     test.assertEqual(test.input.length, test.data.pos);
 
                     test.complete();
@@ -85,7 +85,7 @@ define([
                 exec: function (test) {
                     var out = whiteSpace(test.data);
 
-                    test.assertEqual(out, test.input);
+                    test.assertNull(out);
                     test.assertEqual(test.input.length, test.data.pos);
 
                     test.complete();

@@ -1,9 +1,9 @@
 define([
     "./comment",
-    "./decimal",
     "./exponent",
     "./integer",
     "./langTag",
+    "./numeric",
     "./rdfType",
     "./whiteSpace"
 ], function () {

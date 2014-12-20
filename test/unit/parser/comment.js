@@ -29,7 +29,7 @@ define([
     "blocks/parser/Data"
 ], function (TestPackage, comment, Data) {
     return new TestPackage({
-        module: "jazzHands/parser/match/comment",
+        module: "RdfJs/parser/comment",
         tests: [
             {
                 name: "first char is a '#' will scan to end of line",

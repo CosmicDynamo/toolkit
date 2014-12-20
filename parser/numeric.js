@@ -48,7 +48,9 @@ define([
         var start = data.pos;
         var dt = "integer";
 
-        var number = integer(data) || '';
+        var number = hasChar(data, '+') || hasChar(data, '-') || "";
+
+        number += integer(data) || '';
 
         var endInt = data.pos;
         var dec = hasChar(data, ".");

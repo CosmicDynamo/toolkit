@@ -29,7 +29,7 @@ define([
     "blocks/parser/Data"
 ], function (TestPackage, rdfType, Data) {
     return new TestPackage({
-        module: "jazzHands/parser/match/rdfType",
+        module: "RdfJs/parser/rdfType",
         tests: [
             {
                 name: "If next word is 'a' will return RdfJs.Node for rdf:type",
