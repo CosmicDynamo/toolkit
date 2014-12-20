@@ -24,14 +24,13 @@
  * @module RdfJs.parser.iriRef
  */
 define([
-    "blocks/promise/when",
     "blocks/parser/keyWord",
     "blocks/parser/range",
     "blocks/parser/matchChar",
     "blocks/parser/uChar",
     "blocks/parser/required",
     "RdfJs/node/Named"
-], function (when, keyWord, range, matchChar, uChar, required, Named) {
+], function (keyWord, range, matchChar, uChar, required, Named) {
     /**
      * [139] IRIREF ::= '<' ([^<>"{}|^`\]-[#x00-#x20])* '>'
      * @see http://www.w3.org/TR/sparql11-query/#rIRIREF

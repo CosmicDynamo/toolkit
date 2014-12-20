@@ -35,18 +35,14 @@ define([
     var regExp = new RegExp("[\x20|\x09|\x0D|\x0A]");
 
     function whiteSpace(data) {
-        var out = "";
         do {
             var found = null;
             if (regExp.test(data.getCh())) {
                 found = data.next();
             }
             found = found || comment(data);
-            if (found) {
-                out += found;
-            }
         } while (found);
-        return out;
+        return null;
     }
 
     return whiteSpace;
