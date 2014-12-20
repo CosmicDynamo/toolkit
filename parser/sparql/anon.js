@@ -21,27 +21,25 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.nil
+ * @module jazzHands.parser.sparql.anon
  */
 define([
     "blocks/parser/block",
-    "blocks/parser/hasChar",
-    "blocks/parser/range",
-    "blocks/require/create"
-], function (block, hasChar, range, create) {
+    "RdfJs/Node/Blank"
+], function (block, BlankNode) {
     /**
-     * [161] NIL ::= '(' WS* ')'
-     * @see http://www.w3.org/TR/sparql11-query/#rNIL
+     * [163] ANON ::= '[' WS* ']'
+     * @see http://www.w3.org/TR/sparql11-query/#rANON
      * @property {jazzHands.parser.Data} data
-     * @return {Promise<*> | *}
+     * @return {RdfJs.node.Blank | Null}
      */
-    function nil(data) {
-        var valid = block(data, '(', ')', 0, -1, data.whiteSpace);
+    function anon(data) {
+        var valid = block(data, '[', ']', 0, -1, data.whiteSpace);
         if (valid) {
-            return create("jazzHands/query/function/ArgList", {});
+            return new BlankNode();
         }
         return null;
     }
 
-    return nil;
+    return anon;
 });

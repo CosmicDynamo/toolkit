@@ -51,10 +51,12 @@ define([
     "RdfJs/parser/langTag",
     "RdfJs/parser/exponent",
     "RdfJs/parser/integer",
+    "jazzHands/parser/sparql/anon",
+    "blocks/parser/block",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
     , whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, XsdLiteral, booleanLiteral, iriRef, uChar, utf16Encode, hex
-    , baseDecl, langTag, exponent, integer) {
+    , baseDecl, langTag, exponent, integer, anon, block) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -80,18 +82,22 @@ define([
             input.whiteSpace = whiteSpace;
             input.graph = input.createGraph();
             try {
-                this.turtleDoc(input);
+                var done = this.turtleDoc(input);
             } catch (err) {
-                error = err;
-            }
-            if (!error) {
-                if (input.pos < input.input.length) {
-                    error = { message: "Statement found after end of valid turtle"};
-                } else {
-                    return input.graph;
-                }
+                this._onError(error);
             }
 
+            return when(done, function () {
+                if (!error) {
+                    if (input.pos < input.input.length) {
+                        error = {message: "Statement found after end of valid turtle"};
+                    } else {
+                        return input.graph;
+                    }
+                }
+            }, this._onError);
+        },
+        _onError: function (error) {
             var wP = "";
             error = lang.mixin({
                 failed: true,
@@ -113,13 +119,17 @@ define([
             //[2]	statement	::=	directive | triples '.'
             var r = this.directive(input);
             if (!r) {
-                r = this.triples((input));
-                if (r !== null) {
-                    required(hasChar(input, '.', false, true), "statement", ".");
-                }
+                return when(this.triples(input), function (triples) {
+                    if (triples !== null) {
+                        required(hasChar(input, '.', false, true), "statement", ".");
+                    }
+                    whiteSpace(input);
+                    return triples;
+                });
+            } else {
+                whiteSpace(input); //Clean up potential trailing space
+                return r;
             }
-            whiteSpace(input); //Clean up potential trailing space
-            return r;
         },
         directive: function (input) {
             //[3]	directive	::=	prefixID | base | sparqlPrefix | sparqlBase
@@ -165,20 +175,22 @@ define([
         },
         triples: function (input) {
             //[6]	triples	::=	subject predicateObjectList | blankNodePropertyList predicateObjectList?
-            var props, terms = this.subject(input), isRequired = true;
-            if (terms == null) {
-                terms = this.bNodePropList(input);
-                isRequired = false;
-            }
-            if (terms) {
-                props = this.pObjectList(input);
-
-                if (isRequired) {
-                    required(props, "subject", "predicate");
+            return when(this.subject(input), function (terms) {
+                var props, isRequired = true;
+                if (terms == null) {
+                    terms = this.bNodePropList(input);
+                    isRequired = false;
                 }
-                return props ? this._genTriples(input, terms, props) : terms;
-            }
-            return null;
+                if (terms) {
+                    props = this.pObjectList(input);
+
+                    if (isRequired) {
+                        required(props, "subject", "predicate");
+                    }
+                    return props ? this._genTriples(input, terms, props) : terms;
+                }
+                return null;
+            }.bind(this));
         },
         pObjectList: function (input) {
             //[7]	predicateObjectList	::=	verb objectList (';' (verb objectList)?)*
@@ -229,27 +241,18 @@ define([
         },
         bNodePropList: function (input) {
             //[14]	blankNodePropertyList	::=	'[' predicateObjectList ']'
-            var start = input.pos;
-            if (keyWord(input, '[', true, true)) {
-                var list = this.pObjectList(input);
-                if (list) {
-                    required(keyWord(input, ']', true, true), 'bNode Property List', "]");
-
-                    var subject = input.createBlankNode();
-                    this._genTriples(input, subject, list);
-                    return subject;
-                }
+            var list = block(input, '[', ']', 1, 1, this.pObjectList.bind(this));
+            if (list) {
+                var subject = input.createBlankNode();
+                this._genTriples(input, subject, list);
+                return subject;
             }
-            input.pos = start;
             return null;
         },
         collection: function (input) {
             //[15]	collection	::=	'(' object* ')'
-            var r = hasChar(input, '(');
-            if (r) {
-                var list = range(input, 0, -1, this.object.bind(this));
-                required(hasChar(input, ')', true, true), "collection", ")");
-
+            var list = block(input, '(', ')', 0, -1, this.object.bind(this));
+            if (list) {
                 var bNode = input.createBlankNode;
                 var Triple = input.createTriple;
 
@@ -268,7 +271,7 @@ define([
                 }
                 return rest;
             }
-            return r;
+            return list;
         },
         numeric: function (input) {
             //[16]	NumericLiteral	::=	INTEGER | DECIMAL | DOUBLE
@@ -343,7 +346,7 @@ define([
         },
         bNode: function (input) {
             //[137s]	BlankNode	::=	BLANK_NODE_LABEL | ANON
-            return this.bNodeLabel(input) || this.anon(input);
+            return this.bNodeLabel(input) || anon(input);
         },
         pNameNs: function (input) {
             //[139s]	PNAME_NS	::=	PN_PREFIX? ':'
@@ -439,18 +442,6 @@ define([
                         input.pos = start;
                 }
             }
-            return null;
-        },
-        anon: function (input) {
-            //[162s]	ANON	::=	'[' WS* ']'
-            var start = input.pos;
-            if (hasChar(input, "[")) {
-                whiteSpace(input);
-                if (matchChar(input, "]")) {
-                    return input.createBlankNode().toString();
-                }
-            }
-            input.pos = start;
             return null;
         },
         pnCharsBase: function (input) {

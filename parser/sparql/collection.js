@@ -24,12 +24,8 @@
  * @module jazzHands.parser.sparql.collection
  */
 define([
-    "blocks/parser/hasChar",
-    "blocks/promise/when",
-    "blocks/parser/range",
-    "blocks/parser/find",
-    "blocks/parser/required"
-], function (hasChar, when, range, find, required) {
+    "blocks/parser/block"
+], function (block) {
     /**
      * [102] Collection ::= '(' GraphNode+ ')'
      * @see http://www.w3.org/TR/sparql11-query/#rCollection
@@ -37,20 +33,6 @@ define([
      * @return {Promise<*> | *}
      */
     return function(data){
-        var start = data.pos;
-        var key = hasChar(data, '(');
-        if (key){
-            return when(range(data, 1, -1, function(){
-                return find(data, ["jazzHands/parser/sparql/graphNode"])
-            }), function(graphNodes){
-                if (graphNodes){
-                    required(hasChar(data, ')'), "Collection missing ')'");
-                } else {
-                    data.pos = start;
-                }
-                return graphNodes;
-            });
-        }
-        return null;
+        return block(data, '(', ')', 1, -1, "jazzHands/parser/sparql/graphNode");
     }
 });

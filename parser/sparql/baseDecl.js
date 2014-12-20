@@ -26,7 +26,7 @@
 define([
     "blocks/parser/keyWord",
     "blocks/parser/required",
-    "./../../../RdfJs/parser/iriRef"
+    "RdfJs/parser/iriRef"
 ], function (keyWord, required, iriRef) {
     /**
      * [5] BaseDecl ::= 'BASE' IRIREF
