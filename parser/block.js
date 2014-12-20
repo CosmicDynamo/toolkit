@@ -32,12 +32,12 @@ define([
     /**
      * Returns the values from a block of text surrounded by start and end characters
      */
-    function block(data, startChar, endChar, min, max, fn) {
+    function block(data, startChar, endChar, min, max, fn, sep) {
         var start = data.pos;
         if (hasChar(data, startChar, false, true)) {
             var out = range(data, min, max, function () {
                 return find(data, [fn]);
-            });
+            }, sep);
             if (hasChar(data, endChar, false, true)) {
                 return out;
             }
