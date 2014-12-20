@@ -21,28 +21,17 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module blocks.parser.required
+ * @module jjazzHands.parser.exception.MissingRequired
  */
 define([
-    "blocks/parser/Exception/MissingRequired",
-    "blocks/promise/when"
-], function (MissingRequired, when) {
+    "../../../qasht/node_modules/dojo/_base/declare",
+    "blocks/Exception"
+], function (declare, Exception) {
     /**
-     * Method to be used if the parser has gone down a path where only one possibility exists, and there is a value that MUST be present to fulfill it
-     * @method required
-     * @param {Promise<* | null> | * | null} value - The output from another parsing function.  Will handle the promise and validate if a result was returned
-     * @param {String} message - Exception message should the required attribute be mixxing
-     * @return {Promise<*> | *}
-     * @throws {jazzHands.parser.exception.MissingRequired}
+     * @class jazzHands.parser.exception.MissingRequired
+     * @mixes blocks.Exception
      */
-    function required(value, message) {
-        return when(value, function (hasValue) {
-            if (hasValue == null) {
-                throw new MissingRequired(message);
-            }
-            return hasValue;
-        });
-    }
-
-    return required;
+    return declare([Exception], {
+        message: "Missing Required Value"
+    });
 });
