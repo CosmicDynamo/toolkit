@@ -236,7 +236,7 @@ define([
         },
         literal: function (input) {
             //[13]	literal	::=	RDFLiteral | NumericLiteral | BooleanLiteral
-            return this.rdfLiteral(input) || this.numeric(input) || booleanLiteral(input);
+            return this.rdfLiteral(input) || numeric(input) || booleanLiteral(input);
         },
         bNodePropList: function (input) {
             //[14]	blankNodePropertyList	::=	'[' predicateObjectList ']'
@@ -271,21 +271,6 @@ define([
                 return rest;
             }
             return list;
-        },
-        numeric: function (input) {
-            //[16]	NumericLiteral	::=	INTEGER | DECIMAL | DOUBLE
-            //[19]	INTEGER	::=	[+-]? [0-9]+
-            //[20]	DECIMAL	::=	[+-]? [0-9]* '.' [0-9]+
-            //[21]	DOUBLE	::=	[+-]? ([0-9]+ '.' [0-9]* EXPONENT | '.' [0-9]+ EXPONENT | [0-9]+ EXPONENT)
-            var start = input.pos;
-            var whole = hasAnyChar(input, ['+', '-']) || "";
-            var value = numeric(input);
-            if (value) {
-                value.nominalValue = whole + value.nominalValue;
-                return value;
-            }
-            input.pos = start;
-            return null;
         },
         rdfLiteral: function (input) {
             //[128s]	RDFLiteral	::=	String (LANGTAG | '^^' iri)?
