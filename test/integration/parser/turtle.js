@@ -23,7 +23,7 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            "<jazzHands/test/integration/parser/turtle/manifest.ttl#anonymous_blank_node_object>": false
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#turtle-syntax-number-08>": false
         },
         excludeById: {},
         "rdf-test:TestTurtleNegativeSyntax": function (params) {

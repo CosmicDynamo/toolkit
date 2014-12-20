@@ -49,14 +49,13 @@ define([
     "blocks/parser/hex",
     "./sparql/baseDecl",
     "RdfJs/parser/langTag",
-    "RdfJs/parser/exponent",
-    "RdfJs/parser/integer",
+    "RdfJs/parser/numeric",
     "jazzHands/parser/sparql/anon",
     "blocks/parser/block",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
     , whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, XsdLiteral, booleanLiteral, iriRef, uChar, utf16Encode, hex
-    , baseDecl, langTag, exponent, integer, anon, block) {
+    , baseDecl, langTag, numeric, anon, block) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -280,29 +279,10 @@ define([
             //[21]	DOUBLE	::=	[+-]? ([0-9]+ '.' [0-9]* EXPONENT | '.' [0-9]+ EXPONENT | [0-9]+ EXPONENT)
             var start = input.pos;
             var whole = hasAnyChar(input, ['+', '-']) || "";
-            whole += integer(input) || "";
-
-            var endInt = input.pos;
-            var dec = hasChar(input, ".") || "";
-            if (dec) {
-                dec += integer(input) || "";
-            }
-            var exp = exponent(input) || "";
-
-            var dt = "";
-            if (exp) {
-                required(whole || dec, "exponent", "base value");
-                dt = "double";
-            } else if (dec.length > 1) {
-                dt = "decimal"
-            } else if (whole) {
-                input.pos = endInt;
-                dec = "";
-                dt = "integer";
-            }
-            if (dt) {
-                whole = whole || "0";
-                return XsdLiteral('"' + whole + dec + exp + '"', dt);
+            var value = numeric(input);
+            if (value) {
+                value.nominalValue = whole + value.nominalValue;
+                return value;
             }
             input.pos = start;
             return null;
