@@ -21,7 +21,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.test.unit.parser.match.range
+ * @module blocks.test.unit.parser.range
  */
 define([
     "qasht/package/Unit",
@@ -29,7 +29,7 @@ define([
     "blocks/parser/Data"
 ], function (TestPackage, range, Data) {
     return new TestPackage({
-        module: "jazzHands/parser/match/range",
+        module: "blocks/parser/range",
         tests: [
             {
                 name: "Returns Empty Array at end of input",

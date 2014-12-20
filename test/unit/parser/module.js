@@ -1,10 +1,13 @@
 define([
     "./anyKeyWord",
+    "./eChar",
     "./find",
     "./hasChar",
     "./keyWord",
     "./matchChar",
     "./range",
-    "./required"
+    "./required",
+    "./uChar",
+    "./utf16Encode"
 ], function () {
 });

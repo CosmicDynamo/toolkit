@@ -21,14 +21,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.test.unit.parser.match.required
+ * @module blocks.test.unit.parser.required
  */
 define([
     "qasht/package/Unit",
     "blocks/parser/required"
 ], function (TestPackage, required) {
     return new TestPackage({
-        module: "jazzHands/parser/match/required",
+        module: "blocks/parser/required",
         tests: [
             {
                 name: "Passed input value through",

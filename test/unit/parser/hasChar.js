@@ -21,7 +21,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.test.unit.parser.match.hasChar
+ * @module blocks.test.unit.parser.hasChar
  */
 define([
     "qasht/package/Unit",
@@ -29,7 +29,7 @@ define([
     "blocks/parser/Data"
 ], function (TestPackage, hasChar, Data) {
     return new TestPackage({
-        module: "jazzHands/parser/match/hasChar",
+        module: "blocks/parser/hasChar",
         tests: [
             {
                 name: "Returns character if in string",
