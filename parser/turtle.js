@@ -41,7 +41,6 @@ define([
     "blocks/parser/anyKeyWord",
     "RdfJs/parser/rdfType",
     "../RdfType",
-    "./XsdLiteral",
     "./sparql/booleanLiteral",
     "RdfJs/parser/iriRef",
     "blocks/parser/uChar",
@@ -52,10 +51,11 @@ define([
     "RdfJs/parser/numeric",
     "jazzHands/parser/sparql/anon",
     "blocks/parser/block",
+    "blocks/parser/eChar",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
-    , whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, XsdLiteral, booleanLiteral, iriRef, uChar, utf16Encode, hex
-    , baseDecl, langTag, numeric, anon, block) {
+    , whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, booleanLiteral, iriRef, uChar, utf16Encode, hex
+    , baseDecl, langTag, numeric, anon, block, eChar) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -352,9 +352,9 @@ define([
             var start = matchChar(input, "['\"]", true), value = start;
             if (start) {
                 var except = "[^\x5C\x5C\x0A\x0D" + start + "]";
-                value += range(input, 0, -1, function (scoped) {
-                    return this.eChar(scoped) || uChar(scoped, except) || matchChar(input, except);
-                }.bind(this)).join("");
+                value += range(input, 0, -1, function () {
+                    return eChar(input) || uChar(input, except) || matchChar(input, except);
+                }).join("");
                 value += required(hasChar(input, start), "string literal", start);
             }
             return value;
@@ -366,48 +366,16 @@ define([
             var value = start;
             if (start) {
                 var except = "[^" + start[0] + "\\\\]";
-                value += range(input, 0, -1, function (scoped) {
-                    if (scoped.input.indexOf(start, scoped.pos) !== scoped.pos) {
-                        return hasAnyChar(input, ['"', "'"]) || this.eChar(input) || uChar(input, except) || matchChar(input, "[^\\'\\\\]");
+                value += range(input, 0, -1, function () {
+                    if (input.input.indexOf(start, input.pos) !== input.pos) {
+                        return hasAnyChar(input, ['"', "'"]) || eChar(input) || uChar(input, except) || matchChar(input, "[^\\'\\\\]");
                     }
                     return null;
-                }.bind(this)).join("");
+                }).join("");
 
                 value += required(keyWord(input, start), "long string", start);
             }
             return value;
-        },
-        eChar: function (input) {
-            //[159s]	ECHAR	::=	'\' [tbnrf"'\]
-            var start = input.pos;
-            if (hasChar(input, "\\")) {
-                var ch = matchChar(input, "[tbnrf\"'\\\\]");
-                switch (ch) {
-                    case "t":
-                        return "\t";
-                    case "n":
-                        return "\n";
-                    case "r":
-                        return "\r";
-                    case "'":
-                        return "'";
-                    case '"':
-                        return '"';
-                    case "b":
-                        return "\b";
-                    case "\\":
-                        return "\\";
-                    case "f":
-                        return "\f";
-                    //case "u": //handled somewhere else, but still valid
-                   //     input.pos = start;
-                    //    break;
-                   default:
-                    //    throw {message: "invalid escape character: " + ch};
-                        input.pos = start;
-                }
-            }
-            return null;
         },
         pnCharsBase: function (input) {
             //[163s]	PN_CHARS_BASE	::=	[A-Z] | [a-z] | [#x00C0-#x00D6] | [#x00D8-#x00F6] | [#x00F8-#x02FF] | [#x0370-#x037D] | [#x037F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
