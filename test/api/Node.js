@@ -34,7 +34,6 @@ define([
         test.assertIsObject(instance, "RDF Node must be an Object");
 
         test.assertIsString(instance.nominalValue, "RDF Node nominalValue MUST be a String");
-        test.assertIsString(instance.value, "RDF Node value MUST be a String");
         test.assertIsString(instance.interfaceName, "RDF Node interfaceName MUST be a String");
 
         test.assertIsFunction(instance.toString, "RDF Node API requires a toString method");

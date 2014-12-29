@@ -2,8 +2,9 @@
  * Created by Akeron on 2/26/14.
  */
 define([
+    "dojo/_base/declare",
     "dojo/_base/lang", "dojo/date/stamp", "dojo/date/locale", "./_Node"
-], function (lang, stamp, locale, _Node) {
+], function (declare, lang, stamp, locale, _Node) {
     /* Implementation of <http://www.w3.org/TR/rdf-interfaces/#idl-def-Literal> */
 
     //Maps xsd: datatype to javascript datatypes, could be extended to include other types
@@ -30,57 +31,42 @@ define([
         "http://www.w3.org/2001/XMLSchema#unsignedShort": "int",
         "http://www.w3.org/2001/XMLSchema#unsignedByte": "int"
     };
-    function numeric(value, parse){
-        if (value === "INF") {
-            return Number.POSITIVE_INFINITY;
-        }
-        if (value === "-INF"){
-            return Number.NEGATIVE_INFINITY;
-        }
-        return parse(value);
-    }
 
-    return function (value, language, type) {
-        var lNode = new _Node(value);
-        lNode.interfaceName = "Literal";
-        if (lang.isObject(value)) {
-            lNode.language = value.language || value.lang;
-            lNode.datatype = value.datatype || value.type;
-        } else {
-            lNode.language = language;
-            lNode.datatype = type;
-        }
-
-        lNode.toString = function (prefixMap) {
+    return declare([_Node], {
+        interfaceName: "Literal",
+        language: null,
+        datatype: null,
+        constructor: function (value, language, dataType) {
+            var lNode = this;
+            lNode.language = value.language || language;
+            lNode.datatype = value.datatype || dataType;
+        },
+        toString: function () {
             /* http://www.w3.org/TR/rdf-interfaces/#widl-RDFNode-toString-DOMString */
-            var tmp = "\"" + this.nominalValue + "\"";
+            var tmp = '"' + this.nominalValue + '"';
             if (this.language != null) {
                 tmp = tmp + "@" + this.language;
             } else if (this.datatype != null) {
-                tmp += "^^";
-                if (prefixMap) {
-                    tmp += prefixMap.shrink(this.datatype) || "<" + this.datatype + ">";
-                } else {
-                    tmp += "<" + this.datatype + ">";
-                }
+                tmp += "^^<" + this.datatype + ">";
             }
 
             return tmp;
-        };
-
-        lNode.valueOf = function () {
+        },
+        valueOf: function () {
             /* http://www.w3.org/TR/rdf-interfaces/#widl-RDFNode-valueOf-any */
             var nValue = this.nominalValue;
             if (this.datatype == null) {
                 return nValue;
             }
 
+            //TODO: Create a base set of primitive to/from xsd type converters
+            //TODO:   Then update this code to just call off to the converter
             if (typeMap[this.datatype]) {
                 switch (typeMap[this.datatype]) {
                     case "int":
-                        return numeric(nValue, parseInt);
+                        return this._numeric(nValue, parseInt);
                     case "float":
-                        return numeric(nValue, parseFloat);
+                        return this._numeric(nValue, parseFloat);
                     case "iso8601":
                         return stamp.fromISOString(nValue);
                     case "boolean":
@@ -91,7 +77,7 @@ define([
                             return false;
                         }
 
-                        throw { message: "Value '" + nValue + "' cannot be cast to a javascript boolean" };
+                        throw {message: "Value '" + nValue + "' cannot be cast to a javascript boolean"};
                     case "string":
                     case null:
                         return nValue === null || nValue === undefined ? undefined : '' + nValue;
@@ -100,21 +86,23 @@ define([
 
             console.warn("DataType '" + this.datatype + "' has not been implemented in Literal Node");
             return nValue;
-        };
-
-        var equals = lNode.equals;
-        lNode.equals = function (toCompare) {
-            var match = equals.apply(this, arguments);
-            if (toCompare.interfaceName) {
-                match = match && this.datatype == toCompare.datatype && this.language == toCompare.language;
+        },
+        equals: function (toCompare) {
+            var match = this.inherited(arguments);
+            if (match && toCompare.interfaceName) {
+                return this.datatype == toCompare.datatype && this.language == toCompare.language;
             }
 
             return match;
-        };
-
-        /* JSON-LD Support */
-        lNode.type = lNode.datatype;
-
-        return lNode;
-    };
+        },
+        _numeric: function (value, parse){
+            if (value === "INF") {
+                return Number.POSITIVE_INFINITY;
+            }
+            if (value === "-INF"){
+                return Number.NEGATIVE_INFINITY;
+            }
+            return parse(value);
+        }
+    });
 });

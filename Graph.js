@@ -23,12 +23,12 @@ define([
 
             this.TripleCtr = this.TripleCtr || Triple;
             this._triples = new HashTable({
-                getObjectId: function (t) {
+                genHash: function (t) {
                     return [t.s, t.o, t.p].join("-");
                 }
             });
             this._node = new HashTable({
-                getObjectId: function (node) {
+                genHash: function (node) {
                     return lang.isObject(node) ? node.toNT() : node;
                 }
             });
