@@ -43,7 +43,6 @@ define([
     "../RdfType",
     "./sparql/booleanLiteral",
     "RdfJs/parser/iriRef",
-    "blocks/parser/uChar",
     "blocks/parser/utf16Encode",
     "blocks/parser/hex",
     "./sparql/baseDecl",
@@ -51,11 +50,13 @@ define([
     "RdfJs/parser/numeric",
     "jazzHands/parser/sparql/anon",
     "blocks/parser/block",
-    "blocks/parser/eChar",
+    "RdfJs/parser/string",
+    "RdfJs/node/Literal",
+    "RdfJs/node/Named",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
-    , whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, booleanLiteral, iriRef, uChar, utf16Encode, hex
-    , baseDecl, langTag, numeric, anon, block, eChar) {
+    , whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, booleanLiteral, iriRef, utf16Encode, hex
+    , baseDecl, langTag, numeric, anon, block, string, LiteralNode, NamedNode) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -63,6 +64,7 @@ define([
      */
     return declare([], {
         parse: function (text) {
+            this.input = text;
             var error = null;
             var loc = kernel.global.location;
             var base = loc ? (loc.origin + loc.pathname) : "";
@@ -83,7 +85,7 @@ define([
             try {
                 var done = this.turtleDoc(input);
             } catch (err) {
-                this._onError(error);
+                this._onError(err);
             }
 
             return when(done, function () {
@@ -104,7 +106,7 @@ define([
             }, error);
             error.msg = error.message;
             error.message = 'Parsing Error ' + error.msg + " while parsing " + error.whileParsing;
-            error.input = text;
+            error.input = this.input;
             throw error;
         },
         setBase: function (iri) {
@@ -199,7 +201,7 @@ define([
                 if (p) {
                     return{
                         predicate: p,
-                        object: required(this.objectList(scoped), "predicate", "object list")
+                        object: required(this.objectList(scoped), "predicate missing object list")
                     }
                 }
                 input.pos = start;
@@ -243,7 +245,7 @@ define([
             var list = block(input, '[', ']', 1, 1, this.pObjectList.bind(this));
             if (list) {
                 var subject = input.createBlankNode();
-                this._genTriples(input, subject, list);
+                this._genTriples(input, subject, list[0]);
                 return subject;
             }
             return null;
@@ -274,20 +276,16 @@ define([
         },
         rdfLiteral: function (input) {
             //[128s]	RDFLiteral	::=	String (LANGTAG | '^^' iri)?
-            var value = this.string(input);
-            if (value) {
-                var dt = "", lang = langTag(input) || "";
-                if (lang === "" && keyWord(input, "^^", false, false)) {
+            var value = string(input);
+            if (value != null) {
+                var dt, lang = langTag(input);
+                if (!lang && keyWord(input, "^^", false, false)) {
                     dt = this.iri(input);
-                    dt = "^^" + ((dt.toNT && dt.toNT()) || dt)
+                    dt = dt && dt.toString();
                 }
-                return value + lang + dt;
+                return new LiteralNode(value, lang, dt);
             }
             return null;
-        },
-        string: function (input) {
-            //[17]	String	::=	STRING_LITERAL_QUOTE | STRING_LITERAL_SINGLE_QUOTE | STRING_LITERAL_LONG_SINGLE_QUOTE | STRING_LITERAL_LONG_QUOTE
-            return this.longString(input) || this.shortString(input);
         },
         iri: function (input) {
             //[135s]	iri	::=	IRIREF | PrefixedName
@@ -300,14 +298,13 @@ define([
             var value = this.pNameLn(input) || this.pNameNs(input);
             if (value == null) {
                 input.pos = start;
-            } else {
-                var exp = input.resolve(value);
-                if (exp === value){
-                    throw { message: "Prefix not supplied: " + value.split(":")[0]};
-                }
-                value = "<" + exp + ">";
+                return null;
             }
-            return value;
+            var exp = input.resolve(value);
+            if (exp === value){
+                throw { message: "Prefix not supplied: " + value.split(":")[0]};
+            }
+            return NamedNode(exp);
         },
         bNode: function (input) {
             //[137s]	BlankNode	::=	BLANK_NODE_LABEL | ANON
@@ -343,37 +340,6 @@ define([
                 if (value[value.length - 1] === "."){
                     throw { message: "Blank Node cannot end in '.'"};
                 }
-            }
-            return value;
-        },
-        shortString: function (input) {
-            //[22]	STRING_LITERAL_QUOTE	::=	'"' ([^#x22#x5C#xA#xD] | ECHAR | UCHAR)* '"' /* #x22=" #x5C=\ #xA=new line #xD=carriage return */
-            //[23]	STRING_LITERAL_SINGLE_QUOTE	::=	"'" ([^#x27#x5C#xA#xD] | ECHAR | UCHAR)* "'" /* #x27=' #x5C=\ #xA=new line #xD=carriage return */
-            var start = matchChar(input, "['\"]", true), value = start;
-            if (start) {
-                var except = "[^\x5C\x5C\x0A\x0D" + start + "]";
-                value += range(input, 0, -1, function () {
-                    return eChar(input) || uChar(input, except) || matchChar(input, except);
-                }).join("");
-                value += required(hasChar(input, start), "string literal", start);
-            }
-            return value;
-        },
-        longString: function (input) {
-            //[24]	STRING_LITERAL_LONG_SINGLE_QUOTE	::=	"'''" (("'" | "''")? ([^'\] | ECHAR | UCHAR))* "'''"
-            //[25]	STRING_LITERAL_LONG_QUOTE	::=	'"""' (('"' | '""')? ([^"\] | ECHAR | UCHAR))* '"""'
-            var start = anyKeyWord(input, ["'''", '"""'], true, true);
-            var value = start;
-            if (start) {
-                var except = "[^" + start[0] + "\\\\]";
-                value += range(input, 0, -1, function () {
-                    if (input.input.indexOf(start, input.pos) !== input.pos) {
-                        return hasAnyChar(input, ['"', "'"]) || eChar(input) || uChar(input, except) || matchChar(input, "[^\\'\\\\]");
-                    }
-                    return null;
-                }).join("");
-
-                value += required(keyWord(input, start), "long string", start);
             }
             return value;
         },

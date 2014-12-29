@@ -23,7 +23,15 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            "<jazzHands/test/integration/parser/turtle/manifest.ttl#turtle-syntax-number-08>": false
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#sole_blankNodePropertyList>":false,
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#LITERAL1>":false,
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#LITERAL1_all_punctuation>": false,
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#LITERAL_LONG1>":false,
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#literal_with_escaped_BACKSPACE>":false,
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#IRIREF_datatype>":false,
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#prefixed_name_datatype>":false,
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#repeated_semis_at_end>":false,
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#turtle-subm-18>":true
         },
         excludeById: {},
         "rdf-test:TestTurtleNegativeSyntax": function (params) {
@@ -59,55 +67,6 @@ define([
             var lines = file.split("\n");
             for (var ln = 0; ln < lines.length; ln++) {
                 if (lines[ln].length > 0) {
-                    var pos = 0;
-                    while (lines[ln].indexOf("\\", pos) > pos) {
-                        var rep, val = "";
-                        pos = lines[ln].indexOf("\\", pos);
-                        var pfx = lines[ln].substr(pos, 2);
-                        switch (lines[ln][pos + 1]) {
-                            case "u":
-                                val += lines[ln].substr(pos + 2, 4);
-                                rep = String.fromCharCode(parseInt(val, 16));
-                                break;
-                            case "U":
-                                val += lines[ln].substr(pos + 2, 8);
-
-                                var value = "0x" + val;
-                                var output = [];
-
-                                if ((value & 0xF800) === 0xD800) {
-                                    throw new RangeError("UTF-16(encode): Illegal UTF-16 value");
-                                }
-                                if (value > 0xFFFF) {
-                                    value -= 0x10000;
-                                    output.push(String.fromCharCode(((value >>> 10) & 0x3FF) | 0xD800));
-                                    value = 0xDC00 | (value & 0x3FF);
-                                }
-                                output.push(String.fromCharCode(value));
-
-                                rep = output.join("");
-                                break;
-                            case "n":
-                                rep = "\n";
-                                break;
-                            case "r":
-                                rep = "\r";
-                                break;
-                            case "t":
-                                rep = "\t";
-                                break;
-                            case "f":
-                                rep = "\f";
-                                break;
-                            case "\\":
-                                rep = "\\";
-                                pos += 2;
-                                break;
-                            default:
-                                rep = lines[ln][pos + 1]
-                        }
-                        lines[ln] = lines[ln].replace(pfx + val, rep);
-                    }
 
                     var columns = lines[ln].split(" ");
 
