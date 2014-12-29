@@ -28,37 +28,11 @@ define([
     "./keyWord",
     "blocks/promise/when"
 ], function (lang, keyWord, when) {
-    function async(data, max, fn, separator, optional, list) {
-        if (data.isEnd() || (list.length >= max && max > -1)) {
-            return list;
-        }
-
-        return when(fn.call(this, data), function (val) {
-            var keepOn = val !== null;
-            if (keepOn) {
-                if (lang.isArray(val)) {
-                    list = list.concat(val);
-                } else {
-                    list.push(val);
-                }
-            }
-            if (separator !== undefined) {
-                if (keyWord(data, separator, true, true) === null) {
-                    if (!optional) {
-                        keepOn = false;
-                    }
-                } else {
-                    keepOn = true;
-                }
-            }
-            return keepOn ? async(data, max, fn, separator, optional, list) : list;
-        })
-    }
 
     /**
      * Will execute an input method untill the requested range of results are received
      * @description If the min number cannot be found; the parse position will be reset and a null value returned
-     * @param {jazzHands.parser.Data} data - Information about the parsing process
+     * @param {blocks.parser.Data} data - Information about the parsing process
      * @param {Number} min - The minimum number of times Function should return a result to be valid
      * @param {Number} max - The maximum number of times Function will execute; or -1 if unlimited
      * @param {Function} fn - The method to execute looking for results
@@ -66,17 +40,54 @@ define([
      * @param {Boolean} [optional] - Is the separator required to be between each value
      * @return {Array<*> | Promise<Array<*>>} An array containing zero or more result values
      */
-    function range(data, min, max, fn, separator, optional) {
+    function range (data, min, max, fn, separator, optional) {
+        function isDone(val){
+            if (separator !== undefined) {
+                if (keyWord(data, separator, true, true) !== null){
+                    return data.isEnd();
+                } else if (!optional) {
+                    return true;
+                }
+            }
+            if (val === null) {
+                return true;
+            }
+            return data.isEnd();
+        }
+
+        function onNext(results){
+            var keepOn = false;
+            if (data.isEnd()){
+                return results;
+            }
+            do {
+                var async = when(fn.call(this, data), function(val){
+                    if (val !== null) {
+                        results.push(val);
+                    }
+                    keepOn = !isDone(val, data, separator, optional);
+                    if (max > 0) {
+                        keepOn = keepOn && results.length < max;
+                    }
+                    return results;
+                });
+
+                if (async.then){
+                    return when(async, onNext);
+                }
+            } while (keepOn);
+
+            return results;
+        }
+
         var start = data.pos;
-
-        return when(async(data, max, fn, separator, optional, []), function (list) {
-
-            if (list.length < min) {
+        return when(onNext([]), function(results){
+            if (results.length < min){
                 data.pos = start;
                 return null;
             }
-            return list;
-        });
+            return results;
+        })
     }
 
     return range;

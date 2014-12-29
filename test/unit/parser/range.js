@@ -60,23 +60,6 @@ define([
                 }
             },
             {
-                name: "If results is an array they will concatenated",
-                input: "The quick brown fox jumps over the lazy dog",
-                exec: function (test) {
-                    var out = range(test.data, 0, -1, function (data) {
-                        return [data.next()];
-                    });
-
-                    test.assertIsArray(out);
-                    out.forEach(function (value) {
-                        test.assertIsString(value);
-                    });
-                    test.assertEqual(test.input, out.join(""));
-
-                    test.complete();
-                }
-            },
-            {
                 name: "separator:Will look for separator between each function return",
                 input: "T,h,e, ,q,u,i,c,k, ,b,r,o,w,n, ,f,o,x, ,j,u,m,p,s, ,o,v,e,r, ,t,h,e, ,l,a,z,y, ,d,o,g",
                 exec: function (test) {

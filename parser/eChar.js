@@ -34,25 +34,11 @@ define([
      */
     function eChar(data) {
         var start = data.pos;
-        if (matchChar(data, "[\\\\]")) {
+        var esc = matchChar(data, "[\\\\]");
+        if (esc) {
             var ch = matchChar(data, "[tbnrf\"'\\\\]");
-            switch (ch) {
-                case "t":
-                    return "\t";
-                case "n":
-                    return "\n";
-                case "r":
-                    return "\r";
-                case "'":
-                    return "'";
-                case '"':
-                    return '"';
-                case "b":
-                    return "\b";
-                case "\\":
-                    return "\\";
-                case "f":
-                    return "\f";
+            if (ch){
+                return esc + ch;
             }
         }
         data.pos = start;

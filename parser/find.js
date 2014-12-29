@@ -24,7 +24,7 @@
  * @module jazzHands.parser.match.find
  */
 define([
-    "../../qasht/node_modules/dojo/_base/lang",
+    "dojo/_base/lang",
     "blocks/promise/when",
     "blocks/require"
 ], function (lang, when, require) {

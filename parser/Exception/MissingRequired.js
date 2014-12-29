@@ -24,7 +24,7 @@
  * @module jjazzHands.parser.exception.MissingRequired
  */
 define([
-    "../../../qasht/node_modules/dojo/_base/declare",
+    "dojo/_base/declare",
     "blocks/Exception"
 ], function (declare, Exception) {
     /**

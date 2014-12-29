@@ -35,7 +35,7 @@ define([
                 name: "valid syntax: '\\t'",
                 input: "\\t",
                 exec: function (test) {
-                    test.assertEqual("\t", eChar(test.data));
+                    test.assertEqual("\\t", eChar(test.data));
 
                     test.assertNull(eChar(test.data));
 
@@ -46,7 +46,7 @@ define([
                 name: "valid syntax: '\\b'",
                 input: "\\b",
                 exec: function (test) {
-                    test.assertEqual("\b", eChar(test.data));
+                    test.assertEqual("\\b", eChar(test.data));
 
                     test.assertNull(eChar(test.data));
 
@@ -57,7 +57,7 @@ define([
                 name: "valid syntax: '\\n'",
                 input: "\\n",
                 exec: function (test) {
-                    test.assertEqual("\n", eChar(test.data));
+                    test.assertEqual("\\n", eChar(test.data));
 
                     test.assertNull(eChar(test.data));
 
@@ -68,7 +68,7 @@ define([
                 name: "valid syntax: '\\r'",
                 input: "\\r",
                 exec: function (test) {
-                    test.assertEqual("\r", eChar(test.data));
+                    test.assertEqual("\\r", eChar(test.data));
 
                     test.assertNull(eChar(test.data));
 
@@ -79,7 +79,7 @@ define([
                 name: "valid syntax: '\\f'",
                 input: "\\f",
                 exec: function (test) {
-                    test.assertEqual("\f", eChar(test.data));
+                    test.assertEqual("\\f", eChar(test.data));
 
                     test.assertNull(eChar(test.data));
 
@@ -90,7 +90,7 @@ define([
                 name: "valid syntax: '\\\\'",
                 input: "\\\\",
                 exec: function (test) {
-                    test.assertEqual("\\", eChar(test.data));
+                    test.assertEqual("\\\\", eChar(test.data));
 
                     test.assertNull(eChar(test.data));
 
@@ -101,7 +101,7 @@ define([
                 name: "valid syntax: '\\\'",
                 input: "\\'",
                 exec: function (test) {
-                    test.assertEqual("'", eChar(test.data));
+                    test.assertEqual("\\'", eChar(test.data));
 
                     test.assertNull(eChar(test.data));
 
@@ -112,7 +112,7 @@ define([
                 name: "valid syntax: '\\\"'",
                 input: "\\\"",
                 exec: function (test) {
-                    test.assertEqual('"', eChar(test.data));
+                    test.assertEqual('\\"', eChar(test.data));
 
                     test.assertNull(eChar(test.data));
 
