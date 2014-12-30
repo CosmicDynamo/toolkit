@@ -31,9 +31,6 @@ define([], function () {
     function utf16Encode(value) {
         var output = [];
 
-        if ((value & 0xF800) === 0xD800) {
-            throw new RangeError("UTF-16(encode): Illegal UTF-16 value");
-        }
         if (value > 0xFFFF) {
             value -= 0x10000;
             output.push(String.fromCharCode(((value >>> 10) & 0x3FF) | 0xD800));
