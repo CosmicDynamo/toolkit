@@ -4,13 +4,12 @@
 define([
     "qasht/package/w3c",
     "jazzHands/parser/turtle",
-    "dojo/when",
     "blocks/promise/all",
     "RdfJs/Graph",
     "RdfJs/Triple",
     "RdfJs/test/unit/graph/compare",
     "RdfJs/test/api/Graph"
-], function (TestPackage, Turtle, when, all, Graph, Triple, compare, testGraphApi) {
+], function (TestPackage, Turtle, all, Graph, Triple, compare, testGraphApi) {
     new TestPackage({
         prefix: {"rdf-test": "http://www.w3.org/ns/rdftest#"},
         module: "jazzHands/parser/turtle",
@@ -23,15 +22,7 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            "<jazzHands/test/integration/parser/turtle/manifest.ttl#sole_blankNodePropertyList>":false,
-            "<jazzHands/test/integration/parser/turtle/manifest.ttl#LITERAL1>":false,
-            "<jazzHands/test/integration/parser/turtle/manifest.ttl#LITERAL1_all_punctuation>": false,
-            "<jazzHands/test/integration/parser/turtle/manifest.ttl#LITERAL_LONG1>":false,
-            "<jazzHands/test/integration/parser/turtle/manifest.ttl#literal_with_escaped_BACKSPACE>":false,
-            "<jazzHands/test/integration/parser/turtle/manifest.ttl#IRIREF_datatype>":false,
-            "<jazzHands/test/integration/parser/turtle/manifest.ttl#prefixed_name_datatype>":false,
-            "<jazzHands/test/integration/parser/turtle/manifest.ttl#repeated_semis_at_end>":false,
-            "<jazzHands/test/integration/parser/turtle/manifest.ttl#turtle-subm-18>":true
+            "<>": false
         },
         excludeById: {},
         "rdf-test:TestTurtleNegativeSyntax": function (params) {

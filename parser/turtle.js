@@ -38,12 +38,10 @@ define([
     "blocks/parser/hasAnyChar",
     "RdfJs/parser/whiteSpace",
     "blocks/parser/keyWord",
-    "blocks/parser/anyKeyWord",
     "RdfJs/parser/rdfType",
     "../RdfType",
     "./sparql/booleanLiteral",
     "RdfJs/parser/iriRef",
-    "blocks/parser/utf16Encode",
     "blocks/parser/hex",
     "./sparql/baseDecl",
     "RdfJs/parser/langTag",
@@ -53,10 +51,11 @@ define([
     "RdfJs/parser/string",
     "RdfJs/node/Literal",
     "RdfJs/node/Named",
+    "RdfJs/parser/pnCharsBase",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
-    , whiteSpace, keyWord, anyKeyWord, rdfType, RdfType, booleanLiteral, iriRef, utf16Encode, hex
-    , baseDecl, langTag, numeric, anon, block, string, LiteralNode, NamedNode) {
+    , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex
+    , baseDecl, langTag, numeric, anon, block, string, LiteralNode, NamedNode, pnCharsBase) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -343,21 +342,9 @@ define([
             }
             return value;
         },
-        pnCharsBase: function (input) {
-            //[163s]	PN_CHARS_BASE	::=	[A-Z] | [a-z] | [#x00C0-#x00D6] | [#x00D8-#x00F6] | [#x00F8-#x02FF] | [#x0370-#x037D] | [#x037F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
-            var ch = matchChar(input, "[A-Z]|[a-z]|[\xC0-\xD6]|[\xD8-\xF6]|[\u00F8-\u02FF]|[\u0370-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]");
-            if (ch === null) {
-                var code = input.input.codePointAt(input.pos);
-                if (code >= 0x10000 && code <= 0xEFFFF) {
-                    input.pos += 2;
-                    return utf16Encode("0x" + code.toString(16));
-                }
-            }
-            return ch;
-        },
         pnCharsU: function (input) {
             //[164s]	PN_CHARS_U	::=	PN_CHARS_BASE | '_'
-            return this.pnCharsBase(input) || hasChar(input, "_");
+            return pnCharsBase(input) || hasChar(input, "_");
         },
         pnChars: function (input) {
             //[166s]	PN_CHARS	::=	PN_CHARS_U | '-' | [0-9] | #x00B7 | [#x0300-#x036F] | [#x203F-#x2040]
@@ -365,7 +352,7 @@ define([
         },
         pnPrefix: function (input) {
             //[167s]	PN_PREFIX	::=	PN_CHARS_BASE ((PN_CHARS | '.')* PN_CHARS)?
-            var value = this.pnCharsBase(input);
+            var value = pnCharsBase(input);
             if (value) {
                 value += range(input, 0, -1, function (scoped) {
                     return this.pnChars(scoped) || hasChar(scoped, ".");
