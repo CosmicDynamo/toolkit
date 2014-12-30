@@ -4,6 +4,7 @@ define([
     "./integer",
     "./langTag",
     "./numeric",
+    "./pnCharsBase",
     "./rdfType",
     "./whiteSpace"
 ], function () {

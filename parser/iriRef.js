@@ -37,7 +37,7 @@ define([
      *
      * From Turtle.  Trying to see if I can use both specs side by side without violating anything
      * [18] IRIREF ::= '<' ([^#x00-#x20<>"{}|^`\] | UCHAR)* '>' // #x00=NULL #01-#x1F=control codes #x20=space
-     * @property {jazzHands.parser.Data} data
+     * @property {blocks.parser.Data} data
      * @return {RdfJs.Node | Null}
      */
     function iriRef(data) {
