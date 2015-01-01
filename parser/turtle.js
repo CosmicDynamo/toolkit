@@ -30,7 +30,7 @@ define([
     "dojo/_base/Deferred",
     "dojo/when",
     "RdfJs/Environment",
-    "blocks/parser/Data",
+    "RdfJs/parser/Data",
     "blocks/parser/range",
     "blocks/parser/required",
     "blocks/parser/hasChar",
@@ -56,10 +56,13 @@ define([
     "RdfJs/parser/bNode",
     "./sparql/pnPrefix",
     "./sparql/pNameNs",
+    "./sparql/prefixDecl",
+    "blocks/parser/find",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
     , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, baseDecl, langTag, numeric, block
-    , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNode, pnPrefix, pNameNs) {
+    , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNode, pnPrefix, pNameNs, sparqlPrefix
+    , find) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -130,14 +133,15 @@ define([
                     whiteSpace(input);
                     return triples;
                 });
-            } else {
-                whiteSpace(input); //Clean up potential trailing space
-                return r;
             }
+            return when(r, function (done) {
+                whiteSpace(input);
+                return done;
+            });
         },
         directive: function (input) {
             //[3]	directive	::=	prefixID | base | sparqlPrefix | sparqlBase
-            return this.prefixId(input) || this.base(input) || this.sPrefix(input) || baseDecl(input);
+            return find(input, [this.prefixId.bind(this), this.base.bind(this), sparqlPrefix, baseDecl]);
         },
         prefixId: function (input) {
             //[4]	prefixID	::=	'@prefix' PNAME_NS IRIREF '.'
@@ -149,7 +153,7 @@ define([
                 var iri = required(iriRef(input), key, "iri");
                 required(hasChar(input, ".", false, true), key, ".");
 
-                input.setPrefix(pfx, iri.toString());
+                input.prefixMap.set(pfx, iri.toString());
             }
             return key;
         },
@@ -161,19 +165,6 @@ define([
                 var iri = required(iriRef(input), key, "iri");
                 input.base = iri.toString();
                 required(hasChar(input, ".", false, true), key, ".");
-            }
-            return key;
-        },
-        sPrefix: function (input) {
-            //[6s]	sparqlPrefix	::=	"PREFIX" PNAME_NS IRIREF
-            var key = keyWord(input, "prefix", false, true);
-            if (key) {
-                whiteSpace(input);
-                var pfx = required(pNameNs(input), key, "prefix name");
-                whiteSpace(input);
-                var iri = required(iriRef(input), key, "iri");
-
-                input.setPrefix(pfx, iri.toString());
             }
             return key;
         },
@@ -303,7 +294,7 @@ define([
                 input.pos = start;
                 return null;
             }
-            var exp = input.resolve(value);
+            var exp = input.prefixMap.resolve(value);
             if (exp === value){
                 throw { message: "Prefix not supplied: " + value.split(":")[0]};
             }
