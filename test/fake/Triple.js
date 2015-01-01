@@ -9,12 +9,13 @@ define([
      * @mixes qasht._Fake
      */
     var Triple = declare([_Fake], {
-        constructor: function (params) {
+        postscript: function (subject, predicate, object) {
+            this.inherited(arguments);
             var test = this.test;
 
-            this.subject = new Node(params.subject, test);
-            this.predicate = new Node(params.predicate, test);
-            this.object = new Node(params.object, test);
+            this.subject = new Node(subject.subject || subject, test);
+            this.predicate = new Node(subject.predicate || predicate, test);
+            this.object = new Node(subject.object || object, test);
 
             test.assertIsObject(this.subject);
             test.assertIsObject(this.predicate);

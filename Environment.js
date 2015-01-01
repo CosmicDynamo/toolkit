@@ -20,14 +20,11 @@ define([
         },
         createLiteral: function (value, language, datatype) {
             /* http://www.w3.org/TR/rdf-interfaces/#widl-RDFEnvironment-createLiteral-Literal-DOMString-value-DOMString-language-NamedNode-datatype */
-            if (lang.isString(value)){
-                value = {
-                    value: value,
-                    language: language,
-                    datatype: datatype
-                }
+            if (lang.isObject(value)) {
+                language = value.language;
+                datatype = value.datatype;
             }
-            return new lNode(value);
+            return new lNode(value, language, datatype);
         },
         createTriple: function (s, p, o) {
             /* http://www.w3.org/TR/rdf-interfaces/#widl-RDFEnvironment-createTriple-Triple-RDFNode-subject-RDFNode-predicate-RDFNode-object */
@@ -83,21 +80,6 @@ define([
                 map.addAll(this.prefixes);
             }
             return map;
-        },
-        toContext: function(vocab){
-            var ctx = {};
-            Object.keys(this.prefixes.values).forEach(function(pfx){
-                var val = this.resolve(pfx + ":");
-                if (pfx === vocab){
-                    ctx["@vocab"] = val;
-                }else {
-                    ctx[pfx] = val;
-                }
-            }.bind(this));
-            Object.keys(this.terms.values).forEach(function(term){
-                ctx[term] = this.resolve(term);
-            }.bind(this));
-            return ctx;
         }
     });
 });

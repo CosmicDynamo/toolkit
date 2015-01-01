@@ -56,21 +56,6 @@ define([
 
                     test.complete();
                 }
-            },
-            {
-                name: "null Value creates bNode with new id",
-                exec: function (test) {
-                    var out = new Node(null);
-                    var out2 = new Node(undefined);
-                    var out3 = new Node("");
-
-                    test.assertTrue(lang.isObject(out));
-                    test.assertEqual("BlankNode", out.interfaceName);
-                    test.assertEqual("BlankNode", out2.interfaceName);
-                    test.assertNotEqual("BlankNode", out3.interfaceName);
-
-                    test.complete();
-                }
             }
         ]
     });

@@ -40,6 +40,13 @@ define([
         predicate: null,
         object: null,
         Node: null,
+        constructor: function (subject, predicate, object) {
+            if (arguments.length == 3) {
+                this.set("subject", subject);
+                this.set("predicate", predicate);
+                this.set("object", object);
+            }
+        },
         postscript: function () {
             this.inherited(arguments);
 

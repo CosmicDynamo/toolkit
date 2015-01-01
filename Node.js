@@ -8,42 +8,27 @@ define([
     "./parser/langTag",
     "./parser/iriRef",
     "./node/Literal",
-    "./node/Blank"
-], function (lang, Data, string, langTag, iriRef, lNode, bNode) {
+    "./parser/bNodeLabel"
+], function (lang, Data, string, langTag, iriRef, lNode, bNodeLabel) {
     return function (value) {
-        if (value == null){
-            return new bNode();
+        var data = new Data({
+            input: value
+        });
+
+        var str = string(data);
+        if (str != null) {
+            var datatype, language;
+
+            if (value[data.pos] == '^' && value[data.pos + 1] == '^') {
+                data.pos += 2;
+                datatype = iriRef(data).toString();
+            }
+
+            language = langTag(data);
+
+            return new lNode(str, language, datatype);
         }
 
-        if (lang.isString(value)) {
-            var data = new Data({
-                input: value
-            });
-            if (/^_\:/.test(value)) {
-                return bNode(value.substr(2));
-            }
-
-            var str = string(data);
-            if (str != null) {
-                var datatype, language;
-
-                if (value[data.pos] == '^' && value[data.pos + 1] == '^'){
-                    data.pos += 2;
-                    datatype = iriRef(data).toString();
-                }
-
-                language = langTag(data);
-
-                return new lNode(str, language, datatype);
-            }
-
-            if (/^[$|?]/.test(value)) {
-                return new vNode(value.substr(1));
-            }
-
-            return iriRef(data);
-        }
-
-        return null;
+        return iriRef(data) || bNodeLabel(data);
     }
 });

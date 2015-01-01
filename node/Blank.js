@@ -24,31 +24,29 @@
  * @module RdfJs.node.Blank
  */
 define([
+    "dojo/_base/declare",
     "./_Node",
     "blocks/genId"
-], function (_Node, genId) {
+], function (declare, _Node, genId) {
     /**
      * @class RdfJs.node.Blank
      * @see http://www.w3.org/TR/rdf-interfaces/#idl-def-BlankNode
      */
-    return function (params) {
-        var bNode = new _Node(params);
-        bNode.interfaceName = "BlankNode";
-        bNode.type = 'blank node';
-        bNode.toString = function () {
-            /* http://www.w3.org/TR/rdf-interfaces/#widl-RDFNode-toString-DOMString */
+    return declare([_Node], {
+        interfaceName: "BlankNode",
+        constructor: function () {
+            var value = this.nominalValue || genId();
+            if (value.indexOf("_:") === 0) {
+                value = value.substr(2);
+            }
+            this.nominalValue = value;
+        },
+        /**
+         * @see http://www.w3.org/TR/rdf-interfaces/#widl-RDFNode-toString-DOMString
+         * @return {string}
+         */
+        toString: function () {
             return "_:" + this.nominalValue;
-        };
-
-        var v = bNode.nominalValue || genId();
-        if (v.indexOf("_:") === 0) {
-            v = v.substr(2);
         }
-        bNode.nominalValue = v;
-
-        /* JSON-LD support */
-        bNode.value = bNode.toString();
-
-        return bNode;
-    };
+    });
 });

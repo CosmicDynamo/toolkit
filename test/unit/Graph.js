@@ -58,7 +58,11 @@ define([
                 name: "remove(Triple): returns the graph instance it was called on",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-add-Graph-Triple-triple",
                 exec: function (test) {
-                    var input = new Triple({subject: "<urn:Hello>", prediate: "<urn:World>", object: "\"!!!\"^^<xsd:string>"}, test);
+                    var input = new Triple({
+                        subject: "<urn:Hello>",
+                        predicate: "<urn:World>",
+                        object: "\"!!!\"^^<xsd:string>"
+                    }, test);
                     var output = test.graph.remove(input);
 
                     test.assertEqual(test.graph, output);

@@ -42,7 +42,7 @@ define([
                 exec: function (test) {
                     var left = new _Node("Hello");
                     left.interfaceName = "World";
-                    var match = new _Node({value: "Hello"});
+                    var match = new _Node({nominalValue: "Hello"});
                     match.interfaceName = "World";
                     var diff1 = new _Node("World");
                     diff1.interfaceName = "World";
