@@ -60,7 +60,7 @@ define([
     "blocks/parser/find",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
-    , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, baseDecl, langTag, numeric, block
+    , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, sparqlBase, langTag, numeric, block
     , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNode, pnPrefix, pNameNs, sparqlPrefix
     , find) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
@@ -141,7 +141,7 @@ define([
         },
         directive: function (input) {
             //[3]	directive	::=	prefixID | base | sparqlPrefix | sparqlBase
-            return find(input, [this.prefixId.bind(this), this.base.bind(this), sparqlPrefix, baseDecl]);
+            return find(input, [this.prefixId.bind(this), this.base.bind(this), sparqlPrefix, sparqlBase]);
         },
         prefixId: function (input) {
             //[4]	prefixID	::=	'@prefix' PNAME_NS IRIREF '.'

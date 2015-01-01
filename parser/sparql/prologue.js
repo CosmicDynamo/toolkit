@@ -21,35 +21,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.prefixDecl
+ * @module $<class>$
  */
 define([
-    "blocks/require",
-    "blocks/parser/required",
-    "blocks/parser/keyWord"
-], function (require, required, keyWord) {
+    "blocks/parser/range",
+    "./baseDecl",
+    "./prefixDecl"
+], function (range, baseDecl, prefixDecl) {
     /**
-     * [6] PrefixDecl ::= 'PREFIX' PNAME_NS IRIREF
-     * @see http://www.w3.org/TR/sparql11-query/#rPrefixDecl
+     * [4] Prologue ::= ( BaseDecl | PrefixDecl )*
+     * @see http://www.w3.org/TR/sparql11-query/#rPrologue
      * @property {jazzHands.parser.Data} data
      * @return {String | Null}
      */
-    function prefixDecl(data) {
-        //[6s]	sparqlPrefix	::=	"PREFIX" PNAME_NS IRIREF
-        var key = keyWord(data, "prefix", false, true);
-        if (key) {
-            return require(["jazzHands/parser/sparql/pNameNs", "RdfJs/parser/iriRef"], function (pNameNs, iriRef) {
-                data.whiteSpace(data);
-                var pfx = required(pNameNs(data), "PREFIX missing name");
-                data.whiteSpace(data);
-                var iri = required(iriRef(data), "PREFIX missing IRI");
-
-                data.prefixMap.set(pfx, iri.toString());
-                return iri;
-            });
-        }
-        return null;
+    function prologue(data) {
+        return range(data, 0, -1, function () {
+            return prefixDecl(data) || baseDecl(data);
+        });
     }
 
-    return prefixDecl;
+    return prologue;
 });

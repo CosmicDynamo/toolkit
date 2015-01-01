@@ -25,9 +25,8 @@
  */
 define([
     "blocks/parser/keyWord",
-    "blocks/parser/required",
-    "RdfJs/parser/iriRef"
-], function (keyWord, required, iriRef) {
+    "blocks/require"
+], function (keyWord, require) {
     /**
      * [5] BaseDecl ::= 'BASE' IRIREF
      * @see http://www.w3.org/TR/sparql11-query/#rBaseDecl
@@ -37,11 +36,17 @@ define([
     function baseDecl(data){
         var key = keyWord(data, "base");
         if (key){
-            var base = required(iriRef(data), "BASE missing IRIREF");
-            data.base = base.toString();
-            return base;
+            return require([
+                "blocks/parser/required",
+                "RdfJs/parser/iriRef"
+            ], function (required, iriRef) {
+                var base = required(iriRef(data), "BASE missing IRIREF");
+                data.base = base.toString();
+
+                return base;
+            });
         }
-        return key;
+        return null;
     }
     return baseDecl;
 });
