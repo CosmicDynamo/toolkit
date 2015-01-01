@@ -21,14 +21,26 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.path
+ * @module jazzHands.parser.sparql.varName
  */
 define([
-    "./pathAlternative"
-], function (pathAlternative) {
+    "RdfJs/parser/pnCharsU",
+    "blocks/parser/range",
+    "blocks/parser/matchChar"
+], function (pnCharsU, range, matchChar) {
     /**
-     * [88] Path ::= PathAlternative
-     * @see http://www.w3.org/TR/sparql11-query/#rPath
+     * [166] VARNAME ::= ( PN_CHARS_U | [0-9] ) ( PN_CHARS_U | [0-9] | #x00B7 | [#x0300-#x036F] | [#x203F-#x2040] )*
+     * @see http://www.w3.org/TR/sparql11-query/#rVARNAMEh
      */
-    return pathAlternative;
+    function varName(data) {
+        var varName = pnCharsU(data) || matchChar(data, "[0-9]");
+        if (varName) {
+            varName += range(data, 0, -1, function () {
+                return pnCharsU(data) || matchChar(data, "[0-9]|[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]")
+            }).join("");
+        }
+        return varName;
+    }
+
+    return varName;
 });
