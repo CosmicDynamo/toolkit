@@ -8,8 +8,8 @@ define([
     "./parser/langTag",
     "./parser/iriRef",
     "./node/Literal",
-    "./parser/bNodeLabel"
-], function (lang, Data, string, langTag, iriRef, lNode, bNodeLabel) {
+    "./parser/bNode"
+], function (lang, Data, string, langTag, iriRef, lNode, bNode) {
     return function (value) {
         var data = new Data({
             input: value
@@ -29,6 +29,6 @@ define([
             return new lNode(str, language, datatype);
         }
 
-        return iriRef(data) || bNodeLabel(data);
+        return iriRef(data) || bNode(data);
     }
 });
