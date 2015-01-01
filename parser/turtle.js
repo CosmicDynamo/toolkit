@@ -55,10 +55,11 @@ define([
     "RdfJs/parser/pnChars",
     "RdfJs/parser/bNode",
     "./sparql/pnPrefix",
+    "./sparql/pNameNs",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
     , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, baseDecl, langTag, numeric, block
-    , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNode, pnPrefix) {
+    , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNode, pnPrefix, pNameNs) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -143,12 +144,12 @@ define([
             var key = keyWord(input, "@prefix", true, true);
             if (key) {
                 whiteSpace(input);
-                var pfx = required(this.pNameNs(input), key, "prefix name");
+                var pfx = required(pNameNs(input), key, "prefix name");
                 whiteSpace(input);
                 var iri = required(iriRef(input), key, "iri");
                 required(hasChar(input, ".", false, true), key, ".");
 
-                input.setPrefix(pfx.substr(0, pfx.length - 1), iri.toString());
+                input.setPrefix(pfx, iri.toString());
             }
             return key;
         },
@@ -168,11 +169,11 @@ define([
             var key = keyWord(input, "prefix", false, true);
             if (key) {
                 whiteSpace(input);
-                var pfx = required(this.pNameNs(input), key, "prefix name");
+                var pfx = required(pNameNs(input), key, "prefix name");
                 whiteSpace(input);
                 var iri = required(iriRef(input), key, "iri");
 
-                input.setPrefix(pfx.substr(0, pfx.length - 1), iri.toString());
+                input.setPrefix(pfx, iri.toString());
             }
             return key;
         },
@@ -297,7 +298,7 @@ define([
             //[136s]	PrefixedName	::=	PNAME_LN | PNAME_NS
             var start = input.pos;
             whiteSpace(input);
-            var value = this.pNameLn(input) || this.pNameNs(input);
+            var value = this.pNameLn(input); //There is no case for pNameNs that would not already be returned by pNameLn
             if (value == null) {
                 input.pos = start;
                 return null;
@@ -308,21 +309,11 @@ define([
             }
             return NamedNode(exp);
         },
-        pNameNs: function (input) {
-            //[139s]	PNAME_NS	::=	PN_PREFIX? ':'
-            var start = input.pos;
-            var pfx = pnPrefix(input) || "";
-            if (hasChar(input, ":")) {
-                return pfx + ":";
-            }
-            input.pos = start;
-            return null;
-        },
         pNameLn: function (input) {
             //[140s]	PNAME_LN	::=	PNAME_NS PN_LOCAL
-            var pfx = this.pNameNs(input);
-            if (pfx) {
-                return pfx + (this.pnLocal(input) || "");
+            var pfx = pNameNs(input);
+            if (pfx !== null) {
+                return pfx + ':' + (this.pnLocal(input) || "");
             }
             return null;
         },

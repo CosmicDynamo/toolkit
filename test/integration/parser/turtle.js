@@ -22,7 +22,7 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            "<>": false
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#default_namespace_IRI>": false
         },
         excludeById: {},
         "rdf-test:TestTurtleNegativeSyntax": function (params) {
