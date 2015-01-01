@@ -21,28 +21,30 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.varName
+ * @module jazzHands.parser.sparql.pnPrefix
  */
 define([
-    "RdfJs/parser/pnCharsU",
+    "RdfJs/parser/pnCharsBase",
+    "RdfJs/parser/pnChars",
     "blocks/parser/range",
-    "blocks/parser/matchChar"
-], function (pnCharsU, range, matchChar) {
+    "blocks/parser/hasChar"
+], function (pnCharsBase, pnChars, range, hasChar) {
     /**
-     * [166] VARNAME ::= ( PN_CHARS_U | [0-9] ) ( PN_CHARS_U | [0-9] | #x00B7 | [#x0300-#x036F] | [#x203F-#x2040] )*
-     * @see http://www.w3.org/TR/sparql11-query/#rVARNAMEh
+     * [168] PN_PREFIX ::= PN_CHARS_BASE ((PN_CHARS|'.')* PN_CHARS)?
+     * @see http://www.w3.org/TR/sparql11-query/#rPN_PREFIX
      * @property {jazzHands.parser.Data} data
      * @return {String | Null}
      */
-    function varName(data) {
-        var varName = pnCharsU(data) || matchChar(data, "[0-9]");
-        if (varName) {
-            varName += range(data, 0, -1, function () {
-                return pnCharsU(data) || matchChar(data, "[0-9]|[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]")
+    function pnPrefix(data) {
+        var prefix = pnCharsBase(data);
+        if (prefix) {
+            prefix += range(data, 0, -1, function () {
+                return pnChars(data) || hasChar(data, ".");
             }).join("");
+            prefix += pnChars(data) || "";
         }
-        return varName;
+        return prefix;
     }
 
-    return varName;
+    return pnPrefix;
 });

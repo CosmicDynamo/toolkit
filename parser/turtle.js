@@ -54,10 +54,11 @@ define([
     "RdfJs/parser/pnCharsU",
     "RdfJs/parser/pnChars",
     "RdfJs/parser/bNode",
+    "./sparql/pnPrefix",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
     , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, baseDecl, langTag, numeric, block
-    , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNode) {
+    , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNode, pnPrefix) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -310,7 +311,7 @@ define([
         pNameNs: function (input) {
             //[139s]	PNAME_NS	::=	PN_PREFIX? ':'
             var start = input.pos;
-            var pfx = this.pnPrefix(input) || "";
+            var pfx = pnPrefix(input) || "";
             if (hasChar(input, ":")) {
                 return pfx + ":";
             }
@@ -324,17 +325,6 @@ define([
                 return pfx + (this.pnLocal(input) || "");
             }
             return null;
-        },
-        pnPrefix: function (input) {
-            //[167s]	PN_PREFIX	::=	PN_CHARS_BASE ((PN_CHARS | '.')* PN_CHARS)?
-            var value = pnCharsBase(input);
-            if (value) {
-                value += range(input, 0, -1, function (scoped) {
-                    return pnChars(scoped) || hasChar(scoped, ".");
-                }).join("");
-                value += pnChars(input) || "";
-            }
-            return value;
         },
         pnLocal: function (input) {
             //[168s]	PN_LOCAL	::=	(PN_CHARS_U | ':' | [0-9] | PLX) ((PN_CHARS | '.' | ':' | PLX)* (PN_CHARS | ':' | PLX))?
