@@ -77,7 +77,11 @@ define([
             });
             var done = originalPromise;
             if (fn){
-                done = fn.apply(this, args);
+                try {
+                    done = fn.apply(this, args);
+                } catch (err) {
+                    callDone.reject(err);
+                }
             }
             when(done, callDone.resolve, callDone.reject, callDone.progress);
         };
