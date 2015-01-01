@@ -58,13 +58,12 @@ define([
     "./sparql/pNameNs",
     "./sparql/prefixDecl",
     "blocks/parser/find",
-    "./sparql/percent",
-    "./sparql/pnLocalEsc",
+    "./sparql/plx",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
     , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, sparqlBase, langTag, numeric, block
     , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNode, pnPrefix, pNameNs, sparqlPrefix
-    , find, percent, pnLocalEsc) {
+    , find, plx) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -313,19 +312,19 @@ define([
         pnLocal: function (input) {
             //[168s]	PN_LOCAL	::=	(PN_CHARS_U | ':' | [0-9] | PLX) ((PN_CHARS | '.' | ':' | PLX)* (PN_CHARS | ':' | PLX))?
             var start = input.pos, idx, ch;
-            var value = pnCharsU(input) || matchChar(input, "[:0-9]") || this.plx(input);
+            var value = pnCharsU(input) || matchChar(input, "[:0-9]") || plx(input);
 
             if (value) {
                 value += range(input, 0, -1, function () {
                     idx = input.pos;
-                    ch = pnChars(input) || matchChar(input, "[:.]") || this.plx(input);
+                    ch = pnChars(input) || matchChar(input, "[:.]") || plx(input);
                     if (ch !== null) {
                         start = idx;
                     }
                     return ch;
-                }.bind(this)).join("");
+                }).join("");
                 idx = input.pos;
-                ch = pnChars(input) || hasChar(input, ":") || this.plx(input);
+                ch = pnChars(input) || hasChar(input, ":") || plx(input);
                 if (ch !== null) {
                     start = idx;
                 }
@@ -336,10 +335,6 @@ define([
                 }
             }
             return value;
-        },
-        plx: function (input) {
-            //[169s]	PLX	::=	PERCENT | PN_LOCAL_ESC
-            return find(input, [percent, pnLocalEsc]);
         },
         _genTriples: function (input, subject, pObjectList) {
             var has = false;
