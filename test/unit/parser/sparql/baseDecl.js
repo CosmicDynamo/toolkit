@@ -36,30 +36,30 @@ define([
                 name: "BASE keyword causes registration of IRI is a base prefix",
                 input: "BASE <http://example.com/>",
                 exec: function (test) {
-                    var out = baseDecl(test.data);
+                    test.whenResolved(baseDecl(test.data), function (out) {
+                        testNodeApi(out, test);
+                        test.assertEqual("<http://example.com/>", out.toNT());
 
-                    testNodeApi(out, test);
-                    test.assertEqual("<http://example.com/>", out.toNT());
+                        test.assertEqual(out.toString(), test.data.base);
 
-                    test.assertEqual(out.toString(), test.data.base);
-
-                    test.complete();
+                        test.complete();
+                    });
                 }
             },
             {
                 name: "BASE keyword requires IRI as next value",
                 input: "BASE _:Invalid",
                 exec: function (test) {
-
                     try {
-                        baseDecl(test.data);
-                        test.assertFail("Unreachable Code");
+                        return test.whenRejected(baseDecl(test.data), function (out) {
+                            test.assertIsObject(out);
+                            test.complete();
+                        });
                     }
                     catch(err){
                         test.assertIsObject(err);
+                        test.complete();
                     }
-
-                    test.complete();
                 }
             },
             {

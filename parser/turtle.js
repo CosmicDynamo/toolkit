@@ -58,11 +58,12 @@ define([
     "./sparql/pNameNs",
     "./sparql/prefixDecl",
     "blocks/parser/find",
+    "./sparql/percent",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
     , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, sparqlBase, langTag, numeric, block
     , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNode, pnPrefix, pNameNs, sparqlPrefix
-    , find) {
+    , find, percent) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -311,15 +312,12 @@ define([
         pnLocal: function (input) {
             //[168s]	PN_LOCAL	::=	(PN_CHARS_U | ':' | [0-9] | PLX) ((PN_CHARS | '.' | ':' | PLX)* (PN_CHARS | ':' | PLX))?
             var start = input.pos, idx, ch;
-            var value = pnCharsU(input) || hasChar(input, ":") || matchChar(input, "[0-9]") || this.plx(input);
-            if (value === ".") {
-                value = null;
-                input.pos = start;
-            }
+            var value = pnCharsU(input) || matchChar(input, "[:0-9]") || this.plx(input);
+
             if (value) {
-                value += range(input, 0, -1, function (scoped) {
-                    idx = scoped.pos;
-                    ch = pnChars(scoped) || hasAnyChar(scoped, [".", ":"]) || this.plx(scoped);
+                value += range(input, 0, -1, function () {
+                    idx = input.pos;
+                    ch = pnChars(input) || matchChar(input, "[:.]") || this.plx(input);
                     if (ch !== null) {
                         start = idx;
                     }
@@ -340,14 +338,7 @@ define([
         },
         plx: function (input) {
             //[169s]	PLX	::=	PERCENT | PN_LOCAL_ESC
-            return this.percent(input) || this.pnLocalEsc(input);
-        },
-        percent: function (input) {
-            //[170s]	PERCENT	::=	'%' HEX HEX
-            if (hasChar(input, "%")) {
-                return "%" + required(range(input, 2, 2, hex), "%", "2 Hex digets").join("");
-            }
-            return null;
+            return find(input, [percent, this.pnLocalEsc.bind(this)]);
         },
         pnLocalEsc: function (input) {
             //[172s]	PN_LOCAL_ESC	::=	'\' ('_' | '~' | '.' | '-' | '!' | '$' | '&' | "'" | '(' | ')' | '*' | '+' | ',' | ';' | '=' | '/' | '?' | '#' | '@' | '%')
