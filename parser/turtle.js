@@ -34,15 +34,12 @@ define([
     "blocks/parser/range",
     "blocks/parser/required",
     "blocks/parser/hasChar",
-    "blocks/parser/matchChar",
-    "blocks/parser/hasAnyChar",
     "RdfJs/parser/whiteSpace",
     "blocks/parser/keyWord",
     "RdfJs/parser/rdfType",
     "../RdfType",
     "./sparql/booleanLiteral",
     "RdfJs/parser/iriRef",
-    "blocks/parser/hex",
     "./sparql/baseDecl",
     "RdfJs/parser/langTag",
     "RdfJs/parser/numeric",
@@ -50,20 +47,15 @@ define([
     "RdfJs/parser/string",
     "RdfJs/node/Literal",
     "RdfJs/node/Named",
-    "RdfJs/parser/pnCharsBase",
-    "RdfJs/parser/pnCharsU",
-    "RdfJs/parser/pnChars",
     "RdfJs/parser/bNode",
-    "./sparql/pnPrefix",
     "./sparql/pNameNs",
     "./sparql/prefixDecl",
     "blocks/parser/find",
-    "./sparql/pnLocal",
+    "./sparql/pNameLn",
     "polyfill/has!String.codePointAt"
-], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
-    , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, sparqlBase, langTag, numeric, block
-    , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNode, pnPrefix, pNameNs, sparqlPrefix
-    , find, pnLocal) {
+], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, whiteSpace, keyWord
+    , rdfType, RdfType, booleanLiteral, iriRef, sparqlBase, langTag, numeric, block, string, LiteralNode
+    , NamedNode, bNode, pNameNs, sparqlPrefix, find, pNameLn) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -290,7 +282,7 @@ define([
             //[136s]	PrefixedName	::=	PNAME_LN | PNAME_NS
             var start = input.pos;
             whiteSpace(input);
-            var value = this.pNameLn(input); //There is no case for pNameNs that would not already be returned by pNameLn
+            var value = pNameLn(input); //There is no case for pNameNs that would not already be returned by pNameLn
             if (value == null) {
                 input.pos = start;
                 return null;
@@ -300,14 +292,6 @@ define([
                 throw { message: "Prefix not supplied: " + value.split(":")[0]};
             }
             return NamedNode(exp);
-        },
-        pNameLn: function (input) {
-            //[140s]	PNAME_LN	::=	PNAME_NS PN_LOCAL
-            var pfx = pNameNs(input);
-            if (pfx !== null) {
-                return pfx + ':' + (pnLocal(input) || "");
-            }
-            return null;
         },
         _genTriples: function (input, subject, pObjectList) {
             var has = false;
