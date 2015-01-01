@@ -53,10 +53,11 @@ define([
     "RdfJs/node/Named",
     "RdfJs/parser/pnCharsBase",
     "RdfJs/parser/pnCharsU",
+    "RdfJs/parser/pnChars",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
-    , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex
-    , baseDecl, langTag, numeric, anon, block, string, LiteralNode, NamedNode, pnCharsBase, pnCharsU) {
+    , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, baseDecl, langTag, numeric, anon, block
+    , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -334,27 +335,23 @@ define([
             if (keyWord(input, "_:")) {
                 value = pnCharsU(input) || matchChar(input, "[0-9]");
                 value += range(input, 0, -1, function (scoped) {
-                    return this.pnChars(scoped) || hasChar(scoped, ".");
-                }.bind(this)).join("");
-                value = "_:" + value + (this.pnChars(input) || "");
+                    return pnChars(scoped) || hasChar(scoped, ".");
+                }).join("");
+                value = "_:" + value + (pnChars(input) || "");
                 if (value[value.length - 1] === "."){
                     throw { message: "Blank Node cannot end in '.'"};
                 }
             }
             return value;
         },
-        pnChars: function (input) {
-            //[166s]	PN_CHARS	::=	PN_CHARS_U | '-' | [0-9] | #x00B7 | [#x0300-#x036F] | [#x203F-#x2040]
-            return pnCharsU(input) || hasChar(input, "-") || matchChar(input, "[0-9]|[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]");
-        },
         pnPrefix: function (input) {
             //[167s]	PN_PREFIX	::=	PN_CHARS_BASE ((PN_CHARS | '.')* PN_CHARS)?
             var value = pnCharsBase(input);
             if (value) {
                 value += range(input, 0, -1, function (scoped) {
-                    return this.pnChars(scoped) || hasChar(scoped, ".");
-                }.bind(this)).join("");
-                value += this.pnChars(input) || "";
+                    return pnChars(scoped) || hasChar(scoped, ".");
+                }).join("");
+                value += pnChars(input) || "";
             }
             return value;
         },
@@ -369,14 +366,14 @@ define([
             if (value) {
                 value += range(input, 0, -1, function (scoped) {
                     idx = scoped.pos;
-                    ch = this.pnChars(scoped) || hasAnyChar(scoped, [".", ":"]) || this.plx(scoped);
+                    ch = pnChars(scoped) || hasAnyChar(scoped, [".", ":"]) || this.plx(scoped);
                     if (ch !== null) {
                         start = idx;
                     }
                     return ch;
                 }.bind(this)).join("");
                 idx = input.pos;
-                ch = this.pnChars(input) || hasChar(input, ":") || this.plx(input);
+                ch = pnChars(input) || hasChar(input, ":") || this.plx(input);
                 if (ch !== null) {
                     start = idx;
                 }
