@@ -54,10 +54,11 @@ define([
     "RdfJs/parser/pnCharsBase",
     "RdfJs/parser/pnCharsU",
     "RdfJs/parser/pnChars",
+    "RdfJs/parser/bNodeLabel",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
     , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, baseDecl, langTag, numeric, anon, block
-    , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars) {
+    , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNodeLabel) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -309,7 +310,7 @@ define([
         },
         bNode: function (input) {
             //[137s]	BlankNode	::=	BLANK_NODE_LABEL | ANON
-            return this.bNodeLabel(input) || anon(input);
+            return bNodeLabel(input) || anon(input);
         },
         pNameNs: function (input) {
             //[139s]	PNAME_NS	::=	PN_PREFIX? ':'
@@ -328,21 +329,6 @@ define([
                 return pfx + (this.pnLocal(input) || "");
             }
             return null;
-        },
-        bNodeLabel: function (input) {
-            //[141s]	BLANK_NODE_LABEL	::=	'_:' (PN_CHARS_U | [0-9]) ((PN_CHARS | '.')* PN_CHARS)?
-            var value = null;
-            if (keyWord(input, "_:")) {
-                value = pnCharsU(input) || matchChar(input, "[0-9]");
-                value += range(input, 0, -1, function (scoped) {
-                    return pnChars(scoped) || hasChar(scoped, ".");
-                }).join("");
-                value = "_:" + value + (pnChars(input) || "");
-                if (value[value.length - 1] === "."){
-                    throw { message: "Blank Node cannot end in '.'"};
-                }
-            }
-            return value;
         },
         pnPrefix: function (input) {
             //[167s]	PN_PREFIX	::=	PN_CHARS_BASE ((PN_CHARS | '.')* PN_CHARS)?

@@ -22,7 +22,7 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            "<>": false
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#labeled_blank_node_with_PN_CHARS_BASE_character_boundaries>": true
         },
         excludeById: {},
         "rdf-test:TestTurtleNegativeSyntax": function (params) {
