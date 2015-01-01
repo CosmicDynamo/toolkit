@@ -58,12 +58,12 @@ define([
     "./sparql/pNameNs",
     "./sparql/prefixDecl",
     "blocks/parser/find",
-    "./sparql/plx",
+    "./sparql/pnLocal",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
     , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, sparqlBase, langTag, numeric, block
     , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNode, pnPrefix, pNameNs, sparqlPrefix
-    , find, plx) {
+    , find, pnLocal) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -305,36 +305,9 @@ define([
             //[140s]	PNAME_LN	::=	PNAME_NS PN_LOCAL
             var pfx = pNameNs(input);
             if (pfx !== null) {
-                return pfx + ':' + (this.pnLocal(input) || "");
+                return pfx + ':' + (pnLocal(input) || "");
             }
             return null;
-        },
-        pnLocal: function (input) {
-            //[168s]	PN_LOCAL	::=	(PN_CHARS_U | ':' | [0-9] | PLX) ((PN_CHARS | '.' | ':' | PLX)* (PN_CHARS | ':' | PLX))?
-            var start = input.pos, idx, ch;
-            var value = pnCharsU(input) || matchChar(input, "[:0-9]") || plx(input);
-
-            if (value) {
-                value += range(input, 0, -1, function () {
-                    idx = input.pos;
-                    ch = pnChars(input) || matchChar(input, "[:.]") || plx(input);
-                    if (ch !== null) {
-                        start = idx;
-                    }
-                    return ch;
-                }).join("");
-                idx = input.pos;
-                ch = pnChars(input) || hasChar(input, ":") || plx(input);
-                if (ch !== null) {
-                    start = idx;
-                }
-
-                if (value[value.length - 1] === ".") {
-                    input.pos = start;
-                    value = value.substr(0, value.length - 1);
-                }
-            }
-            return value;
         },
         _genTriples: function (input, subject, pObjectList) {
             var has = false;
