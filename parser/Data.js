@@ -36,13 +36,12 @@ define([
     return declare([Stateful], {
         /** @property {String} the input string being parsed */
         input: null,
-        /** @property {jazzHands.rdf.PrefixMap} a map to be used for resolving curies */
-        prefixMap: null,
+        /** @property {Function} function that skips over any whitSpace */
+        whiteSpace: null,
         /** @property {Number} the current parser location*/
         pos: null,
         constructor: function () {
-            this.prefixMap = new PrefixMap();
-            this.pos = 0
+            this.pos = 0;
         },
         getCh: function () {
             return this.input[this.pos];
