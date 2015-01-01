@@ -46,7 +46,6 @@ define([
     "./sparql/baseDecl",
     "RdfJs/parser/langTag",
     "RdfJs/parser/numeric",
-    "jazzHands/parser/sparql/anon",
     "blocks/parser/block",
     "RdfJs/parser/string",
     "RdfJs/node/Literal",
@@ -54,11 +53,11 @@ define([
     "RdfJs/parser/pnCharsBase",
     "RdfJs/parser/pnCharsU",
     "RdfJs/parser/pnChars",
-    "RdfJs/parser/bNodeLabel",
+    "RdfJs/parser/bNode",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
-    , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, baseDecl, langTag, numeric, anon, block
-    , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNodeLabel) {
+    , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, baseDecl, langTag, numeric, block
+    , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNode) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -222,7 +221,7 @@ define([
         },
         subject: function (input) {
             //[10]	subject	::=	iri | BlankNode | collection
-            return this.iri(input) || this.bNode(input) || this.collection(input);
+            return this.iri(input) || bNode(input) || this.collection(input);
         },
         predicate: function (input) {
             //[11]	predicate	::=	iri
@@ -232,7 +231,7 @@ define([
             //[12]	object	::=	iri | BlankNode | collection | blankNodePropertyList | literal
             var start = input.pos;
             whiteSpace(input);
-            var out = this.iri(input) || this.bNode(input) || this.collection(input) || this.bNodePropList(input) || this.literal(input);
+            var out = this.iri(input) || bNode(input) || this.collection(input) || this.bNodePropList(input) || this.literal(input);
             if (!out) {
                 input.pos = start;
             }
@@ -256,13 +255,13 @@ define([
             //[15]	collection	::=	'(' object* ')'
             var list = block(input, '(', ')', 0, -1, this.object.bind(this));
             if (list) {
-                var bNode = input.createBlankNode;
+                var BlankNode = input.createBlankNode;
                 var Triple = input.createTriple;
 
                 var rdfFirst = RdfType("first");
                 var rdfRest = RdfType("rest");
 
-                var subject = bNode();
+                var subject = BlankNode();
                 var rest = RdfType("nil");
                 for (var idx = list.length - 1; idx > -1; idx--) {
                     input.graph.addAll([
@@ -270,7 +269,7 @@ define([
                         Triple(subject, rdfRest, rest)
                     ]);
                     rest = subject;
-                    subject = bNode();
+                    subject = BlankNode();
                 }
                 return rest;
             }
@@ -307,10 +306,6 @@ define([
                 throw { message: "Prefix not supplied: " + value.split(":")[0]};
             }
             return NamedNode(exp);
-        },
-        bNode: function (input) {
-            //[137s]	BlankNode	::=	BLANK_NODE_LABEL | ANON
-            return bNodeLabel(input) || anon(input);
         },
         pNameNs: function (input) {
             //[139s]	PNAME_NS	::=	PN_PREFIX? ':'
