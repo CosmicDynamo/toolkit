@@ -59,11 +59,12 @@ define([
     "./sparql/prefixDecl",
     "blocks/parser/find",
     "./sparql/percent",
+    "./sparql/pnLocalEsc",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, matchChar, hasAnyChar
     , whiteSpace, keyWord, rdfType, RdfType, booleanLiteral, iriRef, hex, sparqlBase, langTag, numeric, block
     , string, LiteralNode, NamedNode, pnCharsBase, pnCharsU, pnChars, bNode, pnPrefix, pNameNs, sparqlPrefix
-    , find, percent) {
+    , find, percent, pnLocalEsc) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -338,20 +339,7 @@ define([
         },
         plx: function (input) {
             //[169s]	PLX	::=	PERCENT | PN_LOCAL_ESC
-            return find(input, [percent, this.pnLocalEsc.bind(this)]);
-        },
-        pnLocalEsc: function (input) {
-            //[172s]	PN_LOCAL_ESC	::=	'\' ('_' | '~' | '.' | '-' | '!' | '$' | '&' | "'" | '(' | ')' | '*' | '+' | ',' | ';' | '=' | '/' | '?' | '#' | '@' | '%')
-            var start = input.pos;
-            var first = matchChar(input, "\\\\");
-            if (first) {
-                var second = matchChar(input, "[_|~|\\.|\\-|!|$|&|'|\\(|\\)|\\*|\\+|,|;|=|/|\\?|#|@|%]");
-                if (second) {
-                    return second;
-                }
-            }
-            input.pos = start;
-            return null;
+            return find(input, [percent, pnLocalEsc]);
         },
         _genTriples: function (input, subject, pObjectList) {
             var has = false;
