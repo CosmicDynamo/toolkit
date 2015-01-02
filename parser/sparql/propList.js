@@ -21,30 +21,20 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.propListNotEmpty
+ * @module jazzHands.parser.sparql.propList
  */
 define([
-    "blocks/parser/range",
-    "./verb",
-    "./objectList"
-], function (range, verb, objectList) {
+    "./propListNotEmpty"
+], function (propListNotEmpty) {
     /**
-     * [77] PropertyListNotEmpty ::= Verb ObjectList ( ';' ( Verb ObjectList )? )*
-     * @see http://www.w3.org/TR/sparql11-query/#rPropertyListNotEmpty
+     * [76] PropertyList ::= PropertyListNotEmpty?
+     * @see http://www.w3.org/TR/sparql11-query/#rPropertyList
      * @property {jazzHands.parser.Data} data
      * @return {String | Null}
      */
-    function propListNotEmpty(data) {
-        return range(data, 1, -1, function () {
-            var verb = verb(data);
-            return objectList(data).map(function (object) {
-                return {
-                    predicate: verb,
-                    object: object
-                };
-            });
-        }, ";");
+    function propList(data) {
+        return propListNotEmpty(data) || [];
     }
 
-    return propListNotEmpty;
+    return propList;
 });
