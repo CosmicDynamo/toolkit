@@ -51,11 +51,11 @@ define([
     "./sparql/pNameNs",
     "./sparql/prefixDecl",
     "blocks/parser/find",
-    "./sparql/prefixedName",
+    "./sparql/iri",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, whiteSpace, keyWord
     , rdfType, RdfType, booleanLiteral, iriRef, sparqlBase, langTag, numeric, block, string, LiteralNode
-    , NamedNode, bNode, pNameNs, sparqlPrefix, find, prefixedName) {
+    , NamedNode, bNode, pNameNs, sparqlPrefix, find, iri) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -207,17 +207,17 @@ define([
         },
         subject: function (input) {
             //[10]	subject	::=	iri | BlankNode | collection
-            return this.iri(input) || bNode(input) || this.collection(input);
+            return iri(input) || bNode(input) || this.collection(input);
         },
         predicate: function (input) {
             //[11]	predicate	::=	iri
-            return this.iri(input);
+            return iri(input);
         },
         object: function (input) {
             //[12]	object	::=	iri | BlankNode | collection | blankNodePropertyList | literal
             var start = input.pos;
             whiteSpace(input);
-            var out = this.iri(input) || bNode(input) || this.collection(input) || this.bNodePropList(input) || this.literal(input);
+            var out = iri(input) || bNode(input) || this.collection(input) || this.bNodePropList(input) || this.literal(input);
             if (!out) {
                 input.pos = start;
             }
@@ -267,16 +267,12 @@ define([
             if (value != null) {
                 var dt, lang = langTag(input);
                 if (!lang && keyWord(input, "^^", false, false)) {
-                    dt = this.iri(input);
+                    dt = iri(input);
                     dt = dt && dt.toString();
                 }
                 return new LiteralNode(value, lang, dt);
             }
             return null;
-        },
-        iri: function (input) {
-            //[135s]	iri	::=	IRIREF | PrefixedName
-            return iriRef(input) || prefixedName(input);
         },
         _genTriples: function (input, subject, pObjectList) {
             var has = false;
