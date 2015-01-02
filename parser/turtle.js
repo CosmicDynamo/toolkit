@@ -51,11 +51,11 @@ define([
     "./sparql/pNameNs",
     "./sparql/prefixDecl",
     "blocks/parser/find",
-    "./sparql/pNameLn",
+    "./sparql/prefixedName",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, whiteSpace, keyWord
     , rdfType, RdfType, booleanLiteral, iriRef, sparqlBase, langTag, numeric, block, string, LiteralNode
-    , NamedNode, bNode, pNameNs, sparqlPrefix, find, pNameLn) {
+    , NamedNode, bNode, pNameNs, sparqlPrefix, find, prefixedName) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     /**
      * @class jazzHands.parser.turtle
@@ -276,22 +276,7 @@ define([
         },
         iri: function (input) {
             //[135s]	iri	::=	IRIREF | PrefixedName
-            return iriRef(input) || this.prefixName(input);
-        },
-        prefixName: function (input) {
-            //[136s]	PrefixedName	::=	PNAME_LN | PNAME_NS
-            var start = input.pos;
-            whiteSpace(input);
-            var value = pNameLn(input); //There is no case for pNameNs that would not already be returned by pNameLn
-            if (value == null) {
-                input.pos = start;
-                return null;
-            }
-            var exp = input.prefixMap.resolve(value);
-            if (exp === value){
-                throw { message: "Prefix not supplied: " + value.split(":")[0]};
-            }
-            return NamedNode(exp);
+            return iriRef(input) || prefixedName(input);
         },
         _genTriples: function (input, subject, pObjectList) {
             var has = false;
