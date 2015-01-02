@@ -21,32 +21,32 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.var
+ * @module jazzHands.query.graph.Loader
  */
 define([
-    "RdfJs/parser/hasAnyChar",
-    "RdfJs/parser/required",
-    "blocks/require/create",
-    "./varName"
-], function (hasAnyChar, required, create, varName) {
+    "dojo/_base/declare",
+    "dooj/Stateful"
+], function (declare, Stateful) {
     /**
-     * Effective ('?' | '$') VARNAME
-     *
-     * [108] Var ::= VAR1 | VAR2
-     * @see http://www.w3.org/TR/sparql11-query/#rVar
-     * [143] VAR1 ::= '?' VARNAME
-     * @see http://www.w3.org/TR/sparql11-query/#rVAR1
-     * [144] VAR2 ::= '$' VARNAME
-     * @see http://www.w3.org/TR/sparql11-query/#rVAR2
+     * Handles runtime loading of Graph data for use by the query/Graph
+     * @description If named this will return the graph in question; other-wise it will
+     * fetch the data from the 'server' using the request object provided in the query options
+     * @class jazzHands.query.graph.Loader
      */
-    function variable(data) {
-        var symbol = hasAnyChar(data, ['?', '$']);
-        if (symbol) {
-            var name = required(varName(data));
-            return create("jazzHands/query/Variable", symbol + name);
-        }
-        return null;
-    }
+    return declare([Stateful], {
+        /** @property {Boolean} - does this represen a named graph  */
+        named: null,
+        /** @property {RdfJs.node.Named} - the name of the graph in question */
+        iri: null,
+        load: function (options) {
+            if (this.named || !options.fetch) {
+                return this.iri.valueOf();
+            }
 
-    return variable;
+            return options.fetch(this.iri.valueOf(), {
+                method: "get",
+                accept: "RdfGraph"
+            });
+        }
+    });
 });
