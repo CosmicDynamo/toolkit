@@ -25,20 +25,17 @@
  */
 define([
     "dojo/_base/declare",
-    "dojo/_base/lang"
-], function (declare, lang) {
+    "dojo/Stateful"
+], function (declare, Stateful) {
     /**
      * @class jazzHands.query.Graph
      * @mixes dojo._base.declare
      */
-    return declare([], {
+    return declare([Stateful], {
         /** @property {String|String[]} Target Graph Names */
         target: null,
         /** @property {RdfJs.TripleStore} - The store being manipulated */
         tripleStore: null,
-        constructor: function (args) {
-            lang.mixin(this, args);
-        },
         /**
          * Adds a Triple to the target Graph
          * @param {RdfJs.Triple} triple - The triple being added

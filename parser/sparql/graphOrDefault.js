@@ -21,7 +21,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.usingClause
+ * @module jazzHands.parser.sparql.graphOrDefault
  */
 define([
     "blocks/promise/when",
@@ -31,22 +31,24 @@ define([
     "./iri"
 ], function (when, keyWord, required, create, iri) {
     /**
-     * [44] UsingClause ::= 'USING' ( iri | 'NAMED' iri )
-     * @see http://www.w3.org/TR/sparql11-query/#riri
+     * [45] GraphOrDefault ::= 'DEFAULT' | 'GRAPH'? iri
+     * @see http://www.w3.org/TR/sparql11-query/#rGraphOrDefault
      * @property {jazzHands.parser.Data} data
      * @return {Promise<jazzHands.query.graph.Loader> | Null}
      */
-    function usingClause(data) {
-        if (keyWord(data, "using")) {
-            var named = !!keyWord(data, "named");
-            return when(required(iri(data), "USING missing iri"), function (graphName) {
-                return create("jazzHands/query/graph/Loader", {
-                    named: named,
-                    iri: graphName
-                });
-            });
+    function graphOrDefault(data) {
+        var target = keyWord(data, "DEFAULT");
+        if (!target) {
+            keyWord(data, "GRAPH");
+            target = iri(data);
         }
+
+        return when(target, function (graph) {
+            return create("jazzHands/query/Graph", {
+                target: required(graph, "Graph Or Default missing Graph Identifier")
+            });
+        });
     }
 
-    return usingClause;
+    return graphOrDefault;
 });
