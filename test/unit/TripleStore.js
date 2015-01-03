@@ -257,10 +257,8 @@ define([
                     };
                 },
                 exec: function (test) {
-                    var tFilter = {
-                        test: function () {
-                            return true;
-                        }
+                    var tFilter = function () {
+                        return true;
                     };
                     test.result = true;
                     test.assertTrue(test.tStore.some(tFilter, "ALL"), "Returns true when a Graph returns true");
@@ -288,10 +286,8 @@ define([
                     };
                 },
                 exec: function (test) {
-                    var tFilter = {
-                        test: function () {
-                            return true;
-                        }
+                    var tFilter = function () {
+                        return true;
                     };
                     test.result = true;
                     test.assertTrue(test.tStore.every(tFilter, "ALL"), "Returns true when a Graph returns true");
@@ -326,10 +322,8 @@ define([
                     };
                 },
                 exec: function (test) {
-                    var tFilter = {
-                        test: function () {
-                            return true;
-                        }
+                    var tFilter = function () {
+                        return true;
                     };
                     var result = test.tStore.filter(tFilter, "ALL");
 
@@ -349,17 +343,15 @@ define([
                 setUp: function (test) {
                     var graph = test.tStore.getGraph("urn:ThirdGraph");
                     graph.forEach = function (callback) {
-                        callback.run("Triple");
+                        callback("Triple");
                     };
 
                     test.runOnGraphsCalled = null;
                 },
                 exec: function (test) {
-                    var tCallback = {
-                        run: function (arg) {
-                            test.assertEqual("Triple", arg);
-                            test.run = true;
-                        }
+                    var tCallback = function (arg) {
+                        test.assertEqual("Triple", arg);
+                        test.run = true;
                     };
 
                     test.tStore.forEach(tCallback);

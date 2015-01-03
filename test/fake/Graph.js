@@ -27,11 +27,8 @@ define([
     "dojo/_base/declare",
     "qasht/_Fake",
     "RdfJs/Graph",
-    "RdfJs/test/fake/Triple",
-    "RdfJs/test/fake/_TripleFilter",
-    "RdfJs/test/fake/_TripleCallback",
-    "RdfJs/test/fake/_TripleAction"
-], function (declare, _Fake, Graph, Triple, TripleFilter, TripleCallback, TripleAction) {
+    "RdfJs/test/fake/Triple"
+], function (declare, _Fake, Graph, Triple) {
     /**
      * @class RdfJs.test.fake.Graph
      * @mixes qasht._Fake
@@ -77,28 +74,28 @@ define([
         some: function (tFilter) {
             var test = this.test;
             test.assertEqual(1, arguments.length);
-            TripleFilter.testApi(tFilter, test);
+            test.assertIsFunction(tFilter);
 
             return this.inherited(arguments);
         },
         every: function (tFilter) {
             var test = this.test;
             test.assertEqual(1, arguments.length);
-            TripleFilter.testApi(tFilter, test);
+            test.assertIsFunction(tFilter);
 
             return this.inherited(arguments);
         },
         filter: function (tFilter) {
             var test = this.test;
             test.assertEqual(1, arguments.length);
-            TripleFilter.testApi(tFilter, test);
+            test.assertIsFunction(tFilter);
 
             return this.inherited(arguments);
         },
         forEach: function (tCallback) {
             var test = this.test;
             test.assertEqual(1, arguments.length);
-            TripleCallback.testApi(tCallback, test);
+            test.assertIsFunction(tCallback);
 
             return this.inherited(arguments);
         },
@@ -144,7 +141,7 @@ define([
         addAction: function (tAction, run) {
             var test = this.test;
             test.assertTrue(arguments.length === 1 || arguments.length === 2, "There are between 1 and 2 arguments");
-            TripleAction.testApi(tAction, test);
+            test.assertIsFunction(tAction);
             if (run !== undefined) {
                 test.assertTrue(run === true || run === false, "Run is a Boolean");
             }
@@ -183,7 +180,7 @@ define([
         test.assertIsNumber(object.length);
         test.assertIsArray(object.actions);
         object.actions.forEach(function (action) {
-            TripleAction.testApi(action);
+            test.assertIsFunction(action);
         });
 
         test.assertIsFunction(object.TripleCtr);

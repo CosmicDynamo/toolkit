@@ -13,21 +13,17 @@ define([
         var l = left.clone();
         var r = right.clone();
 
-        if (!l.every({
-            left: l,
-            right: r,
-            test: function (triple) {
+        if (!l.every(function (triple) {
                 if (triple.subject.isBlank() || triple.object.isBlank()) {
                     return true;
                 }
-                var pass = this.right.has(triple);
+                var pass = r.has(triple);
 
-                if (pass){
-                    this.right.remove(triple);
-                    this.left.remove(triple);
-                }
-                return pass;
+                if (pass) {
+                    r.remove(triple);
+                    l.remove(triple);
             }
+                return pass;
         })){
             return false;
         }

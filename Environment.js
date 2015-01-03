@@ -46,14 +46,9 @@ define([
             return g;
         },
         createAction: function (test, action) {
-            /* http://www.w3.org/TR/rdf-interfaces/#widl-RDFEnvironment-createAction-TripleAction-TripleFilter-test-TripleCallback-action */
-            return {
-                test: test,
-                action: action,
-                run: function (triple) {
-                    if (this.test(triple)) {
-                        this.action(triple);
-                    }
+            return function (triple) {
+                if (test(triple)) {
+                    action(triple);
                 }
             };
         },

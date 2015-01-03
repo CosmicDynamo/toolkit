@@ -40,7 +40,7 @@ define([
         add: function (triple) {
             /* http://www.w3.org/TR/rdf-interfaces/#widl-Graph-add-Graph-Triple-triple */
             this.actions.forEach(function (action) {
-                action.run(triple);
+                action(triple);
             });
 
             return this._add(triple);
@@ -198,7 +198,7 @@ define([
             /* http://www.w3.org/TR/rdf-interfaces/#widl-Graph-some-boolean-TripleFilter-callback */
             var lst = this._triples.keys();
             for (var idx = 0; idx < lst.length; idx++) {
-                if (tFilter.test(this._ptrToTriple(lst[idx]), this) === true) {
+                if (tFilter(this._ptrToTriple(lst[idx]), this) === true) {
                     return true;
                 }
             }
@@ -207,17 +207,13 @@ define([
         },
         /**
          *
-         * @param {Object} tFilter
-         * @param {Function} tFilter.test
+         * @param {Function} tFilter
          */
         every: function (tFilter) {
             /* http://www.w3.org/TR/rdf-interfaces/#widl-Graph-every-boolean-TripleFilter-callback */
             // every is false if 
-            return !this.some({
-                _test: tFilter,
-                test: function (t, g) {
-                    return (!this._test.test(t, g));
-                }
+            return !this.some(function (t, g) {
+                return (!tFilter(t, g));
             });
         },
         filter: function (tFilter) {
@@ -227,7 +223,7 @@ define([
             var lst = this._triples.keys();
             for (var idx = 0; idx < lst.length; idx++) {
                 var t = this._ptrToTriple(lst[idx]);
-                if (tFilter.test(t, this) === true) {
+                if (tFilter(t, this) === true) {
                     results.add(t);
                 }
             }
@@ -236,8 +232,7 @@ define([
         },
         /**
          *
-         * @param {Object} tCallback
-         * @param {Function} tCallback.run
+         * @param {Function} tCallback
          */
         forEach: function (tCallback) {
             /* http://www.w3.org/TR/rdf-interfaces/#widl-Graph-forEach-void-TripleCallback-callback */
@@ -246,7 +241,7 @@ define([
             this._triples.forEach(function (t) {
                 var value = this._expand(t);
                 var before = value.toString();
-                tCallback.run(value, graph);
+                tCallback(value, graph);
 
                 if (before !== value.toString()) {
                     changed.push({
