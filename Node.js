@@ -4,31 +4,26 @@
 define([
     "dojo/_base/lang",
     "blocks/parser/Data",
-    "./parser/string",
-    "./parser/langTag",
     "./parser/iriRef",
-    "./node/Literal",
+    "./parser/rdfLiteral",
     "./parser/bNode"
-], function (lang, Data, string, langTag, iriRef, lNode, bNode) {
-    return function (value) {
+], function (lang, Data, iriRef, literal, bNode) {
+    /**
+     * Creates an RDF Node based on the input string
+     * @param {String} value - value to be parsed
+     * @param {Object} [options] - param to considered when parsing the string
+     * @param {RdfJs.PrefixMap} [options.prefixMap] - a map to used when expanding any prefixed terms in the string
+     * @return {*}
+     * @constructor
+     */
+    function Node(value, options) {
         var data = new Data({
-            input: value
+            input: value,
+            prefixMap: options ? options.prefixMap : null
         });
 
-        var str = string(data);
-        if (str != null) {
-            var datatype, language;
-
-            if (value[data.pos] == '^' && value[data.pos + 1] == '^') {
-                data.pos += 2;
-                datatype = iriRef(data).toString();
-            }
-
-            language = langTag(data);
-
-            return new lNode(str, language, datatype);
-        }
-
-        return iriRef(data) || bNode(data);
+        return iriRef(data) || literal(data) || bNode(data);
     }
+
+    return Node;
 });
