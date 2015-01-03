@@ -68,7 +68,7 @@ define([
         },
         /**
          * Returns true if some of the Triples pass the TripleFilter
-         * @param {RdfJs._TripleFilter} tFilter - filter being executed
+         * @param {Function} tFilter - filter being executed
          * @return {Boolean}
          */
         some: function (tFilter) {
@@ -76,7 +76,7 @@ define([
         },
         /**
          * Returns true if every Triple passes the TripleFilter
-         * @param {RdfJs._TripleFilter} tFilter - filter being executed
+         * @param {Function} tFilter - filter being executed
          * @return {Boolean}
          */
         every: function (tFilter) {
@@ -84,7 +84,7 @@ define([
         },
         /**
          * Returns the Triples which pass the TripleFilter
-         * @param {RdfJs._TripleFilter} tFilter - filter being executed
+         * @param {Function} tFilter - filter being executed
          * @return {RdfJs.Graph}
          */
         filter: function (tFilter) {
@@ -92,7 +92,7 @@ define([
         },
         /**
          * Runs the TripleCallback against all Triples in the target Graph(s)
-         * @param {RdfJs._TripleCallback} tCallback - callback being executed
+         * @param {Function} tCallback - callback being executed
          */
         forEach: function (tCallback) {
             this.tripleStore.forEach(tCallback, this.target);

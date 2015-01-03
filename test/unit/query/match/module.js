@@ -1,4 +1,5 @@
 define([
-    "./QuadPattern"
+    "./QuadPattern",
+    "./TriplePattern"
 ], function () {
 });
