@@ -48,10 +48,10 @@ define([
     "RdfJs/node/Literal",
     "RdfJs/node/Named",
     "RdfJs/parser/bNode",
-    "./sparql/pNameNs",
+    "RdfJs/parser/pNameNs",
     "./sparql/prefixDecl",
     "blocks/parser/find",
-    "./sparql/iri",
+    "RdfJs/parser/iri",
     "polyfill/has!String.codePointAt"
 ], function (declare, kernel, lang, Deferred, when, rdfEnv, Data, range, required, hasChar, whiteSpace, keyWord
     , rdfType, RdfType, booleanLiteral, iriRef, sparqlBase, langTag, numeric, block, string, LiteralNode

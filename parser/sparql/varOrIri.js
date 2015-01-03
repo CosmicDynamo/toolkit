@@ -25,7 +25,7 @@
  */
 define([
     "./var",
-    "./iri"
+    "RdfJs/parser/iri"
 ], function (variable, iri) {
     /**
      * [107] VarOrIri ::= Var | iri

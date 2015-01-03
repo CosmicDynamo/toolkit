@@ -38,7 +38,7 @@ define([
         //[6s]	sparqlPrefix	::=	"PREFIX" PNAME_NS IRIREF
         var key = keyWord(data, "prefix", false, true);
         if (key) {
-            return require(["jazzHands/parser/sparql/pNameNs", "RdfJs/parser/iriRef"], function (pNameNs, iriRef) {
+            return require(["RdfJs/parser/pNameNs", "RdfJs/parser/iriRef"], function (pNameNs, iriRef) {
                 data.whiteSpace(data);
                 var pfx = required(pNameNs(data), "PREFIX missing name");
                 data.whiteSpace(data);

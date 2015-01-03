@@ -26,7 +26,7 @@
 define([
     "blocks/parser/keyWord",
     "blocks/parser/required",
-    "./iri"
+    "RdfJs/parser/iri"
 ], function (keyWord, required, iri) {
     /**
      * [46] GraphRef ::= 'GRAPH' iri

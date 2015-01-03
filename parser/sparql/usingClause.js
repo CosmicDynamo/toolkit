@@ -28,7 +28,7 @@ define([
     "blocks/parser/keyWord",
     "blocks/parser/required",
     "blocks/require/create",
-    "./iri"
+    "RdfJs/parser/iri"
 ], function (when, keyWord, required, create, iri) {
     /**
      * [44] UsingClause ::= 'USING' ( iri | 'NAMED' iri )
