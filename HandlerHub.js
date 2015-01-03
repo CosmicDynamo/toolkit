@@ -71,13 +71,13 @@ define([
 
             return when(loaded, function(){
                 var graph = store.getGraph(graphName);
-                graph.match(null, rdfType, hub.handlerType).forEach({ run:function(handler){
+                graph.match(null, rdfType, hub.handlerType).forEach(function (handler) {
                     var iri = handler.subject.toNT();
                     var mid = graph.match(iri, aps("moduleId"), null).toArray()[0].object.valueOf();
-                    graph.match(iri, aps("handlesType"), null).forEach({run:function(type){
+                    graph.match(iri, aps("handlesType"), null).forEach(function (type) {
                         hub.require.register(type.object.valueOf(), mid);
-                    }})
-                }})
+                    })
+                })
             })
         },
         /**
