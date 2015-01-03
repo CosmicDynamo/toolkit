@@ -30,7 +30,7 @@ define([
      * A Basic Object Container used for storing data without worrying about hasOwnProperty checks
      * @class blocks.Container
      */
-    return declare([], {
+    var Container = declare([], {
         _values: null,
         constructor: function (args) {
             this._values = {};
@@ -75,6 +75,19 @@ define([
          */
         keys: function () {
             return Object.keys(this._values);
+        },
+        /**
+         * Creates a shallow clown of this container
+         * @return {Container}
+         */
+        clone: function () {
+            var clone = new Container();
+            var original = this;
+            original.keys().forEach(function (key) {
+                clone.set(key, original.get(key));
+            });
+            return clone;
         }
     });
+    return Container;
 });
