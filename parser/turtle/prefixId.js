@@ -21,24 +21,41 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.booleanLiteral
+ * @module jazzHands.parser.sparql.prefixDecl
  */
 define([
-    "blocks/parser/anyKeyWord",
-    "../XsdLiteral"
-], function (anyKeyWord, XsdLiteral) {
+    "blocks/require",
+    "blocks/parser/keyWord"
+], function (require, keyWord) {
     /**
-     * [134] BooleanLiteral ::= 'true' | 'false'
-     * @see http://www.w3.org/TR/sparql11-query/#rBooleanLiteral
+     * [4] prefixID ::= '@prefix' PNAME_NS IRIREF '.'
+     * @see http://www.w3.org/TR/turtle/#grammar-production-prefixID
      * @property {jazzHands.parser.Data} data
-     * @return {Promise<*> | *}
+     * @return {String | Null}
      */
-    function booleanLiteral(data){
-        var match = anyKeyWord(data, ["true", "false"]);
-        if (match){
-            return new XsdLiteral('"' + match + '"', "boolean");
+    function prefixId(data) {
+        var key = keyWord(data, "@prefix", true, true);
+        if (!key) {
+            return null;
         }
-        return match;
+        return require([
+            "blocks/parser/required",
+            "blocks/parser/hasChar",
+            "RdfJs/parser/pNameNs",
+            "RdfJs/parser/iriRef"
+        ], function (required, hasChar, pNameNs, iriRef) {
+            data.whiteSpace();
+            var pfx = required(pNameNs(data), "PREFIX missing name");
+
+            data.whiteSpace();
+            var iri = required(iriRef(data), "PREFIX missing IRI");
+
+            data.prefixMap.set(pfx, iri.toString());
+
+            required(hasChar(data, '.', false, true), "@base missing '.'");
+            return iri;
+        });
     }
-    return booleanLiteral;
+
+    return prefixId;
 });

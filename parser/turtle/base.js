@@ -21,32 +21,36 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.var
+ * @module $<class>$
  */
 define([
-    "blocks/parser/hasAnyChar",
-    "blocks/parser/required",
-    "blocks/require/create",
-    "./varName"
-], function (hasAnyChar, required, create, varName) {
+    "blocks/parser/keyWord",
+    "blocks/require"
+], function (keyWord, require) {
     /**
-     * Effective ('?' | '$') VARNAME
-     *
-     * [108] Var ::= VAR1 | VAR2
-     * @see http://www.w3.org/TR/sparql11-query/#rVar
-     * [143] VAR1 ::= '?' VARNAME
-     * @see http://www.w3.org/TR/sparql11-query/#rVAR1
-     * [144] VAR2 ::= '$' VARNAME
-     * @see http://www.w3.org/TR/sparql11-query/#rVAR2
+     * [5] base ::= '@base' IRIREF '.'
+     * @see http://www.w3.org/TR/turtle/#grammar-production-base
+     * @property {jazzHands.parser.Data} data
+     * @return {String | Null}
      */
-    function variable(data) {
-        var symbol = hasAnyChar(data, ['?', '$']);
-        if (symbol) {
-            var name = required(varName(data));
-            return create("jazzHands/query/Variable", symbol + name);
+    function baseDecl(data) {
+        var key = keyWord(data, "@base", true, true);
+        if (!key) {
+            return null;
         }
-        return null;
+        return require([
+            "blocks/parser/required",
+            "blocks/parser/hasChar",
+            "RdfJs/parser/iriRef"
+        ], function (required, hasChar, iriRef) {
+            var base = required(iriRef(data), "BASE missing IRIREF");
+            data.base = base.toString();
+
+            required(hasChar(data, '.', false, true), "@base missing '.'");
+
+            return base;
+        });
     }
 
-    return variable;
+    return baseDecl;
 });

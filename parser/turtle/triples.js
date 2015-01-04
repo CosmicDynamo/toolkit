@@ -21,32 +21,44 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.var
+ * @module jazzHands.parser.turtle.object
  */
 define([
-    "blocks/parser/hasAnyChar",
+    "blocks/promise/when",
     "blocks/parser/required",
-    "blocks/require/create",
-    "./varName"
-], function (hasAnyChar, required, create, varName) {
+    "./subject",
+    "./bNodePropList",
+    "./predObjectList",
+    "RdfJs/Triple"
+], function (when, required, subject, bNodePropList, predObjectList, Triple) {
     /**
-     * Effective ('?' | '$') VARNAME
-     *
-     * [108] Var ::= VAR1 | VAR2
-     * @see http://www.w3.org/TR/sparql11-query/#rVar
-     * [143] VAR1 ::= '?' VARNAME
-     * @see http://www.w3.org/TR/sparql11-query/#rVAR1
-     * [144] VAR2 ::= '$' VARNAME
-     * @see http://www.w3.org/TR/sparql11-query/#rVAR2
+     * [6] triples ::= subject predicateObjectList | blankNodePropertyList predicateObjectList?
+     * @see http://www.w3.org/TR/turtle/#grammar-production-triples
+     * @property {jazzHands.parser.Data} data
+     * @return {Promise<*> | *}
      */
-    function variable(data) {
-        var symbol = hasAnyChar(data, ['?', '$']);
-        if (symbol) {
-            var name = required(varName(data));
-            return create("jazzHands/query/Variable", symbol + name);
-        }
-        return null;
+    function triples(data) {
+        var s = subject(data);
+        var isRequired = !!s;
+        s = s || bNodePropList(data);
+
+        return when(s, function (subject) {
+            if (!subject) {
+                return null;
+            }
+            var pList = predObjectList(data);
+            return when(pList, function (predicates) {
+                if (isRequired) {
+                    predicates = required(predicates, "Subject missing predicate");
+                }
+
+                predicates.forEach(function (details) {
+                    data.graph.add(new Triple(subject, details.predicate, details.object));
+                });
+                return subject;
+            });
+        });
     }
 
-    return variable;
+    return triples;
 });

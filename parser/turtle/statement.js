@@ -21,32 +21,36 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.var
+ * @module jazzHands.parser.sparql.objectList
  */
 define([
-    "blocks/parser/hasAnyChar",
+    "blocks/promise/when",
     "blocks/parser/required",
-    "blocks/require/create",
-    "./varName"
-], function (hasAnyChar, required, create, varName) {
+    "blocks/parser/hasChar",
+    "./directive",
+    "./triples"
+], function (when, required, hasChar, directive, triples) {
     /**
-     * Effective ('?' | '$') VARNAME
-     *
-     * [108] Var ::= VAR1 | VAR2
-     * @see http://www.w3.org/TR/sparql11-query/#rVar
-     * [143] VAR1 ::= '?' VARNAME
-     * @see http://www.w3.org/TR/sparql11-query/#rVAR1
-     * [144] VAR2 ::= '$' VARNAME
-     * @see http://www.w3.org/TR/sparql11-query/#rVAR2
+     * [2] statement ::= directive | triples '.'
+     * @see http://www.w3.org/TR/turtle/#grammar-production-statement
+     * @property {jazzHands.parser.Data} data
+     * @return {Promise<*> | *}
      */
-    function variable(data) {
-        var symbol = hasAnyChar(data, ['?', '$']);
-        if (symbol) {
-            var name = required(varName(data));
-            return create("jazzHands/query/Variable", symbol + name);
+    function statement(data) {
+        var ready = directive(data);
+        if (!ready) {
+            return when(triples(data), function (subject) {
+                if (subject !== null) {
+                    required(hasChar(data, '.', false, true), "statement missing '.'");
+                }
+                return subject;
+            });
         }
-        return null;
+        return when(ready, function (done) {
+            data.whiteSpace();
+            return done;
+        });
     }
 
-    return variable;
+    return statement;
 });

@@ -21,32 +21,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.var
+ * @module jazzHands.parser.sparql.objectList
  */
 define([
-    "blocks/parser/hasAnyChar",
-    "blocks/parser/required",
-    "blocks/require/create",
-    "./varName"
-], function (hasAnyChar, required, create, varName) {
+    "blocks/parser/find",
+    "./prefixId",
+    "./base",
+    "../sparql/prefixDecl",
+    "../sparql/baseDecl"
+], function (find, prefixId, base, sparqlPrefix, sparqlBase) {
     /**
-     * Effective ('?' | '$') VARNAME
-     *
-     * [108] Var ::= VAR1 | VAR2
-     * @see http://www.w3.org/TR/sparql11-query/#rVar
-     * [143] VAR1 ::= '?' VARNAME
-     * @see http://www.w3.org/TR/sparql11-query/#rVAR1
-     * [144] VAR2 ::= '$' VARNAME
-     * @see http://www.w3.org/TR/sparql11-query/#rVAR2
+     * [3] directive ::= prefixID | base | sparqlPrefix | sparqlBase
+     * @see http://www.w3.org/TR/turtle/#grammar-production-directive
+     * @property {jazzHands.parser.Data} data
+     * @return {Promise<*> | *}
      */
-    function variable(data) {
-        var symbol = hasAnyChar(data, ['?', '$']);
-        if (symbol) {
-            var name = required(varName(data));
-            return create("jazzHands/query/Variable", symbol + name);
-        }
-        return null;
+    function directive(data) {
+        return find(data, [prefixId, base, sparqlPrefix, sparqlBase]);
     }
 
-    return variable;
+    return directive;
 });

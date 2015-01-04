@@ -21,27 +21,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.parser.sparql.nil
+ * @module jazzHands.parser.turtle.object
  */
 define([
-    "blocks/parser/block",
-    "blocks/parser/hasChar",
-    "blocks/parser/range",
-    "blocks/require/create"
-], function (block, hasChar, range, create) {
+    "blocks/parser/find"
+], function (find) {
     /**
-     * [161] NIL ::= '(' WS* ')'
-     * @see http://www.w3.org/TR/sparql11-query/#rNIL
+     * [10] subject ::= iri | BlankNode | collection
+     * @see http://www.w3.org/TR/turtle/#grammar-production-subject
      * @property {jazzHands.parser.Data} data
      * @return {Promise<*> | *}
      */
-    function nil(data) {
-        var valid = block(data, '(', ')', 0, -1, data.whiteSpace);
-        if (valid) {
-            return create("jazzHands/query/function/ArgList", {});
-        }
-        return null;
+    function objectList(data) {
+        return find(data, [
+            "RdfJs/parser/iri",
+            "RdfJs/parser/bNode",
+            "jazzHands/parser/turtle/collection"
+        ]);
     }
 
-    return nil;
+    return objectList;
 });
