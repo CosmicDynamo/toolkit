@@ -80,7 +80,7 @@ define([
                 try {
                     done = fn.apply(this, args);
                 } catch (err) {
-                    callDone.reject(err);
+                    return callDone.reject(err);
                 }
             }
             when(done, callDone.resolve, callDone.reject, callDone.progress);
