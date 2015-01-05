@@ -73,7 +73,7 @@ define([
         if (dt == "integer") {
             data.pos = endInt;
         }
-        if (number.length) {
+        if (number.length && !isNaN(number)) {
             return Literal(number, null, 'http://www.w3.org/2001/XMLSchema#' + dt);
         }
         data.pos = start;

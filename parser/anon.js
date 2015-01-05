@@ -25,7 +25,7 @@
  */
 define([
     "blocks/parser/block",
-    "RdfJs/Node/Blank"
+    "RdfJs/node/Blank"
 ], function (block, BlankNode) {
     /**
      * [163] ANON ::= '[' WS* ']'

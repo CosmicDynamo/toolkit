@@ -40,7 +40,7 @@ define([
             value += matchChar(data, "[+-]") || "";
             return value + required(range(data, 1, -1, function () {
                     return matchChar(data, "[0-9]");
-                }).join(""), "exponent missing value");
+                }), "exponent missing value").join("");
         }
         return null;
     }
