@@ -27,7 +27,7 @@ define([], function () {
     /**
      * Returns the requested keyWord if it is next value in the input string
      * @description If the keyWord is found in the string then this method will increment the details.pos value to the end index of the keyWord in details.input
-     * @param {jazzHands.parser.Data} data - Information about the parsing process
+     * @param {blocks.parser.Data} data - Information about the parsing process
      * @param {String} keyWord - the string value to be found
      * @param {Boolean} [caseSensitive=false] - indicates if case should be considered in the strings value
      * @param {Boolean} [skipWhiteSpace=false] - indicates if case should ignore leading white space

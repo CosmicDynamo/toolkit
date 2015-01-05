@@ -26,7 +26,8 @@
 define([
     "dojo/_base/Deferred",
     "./Container",
-    "./promise/when"
+    "./promise/when",
+    "polyfill/has!Array.find"
 ], function (Deferred, Container, when) {
     /**
      * Rejects the deferred i a timeout reached
@@ -49,15 +50,15 @@ define([
      */
     return function (mids, callback, errback) {
         var paths = mids.map(function(mid) {
-            return require.toUrl(mid) + ".js"
+            return require.toUrl(mid) + ".js";
         });
 
-        var fail = paths.filter(function(path){
+        var fail = paths.find(function (path) {
             return rejected.get(path);
         });
 
-        if (fail.length > 0){
-            return rejected.get(fail[0]).then(callback, errback);
+        if (fail) {
+            return rejected.get(fail).then(callback, errback);
         }
 
         var promise = new Deferred();
@@ -65,33 +66,39 @@ define([
             promises.set(path, promise);
         });
 
+        var out = null;
         require(mids, function () {
             if (!promise.isFulfilled()) {
+                out = arguments;
                 promise.resolve(arguments);
             }
         });
 
-        var done = function(fn, originalPromise, args, callDone){
+        var done = function (fn, args) {
             mids.forEach(function(mid){
                 promises.remove(require.toUrl(mid)+ ".js");
             });
-            var done = originalPromise;
-            if (fn){
-                try {
-                    done = fn.apply(this, args);
-                } catch (err) {
-                    return callDone.reject(err);
-                }
+
+            try {
+                return fn ? fn.apply(this, args) : args;
+            } catch (err) {
+                return callDone.reject(err);
             }
-            when(done, callDone.resolve, callDone.reject, callDone.progress);
         };
+        if (promise.isResolved()) {
+            return done(callback, out);
+        }
 
         var callDone = new Deferred();
-        promise.then(function(modules) {
-            done(callback, promise, modules, callDone);
+        return when(promise, function (modules) {
+            return done(callback, modules);
         }, function(err){
-            done(errback, promise, [err], callDone);
+            console.error(err.message);
+            var out = done(errback, [err]);
+            if (errback) {
+                return out;
+            }
+            throw err;
         });
-        return callDone;
     };
 });

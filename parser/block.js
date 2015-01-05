@@ -24,24 +24,27 @@
  * @module blocks.parser.block
  */
 define([
+    "../promise/when",
     "./hasChar",
     "./range",
     "./find",
     "./required"
-], function (hasChar, range, find) {
+], function (when, hasChar, range, find) {
     /**
      * Returns the values from a block of text surrounded by start and end characters
      */
     function block(data, startChar, endChar, min, max, fn, sep) {
         var start = data.pos;
         if (hasChar(data, startChar, false, true)) {
-            var out = range(data, min, max, function () {
+            return when(range(data, min, max, function () {
                 return find(data, [fn]);
-            }, sep);
-            if (hasChar(data, endChar, false, true)) {
-                return out;
-            }
-            data.pos = start;
+            }, sep), function (out) {
+                if (hasChar(data, endChar, false, true)) {
+                    return out;
+                }
+                data.pos = start;
+                return null;
+            });
         }
         return null;
     }
