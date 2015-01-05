@@ -38,9 +38,11 @@ define([
      * @return {Promise<*> | *}
      */
     function triples(data) {
-        var s = subject(data);
-        var isRequired = !!s;
-        s = s || bNodePropList(data);
+        var source = {};
+        var s = when(subject(data), function (found) {
+            source.subject = !!found;
+            return found || bNodePropList(data);
+        });
 
         return when(s, function (subject) {
             if (!subject) {
@@ -48,13 +50,15 @@ define([
             }
             var pList = predObjectList(data);
             return when(pList, function (predicates) {
-                if (isRequired) {
+                if (source.subject) {
                     predicates = required(predicates, "Subject missing predicate");
                 }
 
-                predicates.forEach(function (details) {
-                    data.graph.add(new Triple(subject, details.predicate, details.object));
-                });
+                if (predicates) {
+                    predicates.forEach(function (details) {
+                        data.graph.add(new Triple(subject, details.predicate, details.object));
+                    });
+                }
                 return subject;
             });
         });

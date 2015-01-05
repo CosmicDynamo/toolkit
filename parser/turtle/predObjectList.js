@@ -33,11 +33,14 @@ define([
      * [77] PropertyListNotEmpty ::= Verb ObjectList ( ';' ( Verb ObjectList )? )*
      * @see http://www.w3.org/TR/sparql11-query/#rPropertyListNotEmpty
      * @property {jazzHands.parser.Data} data
-     * @return {String | Null}
+     * @return {{predicate:RdfJs.Node, object:RdfJs.Node}[] | Null}
      */
     function propListNotEmpty(data) {
-        return range(data, 1, -1, function () {
+        var promise = range(data, 1, -1, function () {
             var predicate = verb(data);
+            if (!predicate) {
+                return null;
+            }
             var objects = objectList(data);
 
             return when(objects, function (list) {
@@ -49,6 +52,13 @@ define([
                 });
             })
         }, ";");
+        return when(promise, function (list) {
+            if (list) {
+                var proto = [];
+                return proto.concat.apply(proto, list);
+            }
+            return null;
+        });
     }
 
     return propListNotEmpty;

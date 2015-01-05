@@ -9,7 +9,7 @@ define([
     "RdfJs/Triple",
     "RdfJs/test/unit/graph/compare",
     "RdfJs/test/api/Graph"
-], function (TestPackage, Turtle, all, Graph, Triple, compare, testGraphApi) {
+], function (TestPackage, parseTurtle, all, Graph, Triple, compare, testGraphApi) {
     new TestPackage({
         prefix: {"rdf-test": "http://www.w3.org/ns/rdftest#"},
         module: "jazzHands/parser/turtle",
@@ -22,7 +22,7 @@ define([
             params.testDetails = this.testDetails;
         },
         debugId: {
-            "<jazzHands/test/integration/parser/turtle/manifest.ttl#default_namespace_IRI>": false
+            "<jazzHands/test/integration/parser/turtle/manifest.ttl#turtle-syntax-bad-num-05>": true
         },
         excludeById: {},
         "rdf-test:TestTurtleNegativeSyntax": function (params) {
@@ -41,9 +41,8 @@ define([
             params.testDetails = this.testDetails;
         },
         testSetUp: function (test) {
-            test.parser = new Turtle();
             var loadAction = test.loadText("mf:action", function(data, name){
-                test.parser.setBase("http://www.w3.org/2013/TurtleTests" + name.substr(name.lastIndexOf("/")));
+                test.base = "http://www.w3.org/2013/TurtleTests" + name.substr(name.lastIndexOf("/"));
                 test.data = data;
             });
 
@@ -90,7 +89,7 @@ define([
         },
         positive: function (test, fn) {
             try {
-                return test.whenResolved(test.parser.parse(test.data), function (results) {
+                return test.whenResolved(parseTurtle(test.data, {base: test.base}), function (results) {
                     if (fn) {
                         return fn(results);
                     }
@@ -103,7 +102,7 @@ define([
         },
         negative: function (test) {
             try {
-                test.whenRejected(test.parser.parse(test.data), function (err) {
+                test.whenRejected(parseTurtle(test.data, {base: test.base}), function (err) {
                     test.assertTrue(err !== null, "Error was thrown");
                     test.complete();
                 });

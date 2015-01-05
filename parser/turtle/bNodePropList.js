@@ -24,9 +24,10 @@
  * @module jazzHands.parser.sparql.propListNotEmpty
  */
 define([
+    "blocks/require",
     "blocks/promise/when",
     "blocks/parser/block"
-], function (when, block) {
+], function (require, when, block) {
     /**
      * [14] blankNodePropertyList ::= '[' predicateObjectList ']'
      * @see http://www.w3.org/TR/turtle/#grammar-production-blankNodePropertyList
@@ -38,6 +39,8 @@ define([
             if (!list) {
                 return null;
             }
+            var proto = [];
+            list = proto.concat.apply(proto, list);
 
             return require(["RdfJs/node/Blank", "RdfJs/Triple"], function (BlankNode, Triple) {
                 var subject = new BlankNode();
