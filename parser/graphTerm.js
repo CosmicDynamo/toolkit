@@ -11,7 +11,7 @@ define([
      * [109] GraphTerm ::= iri | RDFLiteral | NumericLiteral | BooleanLiteral | BlankNode |    NIL
      * @see http://www.w3.org/TR/sparql11-query/#rGraphTerm
      * @param {jazzHands.parser.Data} data - Information about the parsing process
-     * @return {String | Null}
+     * @return {RdfJs.Node | Null}
      */
     function graphTerm(data) {
         return iri(data) || literal(data) || bNode(data) || nil(data);
