@@ -25,8 +25,9 @@
  */
 define([
     "blocks/promise/when",
-    "blocks/parser/block"
-], function (when, block) {
+    "blocks/parser/block",
+    "blocks/require"
+], function (when, block, require) {
     /**
      * [15] collection ::= '(' object* ')'
      * @see http://www.w3.org/TR/turtle/#grammar-production-collection
@@ -38,7 +39,7 @@ define([
             if (!list) {
                 return null;
             }
-            return require(["RdfJs/node/Blank", "RdfJs/Triple", "jazzHands/parser/RdfType"], function (BlankNode, Triple, RdfType) {
+            return require(["RdfJs/node/Blank", "RdfJs/Triple", "jazzHands/RdfType"], function (BlankNode, Triple, RdfType) {
                 var rdfFirst = RdfType("first");
                 var rdfRest = RdfType("rest");
 

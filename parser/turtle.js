@@ -48,9 +48,6 @@ define([
     function parse(turtleString, options) {
         options = options || {};
         options.input = turtleString;
-        options.whiteSpace = function () {
-            return whiteSpace(this);
-        };
         options.graph = new Graph();
 
         if (!options.base) {
@@ -59,12 +56,17 @@ define([
             options.base = options.base || base.substr(0, base.lastIndexOf("/") + 1)
         }
 
-        return when(turtleDoc(new Data(options)), function () {
+        var data = new Data(options);
+        data.whiteSpace = function () {
+            return whiteSpace(data);
+        };
+        return when(turtleDoc(data), function () {
+            data.whiteSpace();
             if (data.pos < data.input.length) {
                 onError({message: "Statement found after end of valid turtle"});
             }
 
-            return input.graph;
+            return data.graph;
         }, onError);
     }
 
