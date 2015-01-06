@@ -32,7 +32,7 @@ define([
      * @property {jazzHands.parser.Data} data
      * @return {Promise<*> | *}
      */
-    return function(data){
-        return find(data, ["jazzHands/parser/sparql/collection", "jazzHands/parser/sparql/bNodePropList"]);
+    return function (data) {
+        return find(data, ["jazzHands/parser/sparql/collectionPath", "jazzHands/parser/sparql/bNodePropListPath"]);
     }
 });
