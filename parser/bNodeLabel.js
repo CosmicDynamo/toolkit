@@ -38,7 +38,7 @@ define([
      * @return {RdfJs.node.Blank | Null}
      */
     function bNodeLabel(data) {
-        if (keyWord(data, "_:")) {
+        if (keyWord(data, "_:", false, true)) {
             var label = pnCharsU(data) || matchChar(data, "[0-9]");
             label += range(data, 0, -1, function () {
                 return pnChars(data) || matchChar(data, "[.]");
