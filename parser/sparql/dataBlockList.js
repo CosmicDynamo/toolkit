@@ -24,32 +24,16 @@
  * @module $<class>$
  */
 define([
-    "blocks/parser/required",
-    "blocks/promise/when",
-    "blocks/require/create",
-    "./var",
-    "./dataBlockList"
-], function (required, when, all, create, variable, dataBlockList) {
+    "blocks/parser/block"
+], function (block) {
     /**
-     * [63] InlineDataOneVar ::= Var '{' DataBlockValue* '}'
-     * @see http://www.w3.org/TR/sparql11-query/#rInlineDataOneVar
+     * [Helper] DataBlocList ::= '{' DataBlockValue* '}'
      * @property {jazzHands.parser.Data} data
      * @return {String | Null}
      */
-    function move(data) {
-        var start = data.pos;
-        var variable = variable(data);
-        if (variable) {
-            return when(required(dataBlockList(data), "Inline Data missing data block"), function (dataBlock) {
-                return create("???", {
-                    variable: variable,
-                    dataBlock: dataBlock
-                });
-            });
-        }
-        data.pos = start;
-        return null;
+    function dataBlockList(data) {
+        return block(data, "(", ")", 0, -1, "jazzHands/parser/sparql/dataBlockValue");
     }
 
-    return move;
+    return dataBlockList;
 });
