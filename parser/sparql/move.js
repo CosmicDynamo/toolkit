@@ -21,33 +21,40 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.opr.Move
+ * @module $<class>$
  */
 define([
-    "dojo/_base/declare",
-    "dojo/Stateful"
-], function (declare, Stateful) {
+    "blocks/parser/keyWord",
+    "blocks/parser/required",
+    "blocks/promise/when",
+    "blocks/promise/all",
+    "blocks/require/create",
+    "./graphOrDefault"
+], function (keyWord, required, when, all, create, graphOrDefault) {
     /**
-     * @class jazzHands.query.opr.Move
-     * @implements jazzHands._QueryPlan
+     * [36] Move ::= 'MOVE' 'SILENT'? GraphOrDefault 'TO' GraphOrDefault
+     * @see http://www.w3.org/TR/sparql11-query/#rMove
+     * @property {jazzHands.parser.Data} data
+     * @return {String | Null}
      */
-    return declare([Stateful], {
-        /** @property {Boolean} */
-        silent: null,
-        /** @property {jazzHands.query.Graph} */
-        source: null,
-        /** @property {jazzHands.query.Graph} */
-        destination: null,
-        /**
-         * @override
-         */
-        execute: function () {
-            //Clear Destination Graph
-            this.destination.removeMatches(null, null, null);
-            //Move Triples From Source To Destination
-            this.destination.addAll(this.source);
-            //Drop Source
-            this.store.removeGraph(this.source.target);
+    function move(data) {
+        var key = keyWord(data, "MOVE");
+        if (key) {
+            var silent = !!keyWord(data, "SILENT");
+            var from = graphOrDefault(data);
+            required(keyWord(data, "TO"), "MOVE missing 'TO'");
+            var to = graphOrDefault(data);
+
+            return when(all([from, to]), function (parts) {
+                return create("jazzHands/query/opr/Move", {
+                    silent: silent,
+                    source: parts[0],
+                    destination: parts[1]
+                })
+            })
         }
-    });
+        return null;
+    }
+
+    return move;
 });
