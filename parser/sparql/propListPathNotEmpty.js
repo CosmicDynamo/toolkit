@@ -34,7 +34,7 @@ define([
      * [83] PropertyListPathNotEmpty ::= ( VerbPath | VerbSimple ) ObjectListPath ( ';' ( ( VerbPath | VerbSimple ) ObjectList )? )*
      * @see http://www.w3.org/TR/sparql11-query/#rPropertyListPathNotEmpty
      * @property {jazzHands.parser.Data} data
-     * @return {String | Null}
+     * @return {{predicate:RdfJs.Node, object:RdfJs.Node} | Null}
      */
     function propListPathNotEmpty(data) {
         var listFn = objectListPath;

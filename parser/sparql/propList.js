@@ -30,7 +30,7 @@ define([
      * [76] PropertyList ::= PropertyListNotEmpty?
      * @see http://www.w3.org/TR/sparql11-query/#rPropertyList
      * @property {jazzHands.parser.Data} data
-     * @return {String | Null}
+     * @return {{predicate:RdfJs.Node, object:RdfJs.Node} | Null}
      */
     function propList(data) {
         return propListNotEmpty(data) || [];
