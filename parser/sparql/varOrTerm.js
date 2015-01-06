@@ -24,10 +24,16 @@
  * @module jazzHands.parser.sparql.varOrTerm
  */
 define([
-], function () {
+    "./var",
+    "RdfJs/parser/graphTerm"
+], function (variable, graphTerm) {
     /**
+     * [106] VarOrTerm ::= Var | GraphTerm
+     * @see http://www.w3.org/TR/sparql11-query/#rVarOrTerm
+     * @param {jazzHands.parser.Data} data - Information about the parsing process
+     * @return {RdfJs.Node | jazzHands.query.Variable | Null}
      */
-    return function(){
-        //TODO: This
+    return function (data) {
+        return variable(data) || graphTerm(data);
     }
 });
