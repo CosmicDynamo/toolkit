@@ -21,15 +21,16 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module $<class>$
+ * @module jazzHands.paser.sparql.sourceSelector
  */
 define([
-    "dojo/_base/declare"
-], function (declare) {
+    "RdfJs/parser/iri"
+], function (iri) {
     /**
-     * @class $<class>$
+     * [16] SourceSelector ::= iri
+     * @see http://www.w3.org/TR/sparql11-query/#rSourceSelector
+     * @property {jazzHands.parser.Data} data
+     * @return {{predicate:RdfJs.Node, object:RdfJs.Node} | Null}
      */
-    return declare([], {
-
-    });
+    return iri;
 });
