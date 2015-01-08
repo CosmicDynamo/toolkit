@@ -24,7 +24,7 @@
  * @module $<class>$
  */
 define([
-    "blocks/parser/block"
+    "../../../../blocks/parser/block"
 ], function (block) {
     /**
      * [72] ExpressionList ::= NIL | '(' Expression ( ',' Expression )* ')'
