@@ -25,30 +25,27 @@
  */
 define([
     "blocks/promise/when",
-    "blocks/parser/find",
+    "blocks/parser/anyKeyWord",
+    "blocks/require/create",
     "./numeric"
-], function (when, find, numericExpr) {
+], function (when, anyKeyWord, create, numericExpresion) {
     /**
-     * [114] RelationalExpression ::= NumericExpression ( ( ('=' | '!=' | '<' | '>' | '<=' | '>=' ) NumericExpression ) | ( 'NOT'? 'IN' ExpressionList ) )?
-     * @see http://www.w3.org/TR/sparql11-query/#rRelationalExpression
+     * [Helper] NumericComparison ::= NumericExpression ( ('=' | '!=' | '<' | '>' | '<=' | '>=' ) NumericExpression )
+     * @see http://www.w3.org/TR/sparql11-query/#rConditionalOrExpression
      * @property {jazzHands.parser.Data} data
      * @return {String | Null}
      */
-    function relationalExpression(data) {
-        var parsing = numericExpr(data);
-        return when(parsing, function (left) {
-            if (!left) {
-                return null;
-            }
-
-            return when(find([data, left], [
-                "jazzHands/parser/sparql/expression/_numericCompare",
-                "jazzHands/parser/sparql/expression/_inOrNot"
-            ]), function (expr) {
-                return expr || left;
-            });
-        });
+    function _numericCompare(data, left) {
+        var numeric = anyKeyWord(data, ['=', '!=', '<', '>', '<=', '>=']);
+        if (!numeric) {
+            return when(numericExpresion(data), function (right) {
+                return create("jazzHands/query/expression/relational", {
+                    left: left,
+                    right: right
+                })
+            })
+        }
     }
 
-    return relationalExpression;
+    return _numericCompare;
 });
