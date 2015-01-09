@@ -24,34 +24,21 @@
  * @module jazzHands.parser.sparql.unaryExpression
  */
 define([
-    "blocks/promise/when",
-    "blocks/require/create",
-    "blocks/parser/hasChar",
-    "./primaryExpression"
-], function (when, create, hasChar, primaryExpression) {
+    "./bracketed",
+    "../function/builtInCall",
+    "../iriOrFunction",
+    "RdfJs/parser/literal",
+    "../var"
+], function (bracketed, builtInCall, iriOrFunction, literal, variable) {
     /**
-     * [118] UnaryExpression ::= ['!' | '+' | '-']? PrimaryExpression
-     * @see http://www.w3.org/TR/sparql11-query/#rUnaryExpression
+     * [119] PrimaryExpression ::= BrackettedExpression | BuiltInCall | iriOrFunction | RDFLiteral | NumericLiteral | BooleanLiteral | Var
+     * @see http://www.w3.org/TR/sparql11-query/#rPrimaryExpression
      * @property {jazzHands.parser.Data} data
      * @return {Promise<*> | *}
      */
-    function unaryExpression(data){
-        var start = data.pos;
-        var mod = hasChar(data, ['!', '+', '-']);
-        return when(primaryExpression(data), function(result){
-            if (!result){
-                data.pos = start;
-                return null;
-            }
-
-            var arg = { expression: result };
-            if (mod === "!"){
-                return create("jazzHands/query/expression/logic/Not", arg);
-            } else if (mod === "-"){
-                return create("jazzHands/query/expression/Negate", arg);
-            }
-            return result
-        })
+    function primaryExpression(data) {
+        return bracketed(data) || builtInCall(data) || iriOrFunction(data) || literal(data) || variable(data);
     }
-    return unaryExpression;
+
+    return primaryExpression;
 });
