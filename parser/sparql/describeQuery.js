@@ -24,63 +24,52 @@
  * @module $<class>$
  */
 define([
-    "blocks/parser/keyWord",
-    "blocks/parser/block",
-    "blocks/parser/required",
-    "blocks/parser/range",
+    "blocks/parser/keyWor",
     "blocks/promise/when",
-    "blocks/promise/all",
+    "blocks/parser/range",
     "blocks/require/create"
-], function (keyWord, block, required, range, when, all, create) {
+], function (keyWord, when, range, create) {
     /**
-     * [10] ConstructQuery ::= 'CONSTRUCT' ( ConstructTemplate DatasetClause* WhereClause SolutionModifier | DatasetClause* 'WHERE' '{' TriplesTemplate? '}' SolutionModifier )
-     * @see http://www.w3.org/TR/sparql11-query/#rConstructQuery
+     * [11] DescribeQuery ::= 'DESCRIBE' ( VarOrIri+ | '*' ) DatasetClause* WhereClause? SolutionModifier
+     * @see http://www.w3.org/TR/sparql11-query/#rDescribeQuery
      * @property {jazzHands.parser.Data} data
      * @return {String | Null}
      */
-    function constructQuery(data) {
-        if (keyWord(data, "CONSTRUCT", false, true)) {
+    function describeQuery(data) {
+        if (keyWord(data, "DESCRIBE", false, true)) {
             return require([
-                "jazzHands/parser/sparql/constructTemplate",
+                "jazzHands/parser/sparql/varOrIri",
                 "jazzHands/parser/sparql/whereClause",
                 "jazzHands/parser/sparql/solutionModifier"
-            ], function (constructTemplate, whereClause, solutionModifier) {
+            ], function (varOrIri, whereClause, solutionModifier) {
                 var args = {};
-                var template = constructTemplate(data);
+                var parsing = keyWord(data, '*', false, true) || range(data, 1, -1, varOrIri);
 
-                var dataSet = when(template, function (clause) {
-                    args.template = clause;
+                var dataSet = when(parsing, function (clause) {
+                    args.variable = clause;
 
                     return range(data, 0, -1, "jazzHands/parser/sparql/clause/dataSet");
                 });
 
                 var where = when(dataSet, function (clause) {
                     args.dataSet = clause;
-                    if (args.template) {
-                        return whereClause(data);
-                    }
-                    if (!keyWord("WHERE")) {
-                        return null;
-                    }
-
-                    return block(data, "{", "}", 0, 1, "jazzHands/parser/sparql/triplesTemplate");
+                    return whereClause(data);
                 });
 
                 var modifier = when(where, function (clause) {
-                    args.where = required(clause, "Construct Missing WHERE clause");
-
+                    args.where = clause;
                     return solutionModifier(data);
                 });
 
                 return when(modifier, function (clause) {
                     args.solutionModifier = clause;
 
-                    return create("jazzHands/query/operation/Construct", args);
+                    return create("jazzHands/query/operation/Describe", args);
                 });
             });
         }
         return null;
     }
 
-    return constructQuery;
+    return describeQuery;
 });
