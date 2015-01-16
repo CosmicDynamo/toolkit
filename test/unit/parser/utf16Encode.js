@@ -25,7 +25,7 @@
  */
 define([
     "qasht/package/Unit",
-    "blocks/parser/utf16Encode"
+    "../../../string/utf16Encode"
 ], function (TestPackage, utf16Encode) {
     return new TestPackage({
         module: "blocks/parser/utf16Encode",

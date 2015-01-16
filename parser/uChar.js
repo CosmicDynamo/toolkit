@@ -25,9 +25,9 @@
  */
 define([
     "./hex",
-    "./utf16Encode",
-    "blocks/parser/anyKeyWord",
-    "blocks/parser/range"
+    "../string/utf16Encode",
+    "./anyKeyWord",
+    "./range"
 ], function (hex, utf16Encode, anyKeyWord, range) {
     /**
      * [26] UCHAR ::= '\u' HEX HEX HEX HEX | '\U' HEX HEX HEX HEX HEX HEX HEX HEX

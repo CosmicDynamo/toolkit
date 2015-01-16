@@ -29,6 +29,7 @@ define([
     /**
      * A Basic Object Container used for storing data without worrying about hasOwnProperty checks
      * @class blocks.Container
+     * @mixes dojo.declare
      */
     var Container = declare([], {
         _values: null,

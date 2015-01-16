@@ -25,8 +25,10 @@
  */
 define([
     "./keyWord",
+    "dojo/_base/lang",
+//Polyfills
     "polyfill/has!Array.find"
-], function (keyWord) {
+], function (keyWord, lang) {
     /**
      * Loops through the input key words for any successful matches
      * @public
@@ -37,6 +39,9 @@ define([
      * @return {String | null} - the matched keyWord as it appeared in the input; or null if keyWord was not found
      */
     function anyKeyWord(data, keyWords, caseSensitive, whiteSpace) {
+        if (lang.isArray(keyWords)) {
+            keyWords = [keyWords];
+        }
         return keyWords.find(function (word) {
                 return keyWord(data, word, caseSensitive, whiteSpace);
             }) || null;
