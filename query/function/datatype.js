@@ -21,33 +21,33 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.function.Lookup
+ * @module jazzHands.query.function.boolean
  */
 define([
-    "dojo/_base/declare",
-    "blocks/require/Aliased"
-], function (declare, Aliased) {
+    "RdfJs/mode/Literal"
+], function (LiteralNode) {
+    var xsdString = "http://www.w3.org/2001/XMLSchema#string";
+
     /**
-     * @class jazzHands.query.function.Lookup
-     * @mixes blocks.require.Aliased
+     * Outputs the data-type of the expression's resulting Literal Node
+     * @see http://www.w3.org/TR/xpath-functions/#func-boolean
+     * @param {Object} execData
+     * @param {jazzHands.query.DataRow} dataRow
+     * @param {jazzHands.query._Expression} expression
+     * @return {RdfJs.node.Literal<Boolean>}
+     * @throws err:FORG0006, Invalid argument type
      */
-    var Lookup = declare([Aliased], {
-        constructor: function(){
-            var lookup = this;
-            Lookup.builtIn.forEach(function(builtIn){
-                lookup.register(builtIn.name, builtIn.mid);
-            });
+    function datatype(execData, dataRow, expression) {
+        var out = expression.resolve(execData, dataRow);
+        if (!out || !out.isLiteral()) {
+            return null;
         }
-    });
-    Lookup.builtIn = [
-        "boolean",
-        "not",
-        "numeric-unary-minus",
-        "numeric-unary-plus",
-        "substring",
-        "string-length"
-    ].map(function(name){
-        return { name: "http://www.w3.org/2005/xpath-functions#" + name, mid:"jazzHands/query/function/" + name};
-    });
-    return Lookup
+        var dataType = out.datatype || xsdString;
+        if (out.language) {
+            dataType = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
+        }
+        return new LiteralNode(dataType);
+    }
+
+    return datatype;
 });

@@ -21,33 +21,25 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.function.Lookup
+ * @module jazzHands.query.function.substring
  */
-define([
-    "dojo/_base/declare",
-    "blocks/require/Aliased"
-], function (declare, Aliased) {
+define([], function () {
     /**
-     * @class jazzHands.query.function.Lookup
-     * @mixes blocks.require.Aliased
+     * returns  substring of the input string
+     * @see http://www.w3.org/TR/xpath-functions/#func-substring
+     * @param {Object} execData
+     * @param {jazzHands.query.DataRow} dataRow
+     * @param {jazzHands.query._Expression} source
+     * @return {RdfJs.node.Literal<String>}
+     * @throws err:FORG0006, Invalid argument type
      */
-    var Lookup = declare([Aliased], {
-        constructor: function(){
-            var lookup = this;
-            Lookup.builtIn.forEach(function(builtIn){
-                lookup.register(builtIn.name, builtIn.mid);
-            });
+    function ucase(execData, dataRow, source) {
+        var string = source.resolve(execData, dataRow);
+        if (string) {
+            string.nominalValue = string.nominalValue.toUpperCase();
         }
-    });
-    Lookup.builtIn = [
-        "boolean",
-        "not",
-        "numeric-unary-minus",
-        "numeric-unary-plus",
-        "substring",
-        "string-length"
-    ].map(function(name){
-        return { name: "http://www.w3.org/2005/xpath-functions#" + name, mid:"jazzHands/query/function/" + name};
-    });
-    return Lookup
+        return string;
+    }
+
+    return ucase;
 });

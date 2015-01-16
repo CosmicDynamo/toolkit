@@ -21,33 +21,33 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.function.Lookup
+ * @module jazzHands.query.function.langMatches
  */
 define([
-    "dojo/_base/declare",
-    "blocks/require/Aliased"
-], function (declare, Aliased) {
+    "RdfJs/node/Literal"
+], function (LiteralNode) {
     /**
-     * @class jazzHands.query.function.Lookup
-     * @mixes blocks.require.Aliased
+     * Converts an expression result to a Boolean Node
+     * @see http://www.w3.org/TR/sparql11-query/#func-regex
+     * @param {Object} execData
+     * @param {jazzHands.query.DataRow} dataRow
+     * @param {jazzHands.query._Expression} text
+     * @param {jazzHands.query._Expression} pattern
+     * @param {jazzHands.query._Expression} replaceWith
+     * @param {jazzHands.query._Expression} flags
+     * @return {RdfJs.node.Literal<Boolean>}
      */
-    var Lookup = declare([Aliased], {
-        constructor: function(){
-            var lookup = this;
-            Lookup.builtIn.forEach(function(builtIn){
-                lookup.register(builtIn.name, builtIn.mid);
-            });
+    function replace(execData, dataRow, text, pattern, replaceWith, flags) {
+        var string = text.resolve(execData, dataRow);
+        var match = pattern.resolve(execData, dataRow).valueOf();
+        var replace = replaceWith.resolve(execData, dataRow).valueOf();
+        var mod;
+        if (flags) {
+            mod = flags.resolve(execData, dataRow).valueOf();
         }
-    });
-    Lookup.builtIn = [
-        "boolean",
-        "not",
-        "numeric-unary-minus",
-        "numeric-unary-plus",
-        "substring",
-        "string-length"
-    ].map(function(name){
-        return { name: "http://www.w3.org/2005/xpath-functions#" + name, mid:"jazzHands/query/function/" + name};
-    });
-    return Lookup
+
+        return new LiteralNode(string.valueOf().replace(match, replace, mod), string.language, string.datatype);
+    }
+
+    return replace;
 });

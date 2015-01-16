@@ -29,12 +29,14 @@ define([
     /**
      * Negates a boolean RDF Literal Node
      * @see http://www.w3.org/TR/xpath-functions/#func-not
-     * @param {RdfJs.Node | RdfJs.Node[]} node
+     * @param {Object} execData
+     * @param {jazzHands.query.DataRow} dataRow
+     * @param {jazzHands.query._Expression} expression
      * @return {RdfJs.node.Literal<Boolean>}
      * @throws err:FORG0006, Invalid argument type
      */
-    function not(node){
-        var value = boolean(node);
+    function not(execData, dataRow, expression) {
+        var value = boolean(execData, dataRow, expression);
         value.nominalValue = value.valueOf()?"false":"true";
         return value;
     }

@@ -21,33 +21,38 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.function.Lookup
+ * @module $<class>$
  */
 define([
-    "dojo/_base/declare",
-    "blocks/require/Aliased"
-], function (declare, Aliased) {
+    "blocks/parser/anyKeyWord",
+    "blocks/parser/range",
+    "blocks/parser/find",
+    "blocks/promise/when",
+    "blocks/require/create"
+], function (anyKeyWord, range, find, when, create) {
     /**
-     * @class jazzHands.query.function.Lookup
-     * @mixes blocks.require.Aliased
+     * [9] SelectClause ::= 'SELECT' ( 'DISTINCT' | 'REDUCED' )? ( ( Var | ( '(' Expression 'AS' Var ')' ) )+ | '*' )
+     * @see http://www.w3.org/TR/sparql11-query/#rSelectClause
+     * @property {jazzHands.parser.Data} data
+     * @return {String | Null}
      */
-    var Lookup = declare([Aliased], {
-        constructor: function(){
-            var lookup = this;
-            Lookup.builtIn.forEach(function(builtIn){
-                lookup.register(builtIn.name, builtIn.mid);
-            });
+    function selectClause(data) {
+        if (anyKeyWord(data, ["SELECT"], false, true)) {
+            var mod = anyKeyWord(data, ["DISTINCT", "REDUCED"], false, true);
+            var parsing = anyKeyWord(data, ["*"], true, true) ||
+                range(data, 0, -1, function () {
+                    return find(data, ["jazzHands/parser/sparql/var", "jazzHands/parser/sparql/exprAsVar"]);
+                });
+
+            return when(parsing, function (output) {
+                return create("jazzHands/query/out/SelectClause", {
+                    columns: output,
+                    modifier: mod
+                })
+            })
+
         }
-    });
-    Lookup.builtIn = [
-        "boolean",
-        "not",
-        "numeric-unary-minus",
-        "numeric-unary-plus",
-        "substring",
-        "string-length"
-    ].map(function(name){
-        return { name: "http://www.w3.org/2005/xpath-functions#" + name, mid:"jazzHands/query/function/" + name};
-    });
-    return Lookup
+    }
+
+    return selectClause;
 });

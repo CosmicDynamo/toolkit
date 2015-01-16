@@ -21,33 +21,38 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.function.Lookup
+ * @module jazzHands.parser.sparql.unaryExpression
  */
 define([
-    "dojo/_base/declare",
-    "blocks/require/Aliased"
-], function (declare, Aliased) {
+    "blocks/promise/when",
+    "blocks/require/create",
+    "blocks/parser/hasChar",
+    "./primary"
+], function (when, create, hasChar, primaryExpression) {
     /**
-     * @class jazzHands.query.function.Lookup
-     * @mixes blocks.require.Aliased
+     * [118] UnaryExpression ::= ['!' | '+' | '-']? PrimaryExpression
+     * @see http://www.w3.org/TR/sparql11-query/#rUnaryExpression
+     * @property {jazzHands.parser.Data} data
+     * @return {Promise<*> | *}
      */
-    var Lookup = declare([Aliased], {
-        constructor: function(){
-            var lookup = this;
-            Lookup.builtIn.forEach(function(builtIn){
-                lookup.register(builtIn.name, builtIn.mid);
-            });
-        }
-    });
-    Lookup.builtIn = [
-        "boolean",
-        "not",
-        "numeric-unary-minus",
-        "numeric-unary-plus",
-        "substring",
-        "string-length"
-    ].map(function(name){
-        return { name: "http://www.w3.org/2005/xpath-functions#" + name, mid:"jazzHands/query/function/" + name};
-    });
-    return Lookup
+    function unaryExpression(data) {
+        var start = data.pos;
+        var mod = hasChar(data, ['!', '+', '-']);
+        return when(primaryExpression(data), function (result) {
+            if (!result) {
+                data.pos = start;
+                return null;
+            }
+
+            var arg = {expression: result};
+            if (mod === "!") {
+                return create("jazzHands/query/expression/logic/Not", arg);
+            } else if (mod === "-") {
+                return create("jazzHands/query/expression/Negate", arg);
+            }
+            return result
+        })
+    }
+
+    return unaryExpression;
 });

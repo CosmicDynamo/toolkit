@@ -60,10 +60,11 @@ define([
         },
         /**
          * Pulls the variables value from the requested data row
+         * @param {Object} execData
          * @param {jazzHands.query.DataRow} dataRow - The row a value is requested from
          * @return {RdfJs.Node | null}
          */
-        resolve: function (dataRow) {
+        resolve: function (execData, dataRow) {
             var out;
             if (dataRow) {
                 out = dataRow.get(this.nominalValue);

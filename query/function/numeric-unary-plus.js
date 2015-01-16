@@ -31,11 +31,15 @@ define([
     /**
      * Verifies an expression is numeric and returns it with sign unchanged
      * @see http://www.w3.org/TR/xpath-functions/#func-numeric-unary-plus
-     * @param {RdfJs.Node | RdfJs.Node[]} node
+     * @param {Object} execData
+     * @param {jazzHands.query.DataRow} dataRow
+     * @param {jazzHands.query._Expression} expression
      * @return {RdfJs.node.Literal<Number>}
      * @throws err:FORG0006, Invalid argument type
      */
-    function unaryPlus(node){
+    function unaryPlus(execData, dataRow, expression) {
+        var node = expression.resolve(execData, dataRow);
+
         var valid = !lang.isArray(node) && node.isLiteral();
 
         if (valid){

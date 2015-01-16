@@ -21,33 +21,36 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.function.Lookup
+ * @module jazzHands.query.function.boolean
  */
 define([
-    "dojo/_base/declare",
-    "blocks/require/Aliased"
-], function (declare, Aliased) {
+    "RdfJs/node/Blank"
+], function (BlankNode) {
     /**
-     * @class jazzHands.query.function.Lookup
-     * @mixes blocks.require.Aliased
+     * Converts an expression result to a Boolean Node
+     * @see http://www.w3.org/TR/xpath-functions/#func-boolean
+     * @param {Object} execData
+     * @param {jazzHands.query.DataRow} dataRow
+     * @param {jazzHands.query._Expression} expression
+     * @return {RdfJs.node.Literal<Boolean>}
+     * @throws err:FORG0006, Invalid argument type
      */
-    var Lookup = declare([Aliased], {
-        constructor: function(){
-            var lookup = this;
-            Lookup.builtIn.forEach(function(builtIn){
-                lookup.register(builtIn.name, builtIn.mid);
-            });
+    function blank(execData, dataRow, expression) {
+        var name = null, seed;
+        if (expression) {
+            seed = expression.resolve(execData, dataRow).toNT();
+            var map = execData.bNodeMap || {};
+            name = map[seed] || null;
         }
-    });
-    Lookup.builtIn = [
-        "boolean",
-        "not",
-        "numeric-unary-minus",
-        "numeric-unary-plus",
-        "substring",
-        "string-length"
-    ].map(function(name){
-        return { name: "http://www.w3.org/2005/xpath-functions#" + name, mid:"jazzHands/query/function/" + name};
-    });
-    return Lookup
+
+        var bNode = new BlankNode(name);
+
+        if (expression) {
+            map[seed] = bNode.nominalValue;
+            execData.bNodeMap = map;
+        }
+        return bNode;
+    }
+
+    return blank;
 });

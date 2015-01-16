@@ -21,33 +21,21 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.function.Lookup
+ * @module jazzHands.query.function.boolean
  */
 define([
-    "dojo/_base/declare",
-    "blocks/require/Aliased"
-], function (declare, Aliased) {
+    "RdfJs/node/Literal"
+], function (LiteralNode) {
     /**
-     * @class jazzHands.query.function.Lookup
-     * @mixes blocks.require.Aliased
+     * Helper Method to return a RDF Literal of type xsd:Boolean
+     * @see http://www.w3.org/TR/xpath-functions/#func-boolean
+     * @param {Boolean} pass
+     * @return {RdfJs.node.Literal<Boolean>}
+     * @throws err:FORG0006, Invalid argument type
      */
-    var Lookup = declare([Aliased], {
-        constructor: function(){
-            var lookup = this;
-            Lookup.builtIn.forEach(function(builtIn){
-                lookup.register(builtIn.name, builtIn.mid);
-            });
-        }
-    });
-    Lookup.builtIn = [
-        "boolean",
-        "not",
-        "numeric-unary-minus",
-        "numeric-unary-plus",
-        "substring",
-        "string-length"
-    ].map(function(name){
-        return { name: "http://www.w3.org/2005/xpath-functions#" + name, mid:"jazzHands/query/function/" + name};
-    });
-    return Lookup
+    function _boolean(pass) {
+        return new LiteralNode(pass ? "true" : "false", null, "http://www.w3.org/2001/XMLSchema#boolean");
+    }
+
+    return _boolean;
 });

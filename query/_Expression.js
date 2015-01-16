@@ -34,10 +34,11 @@ define([
     return declare([Stateful], {
         /**
          * @param {jazzHands.query.DataRow} dataRow - single row to run the expression against
-         * @return {jazzHands.rdf.Node} - the results of this expression
+         * @param {Object} execData - execution data to be used generating distinct values and doing query validation
+         * @return {RdfJs.Node} - the results of this expression
          * @public
          */
-        resolve: function(dataRow){
+        resolve: function (execData, dataRow) {
 
         }
     });

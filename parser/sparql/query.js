@@ -21,33 +21,36 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.function.Lookup
+ * @module jazzHands.parser.sparql.query
  */
 define([
-    "dojo/_base/declare",
-    "blocks/require/Aliased"
-], function (declare, Aliased) {
+    "blocks/promise/when",
+    "./prologue",
+    "./selectQuery",
+    "./constructQuery",
+    "./describeQuery",
+    "./askQuery",
+    "./valuesClause"
+], function (when, prologue, selectQuery, askQuery, constructQuery, describeQuery, valuesClause) {
     /**
-     * @class jazzHands.query.function.Lookup
-     * @mixes blocks.require.Aliased
+     * [2] Query ::= Prologue ( SelectQuery | ConstructQuery | DescribeQuery | AskQuery ) ValuesClause
+     * @see http://www.w3.org/TR/sparql11-query/#rQuery
+     * @property {jazzHands.parser.Data} data
+     * @return {String | Null}
      */
-    var Lookup = declare([Aliased], {
-        constructor: function(){
-            var lookup = this;
-            Lookup.builtIn.forEach(function(builtIn){
-                lookup.register(builtIn.name, builtIn.mid);
-            });
-        }
-    });
-    Lookup.builtIn = [
-        "boolean",
-        "not",
-        "numeric-unary-minus",
-        "numeric-unary-plus",
-        "substring",
-        "string-length"
-    ].map(function(name){
-        return { name: "http://www.w3.org/2005/xpath-functions#" + name, mid:"jazzHands/query/function/" + name};
-    });
-    return Lookup
+    function query(data) {
+        var queue = prologue(data);
+
+        queue = when(queue, function () {
+            return selectQuery(data) || askQuery(data) || constructQuery(data) || describeQuery(data);
+        });
+
+        return when(queue, function (query) {
+            query.values = valuesClause(data);
+
+            return query;
+        });
+    }
+
+    return query;
 });

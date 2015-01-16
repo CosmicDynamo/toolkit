@@ -24,38 +24,45 @@
  * @module jazzHands.query.function.boolean
  */
 define([
-    "dojo/_base/lang",
-    "./_boolean",
-    "jazzHands/query/exception/InvalidArgumentType"
-], function (lang, _boolean, InvalidArgumentType) {
+    "./_boolean"
+], function (_boolean) {
+    var xsd = function (term) {
+        return "http://www.w3.org/2001/XMLSchema#" + term;
+    };
+    var validTypes = [
+        xsd("nonPositiveInteger"),
+        xsd("negativeInteger"),
+        xsd("long"),
+        xsd("int"),
+        xsd("short"),
+        xsd("byte"),
+        xsd("nonNegativeInteger"),
+        xsd("unsignedLong"),
+        xsd("unsignedInt"),
+        xsd("unsignedShort"),
+        xsd("unsignedByte"),
+        xsd("positiveInteger")
+    ];
+
     /**
-     * Converts an expression result to a Boolean Node
-     * @see http://www.w3.org/TR/xpath-functions/#func-boolean
+     * Returns true if the input expression resolves to a Blank Node
+     * @see http://www.w3.org/TR/sparql11-query/#func-bound
      * @param {Object} execData
      * @param {jazzHands.query.DataRow} dataRow
      * @param {jazzHands.query._Expression} expression
-     * @return {RdfJs.node.Literal<Boolean>}
+     * @return {RdfJs.Node}
      * @throws err:FORG0006, Invalid argument type
      */
-    function boolean(execData, dataRow, expression) {
-        var node = expression.resolve(execData, dataRow);
-        var out;
-        if (lang.isArray(node)){
-            out = node.length > 0;
-        } else if (node.isLiteral()) {
-            out = node.valueOf();
-            if (node.datatype !== "http://www.w3.org/2001/XMLSchema#boolean") {
-                if (lang.isString(out)) {
-                    out = out.length > 0;
-                } else {
-                    out = !isNaN(out) && out !== 0;
-                }
-            }
-        } else {
-            throw new InvalidArgumentType({ input: node, module: "jazzHands/query/function/boolean" });
+    function isNumeric(execData, dataRow, expression) {
+        var testMe = expression.resolve(execData, dataRow);
+        var pass = testMe && testMe.isLiteral();
+        if (pass) {
+            pass = !validTypes.find(function (type) {
+                return type === testMe.datatype;
+            });
         }
-
-        return _boolean(out);
+        return _boolean(pass);
     }
-    return boolean;
+
+    return isNumeric;
 });

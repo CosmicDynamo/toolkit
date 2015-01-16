@@ -29,12 +29,14 @@ define([
     /**
      * Negates a numeric expression
      * @see http://www.w3.org/TR/xpath-functions/#func-numeric-unary-plus
-     * @param {RdfJs.Node | RdfJs.Node[]} node
+     * @param {Object} execData
+     * @param {jazzHands.query.DataRow} dataRow
+     * @param {jazzHands.query._Expression} expression
      * @return {RdfJs.node.Literal<Number>}
      * @throws err:FORG0006, Invalid argument type
      */
-    function unaryMinus(node){
-        var rtn = unaryPlus(node);
+    function unaryMinus(execData, dataRow, expression) {
+        var rtn = unaryPlus(execData, dataRow, expression);
 
         var value = rtn.nominalValue;
         if (value.indexOf("-") === 0){

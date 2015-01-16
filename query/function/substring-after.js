@@ -24,51 +24,45 @@
  * @module jazzHands.query.function.substring
  */
 define([
-    "RdfJs/node/Literal",
-    "jazzHands/query/exception/InvalidArgumentType"
-], function (LiteralNode, InvalidArgumentType) {
-    var xsdString = "http://www.w3.org/2001/XMLSchema#string";
+    "jazzHands/query/exception/ParameterMismatch"
+], function (ParameterMismatch) {
     /**
      * returns  substring of the input string
      * @see http://www.w3.org/TR/xpath-functions/#func-substring
      * @param {Object} execData
      * @param {jazzHands.query.DataRow} dataRow
-     * @param {jazzHands.query._Expression} srcExpr
-     * @param {jazzHands.query._Expression} strtExpr
-     * @param {jazzHands.query._Expression} lnExpr
+     * @param {jazzHands.query._Expression} sourceExpr
+     * @param {jazzHands.query._Expression} findExpr
      * @return {RdfJs.node.Literal<String>}
      * @throws err:FORG0006, Invalid argument type
      */
-    function substring(execData, dataRow, srcExpr, strtExpr, lnExpr) {
-        var source = srcExpr.resolve(execData, dataRow);
-        var start = strtExpr.resolve(execData, dataRow);
-        var length = lnExpr.resolve(execData, dataRow);
+    function substring(execData, dataRow, sourceExpr, findExpr) {
+        var source = sourceExpr.resolve(execData, dataRow);
+        var find = findExpr.resolve(execData, dataRow).valueOf();
+        if (source.language && find.language) {
+            if (source.language === find.language) {
+                throw new ParameterMismatch({
+                    param1: source,
+                    param2: find,
+                    hint: "string language must match, if provided",
+                    module: "jazzHands/query/function/substring-before"
+                });
+            }
+        }
 
-        var valid = source && source.isLiteral() && (source.datatype || xsdString) === xsdString;
-        if (!valid){
-            throw new InvalidArgumentType({ input: source, module: "jazzHands/query/function/substring" });
-        }
-        source = source.valueOf();
-        var len;
-        if (length){
-            len = length.valueOf();
-        } else {
-            len = source.length;
-        }
-        if (isNaN(len) && Math.abs(len) != Number.POSITIVE_INFINITY){
-            len = -1;
-        }
-        var startAt = Math.ceil(start && start.valueOf());
-        if (isNaN(startAt) && Math.abs(len) != Number.POSITIVE_INFINITY){
-            startAt = source.length+1;
-        }
-        var end = --startAt + len;
+        var string = source.valueOf();
+        var foundAt = string.indexOf(find);
+
+        var language = null;
+        var dataType = null;
         var out = "";
-        for (var idx = startAt || 0; idx < end && idx < source.length; idx++){
-            out += source[idx] || "";
+        if (foundAt > -1) {
+            language = source.language;
+            dataType = source.datatype;
+            out = string.substr(foundAt + find.length);
         }
-
-        return new LiteralNode(out, null, xsdString);
+        return new LiteralNode(out, language, dataType);
     }
+
     return substring;
 });

@@ -21,33 +21,19 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.function.Lookup
+ * @module jazzHands.query.exception.InvalidArgumentType
  */
 define([
     "dojo/_base/declare",
-    "blocks/require/Aliased"
-], function (declare, Aliased) {
+    "blocks/Exception"
+], function (declare, Exception) {
     /**
-     * @class jazzHands.query.function.Lookup
-     * @mixes blocks.require.Aliased
+     * @class jazzHands.query.exception.InvalidArgumentType
+     * @mixes blocks.Exception
      */
-    var Lookup = declare([Aliased], {
-        constructor: function(){
-            var lookup = this;
-            Lookup.builtIn.forEach(function(builtIn){
-                lookup.register(builtIn.name, builtIn.mid);
-            });
-        }
+    return declare([Exception], {
+        error: "err:SPARQL-0001",
+        message: "Parameter Mismatch",
+        see: "http://www.w3.org/TR/xpath-functions/#ERRFORG0006"
     });
-    Lookup.builtIn = [
-        "boolean",
-        "not",
-        "numeric-unary-minus",
-        "numeric-unary-plus",
-        "substring",
-        "string-length"
-    ].map(function(name){
-        return { name: "http://www.w3.org/2005/xpath-functions#" + name, mid:"jazzHands/query/function/" + name};
-    });
-    return Lookup
 });

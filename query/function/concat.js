@@ -21,33 +21,35 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.function.Lookup
+ * @module jazzHands.query.function.concat
  */
 define([
-    "dojo/_base/declare",
-    "blocks/require/Aliased"
-], function (declare, Aliased) {
+    "RdfJs/node/Literal"
+], function (LiteralNode) {
     /**
-     * @class jazzHands.query.function.Lookup
-     * @mixes blocks.require.Aliased
+     * returns  substring of the input string
+     * @see http://www.w3.org/TR/xpath-functions/#func-concat
+     * @param {Object} execData
+     * @param {jazzHands.query.DataRow} dataRow
+     * @param {...jazzHands.query._Expression} expression
+     * @return {Null | *}
      */
-    var Lookup = declare([Aliased], {
-        constructor: function(){
-            var lookup = this;
-            Lookup.builtIn.forEach(function(builtIn){
-                lookup.register(builtIn.name, builtIn.mid);
-            });
-        }
-    });
-    Lookup.builtIn = [
-        "boolean",
-        "not",
-        "numeric-unary-minus",
-        "numeric-unary-plus",
-        "substring",
-        "string-length"
-    ].map(function(name){
-        return { name: "http://www.w3.org/2005/xpath-functions#" + name, mid:"jazzHands/query/function/" + name};
-    });
-    return Lookup
+    function concat(execData, dataRow, expression) {
+        var parts = [].splice.call(arguments, 2).map(function (expression) {
+            return expression.resolve(execData, dataRow);
+        });
+
+        var language = parts.every(function (literal) {
+            return literal.language === parts[0].language;
+        });
+        var dataType = parts.every(function (literal) {
+            return literal.datatype === parts[0].datatype;
+        });
+        var string = parts.map(function (literal) {
+            return literal.valueOf();
+        }).join("");
+        return new LiteralNode(string, language, dataType);
+    }
+
+    return concat;
 });

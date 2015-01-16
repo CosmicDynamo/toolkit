@@ -45,14 +45,15 @@ define([
         /**
          * Executes a function with the given arguments
          * @override jazzHands.query._Expression#resolve
+         * @param {Object} execData - execution data to be used generating distinct values and doing query validation
+         * @param {jazzHands.query.DataRow} dataRow
          * @return {RdfJs.node.Literal<Number>}
          */
-        resolve: function(dataRow){
-            var args = this.args.map(function(arg){
-                return arg.resolve(dataRow);
-            });
+        resolve: function (execData, dataRow) {
+            var args = this.args;
+
             args.push(this.distinct);
-            return this.fn.apply(this, args);
+            return this.fn.apply(this, [execData, dataRow].concat(args));
         }
     });
 });

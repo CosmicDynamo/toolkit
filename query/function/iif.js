@@ -21,33 +21,27 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.function.Lookup
+ * @module jazzHands.query.function.boolean
  */
-define([
-    "dojo/_base/declare",
-    "blocks/require/Aliased"
-], function (declare, Aliased) {
+define([], function () {
     /**
-     * @class jazzHands.query.function.Lookup
-     * @mixes blocks.require.Aliased
+     * Returns true if var is bound to a value. Returns false otherwise. Variables with the value NaN or INF are considered bound.
+     * @see http://www.w3.org/TR/sparql11-query/#func-bound
+     * @param {Object} execData
+     * @param {jazzHands.query.DataRow} dataRow
+     * @param {jazzHands.query._Expression} test
+     * @param {jazzHands.query._Expression} ifTrue
+     * @param {jazzHands.query._Expression} ifFalse
+     * @return {RdfJs.Node}
+     * @throws err:FORG0006, Invalid argument type
      */
-    var Lookup = declare([Aliased], {
-        constructor: function(){
-            var lookup = this;
-            Lookup.builtIn.forEach(function(builtIn){
-                lookup.register(builtIn.name, builtIn.mid);
-            });
+    function bound(execData, dataRow, test, ifTrue, ifFalse) {
+        var pass = test.resolve(execData, dataRow);
+        if (pass && pass.valueOf()) {
+            return ifTrue.resolve(execData, dataRow);
         }
-    });
-    Lookup.builtIn = [
-        "boolean",
-        "not",
-        "numeric-unary-minus",
-        "numeric-unary-plus",
-        "substring",
-        "string-length"
-    ].map(function(name){
-        return { name: "http://www.w3.org/2005/xpath-functions#" + name, mid:"jazzHands/query/function/" + name};
-    });
-    return Lookup
+        return ifFalse.resolve(execData, dataRow);
+    }
+
+    return bound;
 });

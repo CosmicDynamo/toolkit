@@ -21,33 +21,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.function.Lookup
+ * @module jazzHands.query.parser.valuesClause
  */
 define([
-    "dojo/_base/declare",
-    "blocks/require/Aliased"
-], function (declare, Aliased) {
+    "blocks/parser/keyWord",
+    "blocks/parser/required",
+    "blocks/parser/find"
+], function (keyWord, required, find) {
     /**
-     * @class jazzHands.query.function.Lookup
-     * @mixes blocks.require.Aliased
+     * [28] ValuesClause ::= ( 'VALUES' DataBlock )?
+     * @see http://www.w3.org/TR/sparql11-query/#rValuesClause
+     * @property {jazzHands.parser.Data} data
+     * @return {String | Null}
      */
-    var Lookup = declare([Aliased], {
-        constructor: function(){
-            var lookup = this;
-            Lookup.builtIn.forEach(function(builtIn){
-                lookup.register(builtIn.name, builtIn.mid);
-            });
+    function valuesClause(data) {
+        if (keyWord(data, "VALUES")) {
+            return required(find(data, ["jazzHands/parser/sparql/dataBlock"]), "'VALUES' Missing DataBlock");
         }
-    });
-    Lookup.builtIn = [
-        "boolean",
-        "not",
-        "numeric-unary-minus",
-        "numeric-unary-plus",
-        "substring",
-        "string-length"
-    ].map(function(name){
-        return { name: "http://www.w3.org/2005/xpath-functions#" + name, mid:"jazzHands/query/function/" + name};
-    });
-    return Lookup
+    }
+
+    return valuesClause;
 });

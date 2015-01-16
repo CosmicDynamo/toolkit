@@ -21,33 +21,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module jazzHands.query.function.Lookup
+ * @module jazzHands.parser.sparql.unaryExpression
  */
 define([
-    "dojo/_base/declare",
-    "blocks/require/Aliased"
-], function (declare, Aliased) {
+    /*"./bracketted",
+     "../function/builtInCall",
+     "../iriOrFunction",*/
+    "RdfJs/parser/literal"//,
+    //"../var"
+], function (/*bracketted, builtIncall, iriOrFunction,*/ literal/*, variable*/) {
     /**
-     * @class jazzHands.query.function.Lookup
-     * @mixes blocks.require.Aliased
+     * [119] PrimaryExpression ::= BrackettedExpression | BuiltInCall | iriOrFunction | RDFLiteral | NumericLiteral | BooleanLiteral | Var
+     * @see http://www.w3.org/TR/sparql11-query/#rPrimaryExpression
+     * @property {jazzHands.parser.Data} data
+     * @return {Promise<*> | *}
      */
-    var Lookup = declare([Aliased], {
-        constructor: function(){
-            var lookup = this;
-            Lookup.builtIn.forEach(function(builtIn){
-                lookup.register(builtIn.name, builtIn.mid);
-            });
-        }
-    });
-    Lookup.builtIn = [
-        "boolean",
-        "not",
-        "numeric-unary-minus",
-        "numeric-unary-plus",
-        "substring",
-        "string-length"
-    ].map(function(name){
-        return { name: "http://www.w3.org/2005/xpath-functions#" + name, mid:"jazzHands/query/function/" + name};
-    });
-    return Lookup
+    function primaryExpression(data) {
+        return /*breacketted(data) || builtInCall(data) || iriOrFunction(data) ||*/ literal(data);// || variable(data);
+    }
+
+    return primaryExpression;
 });
