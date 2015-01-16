@@ -2,15 +2,15 @@
  * Created by Akeron on 3/8/14.
  */
 define([
-    "dojo/_base/declare", "./_Map"
+    "dojo/_base/declare",
+    "./_Map"
 ], function (declare, _Map) {
     /* Implementation of <http://www.w3.org/TR/rdf-interfaces/#idl-def-PrefixMap> */
 
     return declare([_Map], {
-        values: null,
-        constructor: function () {
-            if (this.default) {
-                this.values[""] = this.default;
+        constructor: function (args) {
+            if (args.default) {
+                this.set("", args.default);
             }
         },
         /*get : http://www.w3.org/TR/rdf-interfaces/#widl-TermMap-get-omittable-getter-DOMString-DOMString-term */
@@ -42,18 +42,15 @@ define([
         },
         shrink: function (iri) {
             /* http://www.w3.org/TR/rdf-interfaces/#widl-TermMap-shrink-DOMString-DOMString-iri */
-            for (var term in this.values) {
-                if (this.values[term] === iri) {
-                    return term;
-                }
-            }
-
-            return iri;
+            var map = this;
+            return this.keys().find(function (term) {
+                    return map.get(term) === iri;
+                }) || iri;
         },
         setDefault: function (iri) {
             /* http://www.w3.org/TR/rdf-interfaces/#widl-TermMap-setDefault-void-DOMString-iri */
-            this.default = iri;
+            this.set("", iri);
         }
         /*addAll : http://www.w3.org/TR/rdf-interfaces/#widl-TermMap-addAll-TermmMap-TermMap-terms-boolean-override */
     });
-})
+});

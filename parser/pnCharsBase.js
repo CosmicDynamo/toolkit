@@ -25,7 +25,7 @@
  */
 define([
     "blocks/parser/matchChar",
-    "blocks/parser/utf16Encode",
+    "../../blocks/string/utf16Encode",
     "polyfill/has!String.codePointAt"
 ], function (matchChar, utf16Encode) {
     /**

@@ -38,13 +38,14 @@ define([
             /* http://www.w3.org/TR/rdf-interfaces/#widl-Profile-setPrefix-void-DOMString-prefix-DOMString-iri */
             this.prefixes.set(pref, iri);
         },
+        /* Reserved word...
         import: function (prof, override) {
-            /* http://www.w3.org/TR/rdf-interfaces/#widl-Profile-importProfile-Profile-Profile-profile-boolean-override */
+         *//* http://www.w3.org/TR/rdf-interfaces/#widl-Profile-importProfile-Profile-Profile-profile-boolean-override *//*
             this.prefixes.addAll(prof.prefixes, override);
             this.terms.addAll(prof.terms, override);
 
             return this;
-        },
+         },*/
         shrink: function (iri) {
             var out = this.terms.shrink(iri);
             if (iri === out) {
