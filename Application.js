@@ -27,9 +27,10 @@ define([
     "dojo/_base/declare",
     "core/Application",
     "./Router",
-    "core/converter",
+    "./Server",
+    "core/convert",
     "service/io/file"
-], function (declare, Application, Router, converter, file) {
+], function (declare, Application, Router, Server, convert, file) {
     /**
      * @class service.Application
      * @mixes core.Application
@@ -37,14 +38,17 @@ define([
     return declare([Application], {
         /** @property {service.config} */
         config: null,
-        constructor: function () {
+        constructor: function (params) {
             this.components.push("router");
-            this.router = new Router({app: this});
+            this.components.push("server");
+            this.router = new Router();
+            this.server = new Server();
             this.file = file;
+            this.messaging = params.server;
 
-            var convert = this.config.converter;
-            if (convert) {
-                converter.register(convert);
+            var converters = this.config.converter;
+            if (converters) {
+                convert.register(converters);
             }
         }
     });
