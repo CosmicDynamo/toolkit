@@ -26,19 +26,47 @@
 define([
     "dojo/_base/declare",
     "./cache",
-    "dojo/Stateful"
-], function (declare, cache, Stateful) {
+    "dojo/Stateful",
+    "blocks/promise/when",
+    "core/convert"
+], function (declare, cache, Stateful, when, convert) {
     /**
      * @class core.app._Component
+     * @mixes dojo.Stateful
      * @mixes dojo.declare
      */
     return declare([Stateful], {
+        /** @property {String} name of the RDF Graph which contains the Hub's configuration data */
+        configGraph: null,
         /**
          * Returns the active application object
          * @return {core.Application}
          */
         app: function(){
             return cache.get();
+        },
+        /**
+         * Pulls RDF configuration information and puts it into the Components configuration graph
+         * @param {Object} [config] - config data to use when prepping this object
+         * @return {Promise | null}
+         */
+        loadConfig: function(config) {
+            config = config || {};
+            if (!config.load) {
+                return null;
+            }
+
+            var graph = this.config();
+            return when(convert.loadFile(config.load, "RdfGraph"), function (data) {
+                graph.addAll(data);
+            });
+        },
+        /**
+         * Returns the RDF Graph containing configuration data for this Component
+         * @return {RdfJs.Graph}
+         */
+        config: function(){
+            return this.app().store.getGraph(this.configGraph, { createIfNotExists: true});
         }
     });
 });

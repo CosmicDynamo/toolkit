@@ -21,22 +21,28 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module core.app.cache
+ * @module core._Handler
  */
 define([
-    "blocks/require"
-], function (require) {
+    "dojo/_base/declare",
+    "./app/_Component"
+], function (declare, _Component) {
     /**
-     * @instance core.app.cache
+     * Represents a class that generically handles performing some operation on a piece of data
+     * @class core._Handler
+     * @mixes core.app._Component
+     * @interface
      */
-    return {
-        get: function(){
-            return this.app;
-        },
-        create: function(mid, config){
-            return require([mid], function(Ctor){
-                return this.app = (new Ctor(config || {}))
-            }.bind(this));
+    return declare([_Component], {
+        /**
+         * Main method called when a piece of RDF data needs ...'handling'
+         * @param {RdfJs.Node} iri - The Subject Identifier of the data being handled
+         * @param {Object} args - arguments that can be used to control how the data is handled
+         * @param {RdfJs.Graph} args.handleGraph - The graph containing the data associated with this subject
+         * @return {Promise<*>} - Promise that will be resolved when handling is complete.
+         */
+        handle: function(iri, args){
+
         }
-    };
+    });
 });

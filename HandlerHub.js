@@ -27,12 +27,11 @@ define([
     "dojo/_base/declare",
     "dojo/_base/lang",
     "core/app/_Component",
-    "blocks/require/Aliased",
-    "blocks/promise/when",
-    "core/convert"
-], function (declare, lang, _Component, Aliased, when, convert) {
-    var rdfType = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
-    var aps = function(term){
+    "blocks/require",
+    "RdfJs/node/Literal",
+    "RdfJs/Graph"
+], function (declare, lang, _Component, require, Literal, Graph) {
+    var pres = function(term){
         return "<http://vocab.cosmicdynamo.net/presentation.owl#" + term + ">";
     };
     /**
@@ -43,75 +42,63 @@ define([
      * @mixes core.app._Component
      */
     return declare([_Component], {
-        /** @property {String} name of the RDF Graph which contains the Hub's configuration data */
-        configGraph: null,
         /** @property {String} name of the method to call to trigger the 'handling' process */
         handleMethod: "handle",
-        /** @property {blocks.require.Aliased} */
-        require: null,
-        /** @property {String} */
-        handlerType: aps("Handler"),
+        /** @property {String} NT Form IRI for pres:hasPurpose */
+        hasPurpose: null,
+        /** @property {String} NT Form IRI for pres:moduleId */
+        moduleId: null,
         constructor: function(){
-            this.require = new Aliased();
+            this.hasPurpose = pres("hasPurpose").toNT();
+            this.moduleId = pres("moduleId").toNT();
         },
         postscript: function(){
             this.inherited(arguments);
+
             this[this.handleMethod] = this.handle;
-        },
-        loadConfig: function(config){
-            var hub = this;
-            var store = hub.app().store;
-            var graphName = hub.configGraph;
-
-            if (config && config.load) {
-                var loaded = when(convert.loadFile(config.load, "RdfGraph"), function (data) {
-                    store.addAll(data, graph);
-                });
-            }
-
-            return when(loaded, function(){
-                var graph = store.getGraph(graphName);
-                graph.match(null, rdfType, hub.handlerType).forEach(function (handler) {
-                    var iri = handler.subject.toNT();
-                    var mid = graph.match(iri, aps("moduleId"), null).toArray()[0].object.valueOf();
-                    graph.match(iri, aps("handlesType"), null).forEach(function (type) {
-                        hub.require.register(type.object.valueOf(), mid);
-                    })
-                })
-            })
         },
         /**
          * Finds the appropriate handler and executes it for the input object
          * @param {RdfJs.Node} iri - Identifier for the object being handled
-         * @param {Object} options - configuration options
-         * @param {RdfJs.Graph | String} options.handleGraph - graph which contains the data for the object being handled
+         * @param {Object} [options] - configuration options
+         * @param {RdfJs.Node[]} [options.handleAs] - Use these type IRIs instead of values from the RDF graph
+         * @param {String} [options.purpose] - A modifier to use when choosing the handler for this object
+         * @param {RdfJs.Graph | String} [options.handleGraph] - graph which contains the data for the object being handled
          */
         handle: function(iri, options){
+            options = options || {};
+
             var graph = options.handleGraph;
             if (lang.isString(options.handleGraph)){
                 options.handleGraph = graph = this.app().store.getGraph(graph);
             }
 
-            var type = graph.match(iri.toNT(), rdfType, null).toArray().map(function(triple){
-                return triple.object.toString();
+            var types = options.handleAs || graph.match(iri.toNT(), "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", null).toArray().map(function(triple){
+                return triple.object;
             });
 
-            var handled = null;
-            for(var idx = 0; idx < type.length; idx++){
-                handled = this.require.load(type[idx], function(module){
-                    return this._callHandler(module, iri, options);
-                }.bind(this));
-                if (handled){
-                    break;
-                }
-            }
+            var handlers = new Graph();
+            types.forEach(function(typeIri){
+                handlers.addAll(graph.match(null, pres("handlesType"), typeIri.toNT()).toArray());
+            });
+            var method = this.handleMethod;
 
-           return handled;
-        },
-        _callHandler: function(module, iri, options){
-            var inst = (lang.isFunction(module))?new module(options):module;
+            var purpose = Literal(options.purpose || "ANY", null, "http://www.w3.org/1999/02/22-rdf-syntax-ns#string");
+            var hasPurpose = this.hasPurpose;
+            handlers = handlers.filter(function(triple){
+                return graph.match(triple.subject.toNT(), hasPurpose, purpose).length === (purpose?1:0);
+            });
 
-            return inst[this.handleMethod](iri, options);
+            var moduleId = this.moduleId;
+            return handlers.map(function(triple){
+                return graph.match(triple.subject.toNT(), moduleId, null).toArray()[0].object;
+            }).map(function(mid){
+                return require([mid.valueOf()], function(module){
+                    var inst = (lang.isFunction(module))?new module(options):module;
+
+                    return inst[method](iri, options);
+                })
+            });
         }
     });
 });

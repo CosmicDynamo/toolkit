@@ -24,12 +24,11 @@
  * @module core/converter
  */
 define([
-    "dojo/_base/lang",
     "blocks/Cache",
     "blocks/Container",
     "blocks/require",
     "./header/accept"
-], function (lang, Cache, Container, require, parseAccept) {
+], function (Cache, Container, require, parseAccept) {
     var parsers = new Cache({
         load: function(){
             return new Container();
@@ -41,9 +40,10 @@ define([
      * @param {String} fromType - mediaType of the input data
      * @param {String} accept - data type of the output
      * @param {*} data - Data to be parsed
+     * @param {Object} [options] - params to use when converting the data
      * @return {Promise<*> | null} - data formatted as requested; or null if no parser available
      */
-    function convert(fromType, accept, data) {
+    function convert(fromType, accept, data, options) {
         var parts = fromType.split(";");
 
         var from = parsers.get(parts[0]);
@@ -56,7 +56,7 @@ define([
         }
 
         return require([to], function (parse) {
-            var options = {};
+            var options = options || {};
             if (parts[1]){
                 parts[1].split(",").map(function(params){
                     return params.split("=");
@@ -129,13 +129,14 @@ define([
     /**
      * Loads a file directly to the target format
      * @param {String} fileName - File to be loaded
-     * @param {String} to - detination format/mimeType
+     * @param {String} to - destination format/mimeType
+     * @param {Object} [options] - params to use when converting the data
      * @return {Promise<*>}
      */
-    convert.loadFile = function(fileName, to){
+    convert.loadFile = function(fileName, to, options){
         var from = fileExt.get(fileName.split(".")[1]);
         return require(["dojo/text!" + fileName], function(data) {
-            return convert(data, from, to)
+            return convert(data, from, to, options)
         });
     };
 
