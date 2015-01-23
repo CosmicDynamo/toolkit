@@ -28,6 +28,7 @@ define([
 ], function (_Node) {
     /**
      * @class RdfJs.node.Named
+     * @mixes RdfJs.Node
      * @see http://www.w3.org/TR/rdf-interfaces/#idl-def-NamedNode
      */
     return function (params) {
