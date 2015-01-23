@@ -79,17 +79,12 @@ define([
                 promises.remove(require.toUrl(mid)+ ".js");
             });
 
-            try {
-                return fn ? fn.apply(this, args) : args;
-            } catch (err) {
-                return callDone.reject(err);
-            }
+            return fn ? fn.apply(this, args) : args;
         };
         if (promise.isResolved()) {
             return done(callback, out);
         }
 
-        var callDone = new Deferred();
         return when(promise, function (modules) {
             return done(callback, modules);
         }, function(err){
