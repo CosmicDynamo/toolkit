@@ -29,20 +29,61 @@ define([
     "./Router",
     "./Server",
     "core/convert",
-    "service/io/file"
-], function (declare, Application, Router, Server, convert, file) {
+    "service/io/file",
+    "service/data/Provider",
+    "service/Permission",
+    "service/Ontology"
+], function (declare, Application, Router, Server, convert, file, Provider, Permission, Ontology) {
     /**
      * @class service.Application
      * @mixes core.Application
      */
     return declare([Application], {
-        /** @property {service.config} */
+        /**
+         * @property
+         * @type {service.config}
+         */
         config: null,
+        /**
+         * @property
+         * @type {service.Router}
+         */
+        router:null,
+        /**
+         * @property
+         * @type {service.data.Provider}
+         */
+        data:null,
+        /**
+         * @property
+         * @type {service.Server}
+         */
+        server:null,
+        /**
+         * @property
+         * @type {service.Permission}
+         */
+        permission: null,
+        /**
+         * @property
+         * @type {service.Ontology}
+         */
+        ontology: null,
         constructor: function (params) {
             this.components.push("router");
             this.components.push("server");
+            this.components.push("permission");
+            this.components.push("ontology");
+            //noinspection JSValidateTypes
             this.router = new Router();
+            //noinspection JSValidateTypes
             this.server = new Server();
+            //noinspection JSValidateTypes
+            this.data = new Provider();
+            //noinspection JSValidateTypes
+            this.permission = new Permission();
+            //noinspection JSValidateTypes
+            this.ontology = new Ontology();
             this.file = file;
             this.messaging = params.server;
 
