@@ -24,21 +24,23 @@
  * @module jazzHands.parser.turtle
  */
 define([
-    "dojo/_base/declare",
+    "dojo/_base/Deferred",
     "dojo/_base/kernel",
     "dojo/when",
     "RdfJs/parser/Data",
     "RdfJs/parser/whiteSpace",
     "RdfJs/Graph",
     "./turtle/turtleDoc"
-], function (declare, kernel, when, Data, whiteSpace, Graph, turtleDoc) {
+], function (Deferred, kernel, when, Data, whiteSpace, Graph, turtleDoc) {
     /* Implementation of <http://www.w3.org/TeamSubmission/turtle/> */
     function onError(error) {
         //var wP = "";
         error.failed = true;
         //TODO Add code to find line-number/position of the error
         error.message = "Parsing Error, '" + error.message + "', while parsing turtle document";
-        throw error;
+        var rejected = (new Deferred());
+        rejected.reject(error);
+        return rejected;
     }
 
     /**
@@ -60,10 +62,16 @@ define([
         data.whiteSpace = function () {
             return whiteSpace(data);
         };
-        return when(turtleDoc(data), function () {
+        try {
+            var done = turtleDoc(data);
+        } catch(ex){
+            return onError(ex);
+        }
+
+        return when(done, function () {
             data.whiteSpace();
             if (data.pos < data.input.length) {
-                onError({message: "Statement found after end of valid turtle"});
+                return onError({message: "Statement found after end of valid turtle"});
             }
 
             return data.graph;
