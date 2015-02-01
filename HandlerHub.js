@@ -29,11 +29,9 @@ define([
     "core/app/_Component",
     "blocks/require",
     "RdfJs/node/Literal",
-    "RdfJs/Graph"
-], function (declare, lang, _Component, require, Literal, Graph) {
-    var pres = function(term){
-        return "<http://vocab.cosmicdynamo.net/presentation.owl#" + term + ">";
-    };
+    "RdfJs/Graph",
+    "core/ontology/pres"
+], function (declare, lang, _Component, require, Literal, Graph, pres) {
     /**
      * Takes an RDF object and finds the registered code to 'handle' it
      * @description uses rdf:type to match up an RDF object the the code-base that should be
@@ -49,7 +47,7 @@ define([
         /** @property {String} NT Form IRI for pres:moduleId */
         moduleId: null,
         constructor: function(){
-            this.hasPurpose = pres("hasPurpose").toNT();
+            this.hasPurpose = pres("handlePurpose").toNT();
             this.moduleId = pres("moduleId").toNT();
         },
         postscript: function(){
@@ -68,36 +66,48 @@ define([
         handle: function(iri, options){
             options = options || {};
 
-            var graph = options.handleGraph;
-            if (lang.isString(options.handleGraph)){
-                options.handleGraph = graph = this.app().store.getGraph(graph);
+
+            var types;
+            if (options.handleAs) {
+                types = [options.handleAs];
+            } else {
+                var handleGraph = options.handleGraph;
+                if (lang.isString(handleGraph)){
+                    options.handleGraph = this.app().store.getGraph(handleGraph);
+                }
+
+                types = options.handleGraph.match(iri.toNT(), "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", null).toArray().map(function(triple){
+                    return triple.object;
+                });
             }
 
-            var types = options.handleAs || graph.match(iri.toNT(), "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", null).toArray().map(function(triple){
-                return triple.object;
-            });
-
+            var graph = this.config();
             var handlers = new Graph();
             types.forEach(function(typeIri){
-                handlers.addAll(graph.match(null, pres("handlesType"), typeIri.toNT()).toArray());
+                handlers.addAll(graph.match(null, pres("handlesType").toNT(), typeIri.toNT()).toArray());
             });
             var method = this.handleMethod;
 
-            var purpose = Literal(options.purpose || "ANY", null, "http://www.w3.org/1999/02/22-rdf-syntax-ns#string");
+            var purpose = Literal(options.purpose || "ANY", null, "http://www.w3.org/2001/XMLSchema#string").toNT();
             var hasPurpose = this.hasPurpose;
-            handlers = handlers.filter(function(triple){
-                return graph.match(triple.subject.toNT(), hasPurpose, purpose).length === (purpose?1:0);
+            var handler = handlers.toArray().find(function(triple){
+                return graph.match(triple.subject.toNT(), hasPurpose, purpose).length > 0;
             });
 
-            var moduleId = this.moduleId;
-            return handlers.map(function(triple){
-                return graph.match(triple.subject.toNT(), moduleId, null).toArray()[0].object;
-            }).map(function(mid){
-                return require([mid.valueOf()], function(module){
-                    var inst = (lang.isFunction(module))?new module(options):module;
+            if (!handler){
+                return null;
+            }
 
-                    return inst[method](iri, options);
-                })
+            var moduleId = this.moduleId;
+            var mid = graph.match(handler.subject.toNT(), moduleId, null).toArray()[0].object;
+
+            return require([mid.valueOf()], function(module){
+                var inst = (lang.isFunction(module))?new module(options):module;
+
+                if (options.noExec){
+                    return inst;
+                }
+                return inst[method](iri, options);
             });
         }
     });

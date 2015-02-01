@@ -25,13 +25,15 @@
  */
 define([
     "dojo/_base/declare",
-    "RdfJs/TripleStore"
-], function (declare, TripleStore) {
+    "RdfJs/TripleStore",
+    "core/app/_Component"
+], function (declare, TripleStore, _Component) {
     /**
      * @class core.data.Cache
      * @mixes RdfJs.TripleStore
+     * @mixes core.app._Component
      */
-    return declare([TripleStore], {
+    return declare([TripleStore, _Component], {
 
     });
 });

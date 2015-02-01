@@ -111,13 +111,13 @@ define([
     function bestMatch(supported, header) {
         var parsedHeader = parseRanges(header);
 
-        return (supported.map(function(mimeType){
+        return supported.map(function(mimeType){
             return parseFitnessAndQuality(mimeType, parsedHeader);
         }).filter(function(mimeType){
             return mimeType.fitness > 0;
         }).sort(function(comp, to){
             return comp.q < to.q;
-        })[0] || {}).mimeType;
+        })[0];
     }
     return bestMatch;
 });

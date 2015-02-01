@@ -36,7 +36,10 @@ define([
      * @mixes dojo.declare
      */
     return declare([Stateful], {
-        /** @property {String} name of the RDF Graph which contains the Hub's configuration data */
+        /**
+         * @property name of the RDF Graph which contains the Hub's configuration data
+         * @type {String}
+         * */
         configGraph: null,
         /**
          * Returns the active application object
@@ -59,6 +62,8 @@ define([
             var graph = this.config();
             return when(convert.loadFile(config.load, "RdfGraph"), function (data) {
                 graph.addAll(data);
+            }, function(err){
+                console.error("Failed to load file".error, config.load.data, err.message.info);
             });
         },
         /**

@@ -25,9 +25,8 @@
  */
 define([
     "qasht/package/Unit",
-    "core/header/accept",
-    "RdfJs/test/fake/Node"
-], function (TestPackage, bestMatch, Node) {
+    "core/header/accept"
+], function (TestPackage, bestMatch) {
     return new TestPackage({
         module: "core/header/accept",
         tests: [
@@ -36,7 +35,7 @@ define([
                 exec: function (test) {
                     var match = bestMatch(['application/xbel+xml', 'application/xml'], 'application/xbel+xml');
 
-                    test.assertEqual('application/xbel+xml', match);
+                    test.assertEqual('application/xbel+xml', match.mimeType);
 
                     test.complete();
                 }
@@ -46,7 +45,7 @@ define([
                 exec: function (test) {
                     var match = bestMatch(['application/xbel+xml', 'application/xml'], 'application/xbel+xml; q=1');
 
-                    test.assertEqual('application/xbel+xml', match);
+                    test.assertEqual('application/xbel+xml', match.mimeType);
 
                     test.complete();
                 }
@@ -56,7 +55,7 @@ define([
                 exec: function (test) {
                     var match = bestMatch(['application/xbel+xml', 'application/xml'], 'application/xml; q=1');
 
-                    test.assertEqual('application/xml', match);
+                    test.assertEqual('application/xml', match.mimeType);
 
                     test.complete();
                 }
@@ -66,7 +65,7 @@ define([
                 exec: function (test) {
                     var match = bestMatch(['application/xml', 'application/xbel+xml'], 'application/*; q=1');
 
-                    test.assertEqual('application/xml', match);
+                    test.assertEqual('application/xml', match.mimeType);
 
                     test.complete();
                 }
@@ -76,7 +75,7 @@ define([
                 exec: function (test) {
                     var match = bestMatch(['application/xml', 'application/xbel+xml'], '*/*');
 
-                    test.assertEqual('application/xml', match);
+                    test.assertEqual('application/xml', match.mimeType);
 
                     test.complete();
                 }
@@ -86,7 +85,7 @@ define([
                 exec: function (test) {
                     var match = bestMatch(['application/xbel+xml', 'text/xml'], 'text/*;q=0.5,*/*; q=0.1');
 
-                    test.assertEqual('text/xml', match);
+                    test.assertEqual('text/xml', match.mimeType);
 
                     test.complete();
                 }
@@ -106,7 +105,7 @@ define([
                 exec: function (test) {
                     var match = bestMatch(['application/json', 'text/xml'], 'application/json, text/javascript, */*');
 
-                    test.assertEqual('application/json', match);
+                    test.assertEqual('application/json', match.mimeType);
 
                     test.complete();
                 }
@@ -116,7 +115,7 @@ define([
                 exec: function (test) {
                     var match = bestMatch(['application/json', 'text/xml'], 'application/json, text/html;q=0.9');
 
-                    test.assertEqual('application/json', match);
+                    test.assertEqual('application/json', match.mimeType);
 
                     test.complete();
                 }
@@ -127,8 +126,8 @@ define([
                     var match1 = bestMatch(['application/json', 'application/xml'],  'application/json, application/xml');
                     var match2 = bestMatch(['application/xml', 'application/json'],  'application/json, application/xml');
 
-                    test.assertEqual('application/json', match1);
-                    test.assertEqual('application/xml', match2);
+                    test.assertEqual('application/json', match1.mimeType);
+                    test.assertEqual('application/xml', match2.mimeType);
 
                     test.complete();
                 }

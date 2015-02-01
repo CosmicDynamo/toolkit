@@ -24,11 +24,12 @@
  * @module core/converter
  */
 define([
+    "dojo/_base/lang",
     "blocks/Cache",
     "blocks/Container",
     "blocks/require",
     "./header/accept"
-], function (Cache, Container, require, parseAccept) {
+], function (lang, Cache, Container, require, parseAccept) {
     var parsers = new Cache({
         load: function(){
             return new Container();
@@ -43,20 +44,25 @@ define([
      * @param {Object} [options] - params to use when converting the data
      * @return {Promise<*> | null} - data formatted as requested; or null if no parser available
      */
-    function convert(fromType, accept, data, options) {
+    function convert(data, fromType, accept, options) {
         var parts = fromType.split(";");
 
         var from = parsers.get(parts[0]);
 
         var toType = parseAccept(from.keys(), accept);
+        if (!toType){
+            return null;
+        }
 
-        var to = from.get(toType);
-        if (!toType || !to) {
+        var to = from.get(toType.mimeType);
+        if (!to) {
             return null;
         }
 
         return require([to], function (parse) {
             var options = options || {};
+            lang.mixin(options, toType);
+
             if (parts[1]){
                 parts[1].split(",").map(function(params){
                     return params.split("=");
@@ -124,6 +130,10 @@ define([
                     use: config[key]
                 }
             }).forEach(fn);
+        keys.filter(function(key){ return key[0] === "."})
+            .forEach(function(key) {
+                convert.registerExtension(key, config[config[key]]);
+            });
     };
 
     /**
@@ -134,7 +144,7 @@ define([
      * @return {Promise<*>}
      */
     convert.loadFile = function(fileName, to, options){
-        var from = fileExt.get(fileName.split(".")[1]);
+        var from = fileExt.get(fileName.substr(fileName.lastIndexOf(".")));
         return require(["dojo/text!" + fileName], function(data) {
             return convert(data, from, to, options)
         });
