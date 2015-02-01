@@ -39,7 +39,7 @@ define([
      * @return {String | null} - the matched keyWord as it appeared in the input; or null if keyWord was not found
      */
     function anyKeyWord(data, keyWords, caseSensitive, whiteSpace) {
-        if (lang.isArray(keyWords)) {
+        if (!lang.isArray(keyWords)) {
             keyWords = [keyWords];
         }
         return keyWords.find(function (word) {

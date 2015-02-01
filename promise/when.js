@@ -1,7 +1,6 @@
 define([
-	"dojo/_base/Deferred",
     "dojo/_base/lang"
-], function(Deferred, lang){
+], function(lang){
     /**
      * Transparently applies callbacks to values and/or promises.
      * @description Accepts promises but also transparently handles non-promises. If no
@@ -27,6 +26,13 @@ define([
             return valueOrPromise.then(callback, errback, progback);
         }
 
-		return callback?callback(valueOrPromise):valueOrPromise;
+		try {
+			return callback ? callback(valueOrPromise) : valueOrPromise;
+		} catch(ex){
+			if (errback){
+				return errback(ex);
+			}
+			throw ex;
+		}
 	};
 });
