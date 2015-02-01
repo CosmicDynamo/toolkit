@@ -24,10 +24,9 @@
  * @module jazzHands.parser.sparql.pnPrefix
  */
 define([
-    "blocks/parser/find",
-    "RdfJs/parser/iriRef",
+    "./iriRef",
     "./prefixedName"
-], function (find, iriRef, prefixedName) {
+], function (iriRef, prefixedName) {
     /**
      * [136] iri ::= IRIREF | PrefixedName
      * @see http://www.w3.org/TR/sparql11-query/#riri

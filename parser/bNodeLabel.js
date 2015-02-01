@@ -30,7 +30,7 @@ define([
     "./pnCharsU",
     "./pnChars",
     "RdfJs/node/Blank"
-], function (keyWord, matchChar, range, pnCharsU, pnChars, BlankNode) {
+], function (keyWord, matchChar, range, pnCharsU, pnChars, Blank) {
     /**
      * [142] BLANK_NODE_LABEL ::= '_:' ( PN_CHARS_U | [0-9] ) ((PN_CHARS|'.')* PN_CHARS)?
      * @see http://www.w3.org/TR/sparql11-query/#rBLANK_NODE_LABEL
@@ -47,7 +47,7 @@ define([
             if (label[label.length - 1] === ".") {
                 throw {message: "Blank Node cannot end in '.'"};
             }
-            return new BlankNode(label);
+            return new Blank(label);
         }
         return null;
     }

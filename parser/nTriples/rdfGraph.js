@@ -27,12 +27,12 @@ define([
     "RdfJs/Graph",
     "RdfJs/Triple",
     "blocks/parser/Data",
-    "RdfJs/parser/iri",
+    "RdfJs/parser/iriRef",
     "RdfJs/parser/literal",
-    "RdfJs/parser/bNode",
+    "RdfJs/parser/bNodeLabel",
     "blocks/parser/hasChar",
     "RdfJs/parser/whiteSpace"
-], function (Graph, Triple, Data, iri, literal, bNode, hasChar, whiteSpace) {
+], function (Graph, Triple, Data, iriRef, literal, bNodeLabel, hasChar, whiteSpace) {
     /**
      * Converts data from a N-Triples string to an RDF Graph
      * @method RdfJs.parser.nTriples.rdfGraph
@@ -47,9 +47,9 @@ define([
             whiteSpace: whiteSpace
         });
         while(!data.isEnd()){
-            var subject = iri(data) || bNode(data);
-            var predicate = iri(data);
-            var object = iri(data) || bNode(data) || literal(data);
+            var subject = iriRef(data) || bNodeLabel(data);
+            var predicate = iriRef(data);
+            var object = iriRef(data) || bNodeLabel(data) || literal(data);
             var end = hasChar(data, ".", true, true);
 
             if (!subject || !predicate || !object || !end){
