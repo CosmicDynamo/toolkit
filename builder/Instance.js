@@ -27,10 +27,11 @@ define([
     "dojo/_base/declare",
     "./Base",
     "service/ontology/jss",
+    "./Container",
 
 //Extensions
     "./hypermedia/Link"
-], function (declare, Base, jss) {
+], function (declare, Base, jss, Container) {
     /**
      * Used for creating/updating triples representing a single Instance of data
      * @class service.builder.Instance
@@ -64,6 +65,13 @@ define([
                 .setAccepts(objectType)
                 .setProvides(objectType);
             return this;
+        },
+        markCollection: function(predicate){
+            return new Container({
+                memberSubject: this.subject,
+                predicate: predicate,
+                graphName: this.graphName
+            });
         }
     });
 });

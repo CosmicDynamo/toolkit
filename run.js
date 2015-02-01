@@ -1,5 +1,18 @@
 var express = require('express');
 var path = require('path');
+var colors = require('colors');
+
+colors.setTheme({
+    error: 'red',
+    input: 'grey',
+    verbose: 'cyan',
+    prompt: 'grey',
+    info: 'green',
+    data: 'grey',
+    help: 'cyan',
+    warn: 'yellow',
+    debug: 'blue'
+});
 
 var workingDir = process.cwd();
 //var favicon = require('serve-favicon');
@@ -26,11 +39,23 @@ var writeFn = function (path) {
         app.file.writeFileSync(path, [].join.call(arguments, "\r\n - "));
     }
 };
+
 if (config.writeLogs) {
     console.log = writeFn(config.writeLogs)
 }
 else if (config.hideLogs) {
     console.log = noop;
+} else {
+    function colorCode(fnName){
+        console[fnName] = function(){
+            arguments[0] = arguments[0][fnName];
+            console.log.apply(console, arguments);
+        }
+    }
+    colorCode("error");
+    colorCode("warn");
+    colorCode("verbose");
+    colorCode("debug");
 }
 if (config.writeWarnings) {
     console.warn = writeFn(config.writeWarnings)
@@ -56,7 +81,9 @@ portConfig.forEach(function (port) {
 
     console.log("Server Listening On Port: ", port);
 });
-appConfig.proxyName = proxyName;
+var server = appConfig.config.server || {};
+server.proxyName = server.proxyName || proxyName;
+appConfig.config.server = server;
 
 var scriptRoot = config.scriptRoot || (workingDir + "/scripts");
 
@@ -100,14 +127,8 @@ global.require([
     global.Promise = Promise;//needed for jsonld line 990.
     //format function tries to make the print to the file more like console.log.
 
-    var started = when(cache.create("service/Application", appConfig), function(instance){
+    when(cache.create("service/Application", appConfig), function(instance){
         return instance.start(appConfig);//pass in the express app so that we can build upon it.
-    });
-
-    appConfig.server.use(function (req, res, next) {
-        when(started, function () {
-            next();
-        });
     });
 });
 

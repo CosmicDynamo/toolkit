@@ -28,8 +28,9 @@ define([
     "core/app/_Component",
     "blocks/genId",
     "RdfJs/Triple",
-    "service/ontology/rdf"
-], function (declare, _Component, genId, Triple, rdf) {
+    "RdfJs/ontology/rdf",
+    "blocks/promise/when"
+], function (declare, _Component, genId, Triple, rdf, when) {
     /**
      * Used for creating/updating triples in a graph of data
      * @class service._Builder
@@ -51,10 +52,18 @@ define([
         },
         /**
          * Loads the persisted data for the builder's subject
-         * @returns {Promise<RdfJs.Graph>}
+         * @returns {Promise<Boolean>}
          */
         load: function(){
-            return this.app().data.get(this.subject, this.graphName);
+            var builder = this;
+            return when(this.app().data.get(this.subject), function(data){
+                if (!data){
+                    return false;
+                }
+                var graph = builder.graph();
+                graph.addAll(data);
+                return true;
+            });
         },
         /**
          * Adds a rdf:type Triple for the current subject
@@ -80,7 +89,7 @@ define([
          * @returns {RdfJs.Graph}
          */
         graph: function(){
-            return this.app().data.getGraph(this.graphName);
+            return this.app().data.getGraph(this.graphName, true);
         },
         /**
          * Updates the object for a given predicate to the input value

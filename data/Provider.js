@@ -25,15 +25,56 @@
  */
 define([
     "dojo/_base/declare",
-    "core/data/Cache"
-], function (declare, Cache) {
+    "core/data/Cache",
+    "core/convert"
+], function (declare, Cache, convert) {
     /**
      * @class service.data.Provider
      * @mixes core.data.Cache
      */
     return declare([Cache], {
-        get: function(subject, graphOrName){
+        runtime: null,
+        init: function(config){
+            config = config || {};
+            this.runtime = config.runtime || "./runtime";
 
+            this._mkDir(this.app().path.resolve(this.runtime));
+        },
+        get: function(subject){
+            var app = this.app();
+            var fs = app.file;
+
+            var path = this.runtime + subject.toString().replace("file://api/", "/").replace("/id/", "/");
+            path = path.substr(0, path.length - 1) + ".nt";
+            if (fs.existsSync(path)){
+                return convert.loadFile(path, "RdfGraph");
+            }
+            return null;
+        },
+        _mkDir: function (fullPath, start) {
+            var sep = this.app().path.sep;
+
+            var parts = fullPath.split(sep);
+            var fs = this.app().file;
+
+            var idx = start || 2;
+            try {
+                var dir = parts.slice(0, idx).join(sep);
+                if (!fs.existsSync(dir)) {
+                    console.verbose("Making Directory:".verbose, dir.info);
+                    fs.mkdirSync(dir);
+                }
+            } catch (err) {
+                if (err.code != "EEXIST") {
+                    console.error("Failed to create Directory:".error, err);
+                    return false;
+                }
+            }
+
+            if (idx < parts.length) {
+                return this._mkDir(fullPath, idx + 1);
+            }
+            return true;
         }
     });
 });

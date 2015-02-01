@@ -21,26 +21,42 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module service.handler.request._Get
+ * @module service.handler._Request
  */
 define([
     "dojo/_base/declare",
-    "service/builder/Instance"
-], function (declare, Instance) {
+    "core/convert"
+], function (declare, convert) {
     /**
-     * Base class for GET requests
-     * @class service.handler.request._Get
-     * @mixes service.handler._Request
+     * Base class for processing Incoming Requests
+     * @class service.handler._Request
+     * @mixes service._Request
+     * @interface
      */
     return declare([], {
-        /**
-         * Handle the incoming GET Request
-         * @param {service.handler._Request} params - arguments that will be used to instantiate the builder
-         * @returns {Promise<*> | *}
-         * @override service.handler._Request#initBuilder
-         */
-        initBuilder: function(params){
-            return this.builder = new Instance(params);
+        buildResponseBody: function(){
+            var accept = this.request.headers["accept"];
+
+            if (!accept){
+                this.setHeader("Content-Type", "text/plane");
+                this.setStatus(406);
+                return "Fatal Exception: Missing Accept Header";
+            }
+
+            var data = this.builder.graph();
+            var baseUrl = this.app().server.proxyName;
+            var replace = function (node) {
+                if (node.isNamed() && node.toString().indexOf("file:/") == 0) {
+                    node.nominalValue = node.nominalValue.replace("file:/", baseUrl);
+                }
+            };
+
+            data.forEach(function (triple) {
+                replace(triple.subject);
+                replace(triple.object);
+            });
+
+            return convert(data, "RdfGraph", accept);
         }
     });
 });

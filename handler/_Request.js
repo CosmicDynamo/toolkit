@@ -34,10 +34,26 @@ define([
      * @interface
      */
     return declare([_Handler], {
-        /** @property {express.Request} */
+        /**
+         * @property
+         * @type {Number}
+         */
+        statusCode: null,
+        /**
+         * @property
+         * @type {express.Request}
+         */
         request:null,
-        /** @property {express.Response} */
+        /**
+         * @property
+         * @type {express.Response}
+         */
         response:null,
+        /**
+         * @property
+         * @type {RdfJs.node.Named}
+         */
+        objectType: null,
         /**
          * Handle the incoming Request
          * @param {RdfJs.Node} iri - The URL of the request being handled
@@ -48,29 +64,38 @@ define([
          * @override core._Handler#handle
          */
         handle: function(iri, args){
+            this.subject = iri;
             this.request = args.request;
             this.response = args.response;
+            this.objectType = args.objectType;
 
-            return this.initBuilder();
+            return this.initBuilder(this);
         },
         /**
          * Initializes the builder object that will be used to manipulate/read data for this request
+         * @param {service.handler._Request} params - arguments that will be used to instantiate the builder
          * @return {Promise | *} - Promise that is resolved when initialization is complete
          */
-        initBuilder: function(){
+        initBuilder: function (params){
             throw { message:"_Request initBuilder has not been implemented" };
         },
         setHeader: function(name, value){
             var response = this.response;
 
             //CORS requires that every header that you want to make readable should be exposed
-            var expose = (response.getHeader("Access-Control-Expose-Header") || "").split(", ");
+            var expose = (response.getHeader("Access-Control-Expose-Headers") || "").split(", ");
             if (expose.indexOf(name) === -1) {
                 expose.push(name);
-                res.setHeader("Access-Control-Expose-Header", expose.join(", "))
+                response.setHeader("Access-Control-Expose-Headesr", expose.join(", "))
             }
 
             response.setHeader(name, value);
+        },
+        setStatus: function(value){
+            var code = Math.max(this.response.statusCode || 0, value);
+            this.response.status(code);
+
+            this.response.statusCode = code;
         }
     });
 });

@@ -21,26 +21,41 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module service.handler.request._Get
+ * @module service.builder.Container
  */
 define([
     "dojo/_base/declare",
-    "service/builder/Instance"
-], function (declare, Instance) {
+    "./Base",
+    "jazzHands/LinkedList",
+    "service/ontology/collection"
+], function (declare, Base, LinkedList, collection) {
     /**
-     * Base class for GET requests
-     * @class service.handler.request._Get
-     * @mixes service.handler._Request
+     * @class service.builder.Container
+     * @mixes service._Builder
      */
-    return declare([], {
+    return declare([Base], {
         /**
-         * Handle the incoming GET Request
-         * @param {service.handler._Request} params - arguments that will be used to instantiate the builder
-         * @returns {Promise<*> | *}
-         * @override service.handler._Request#initBuilder
+         * @property
+         * @type {RdfJs.Node}
          */
-        initBuilder: function(params){
-            return this.builder = new Instance(params);
+        memberSubject: null,
+        /**
+         * @property
+         * @type {RdfJs.node.Named}
+         */
+        predicate: null,
+        constructor: function(){
+           this.lListRoot = new LinkedList({
+               subject: args.memberSubject,
+               predicate: args.predicate
+           })
+        },
+        postscript: function(){
+            this.inherited(arguments);
+
+            this.addType(collection("Container"))
+                .setValue(collection("membershipSubject"), this.memberSubject)
+                .setValue(collection("membershipPredicate"), this.predicate);
         }
     });
 });

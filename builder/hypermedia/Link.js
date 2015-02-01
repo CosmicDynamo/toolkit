@@ -28,15 +28,18 @@ define([
     "dojo/_base/lang",
     "../Base",
     "service/ontology/hm",
-    "service/ontology/xsd",
-    "RdfJs/node/Literal"
-], function (declare, lang, Base, hm, xsd, Literal) {
+    "RdfJs/ontology/xsd",
+    "RdfJs/node/Literal",
+    "Rdfjs/node/Blank"
+], function (declare, lang, Base, hm, xsd, Literal, Blank) {
     /**
      * @class service.builder.hypermedia.Link
      * @mixes service._Builder
      */
     var LinkCtor = declare([Base], {
         constructor: function(){
+            this.subject = new Blank();
+
             this.addType(hm("HypermediaLink"));
         },
         /**
@@ -45,7 +48,8 @@ define([
          * @return {service.builder.hypermedia.Link}
          */
         setUrl: function(url){
-            return this.setValue(hm("url"), new Literal(url, null, xsd("url")));
+            var literal = this.app().server.pathToUrl(new Literal(url, null, xsd("url")));
+            return this.setValue(hm("url"), literal);
         },
         /**
          * Defines the Method that MUST be used to call this link
@@ -82,7 +86,9 @@ define([
          * @returns {service.builder.hypermedia.Link}
          */
         addLink: function(){
-            var link = new LinkCtor();
+            var link = new LinkCtor({
+                graphName: this.graphName
+            });
 
             this.addValue(hm("hasLink"), link.subject);
 

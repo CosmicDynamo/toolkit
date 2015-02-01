@@ -26,15 +26,16 @@
 define([
     "dojo/_base/declare",
     "../_Request",
+    "../_ResponseBody",
     "blocks/promise/when"
-], function (declare, _Request, when) {
+], function (declare, _Request, _ResponseBody, when) {
     /**
      * Base class for GET requests
      * @class service.handler.request._Get
      * @mixes service.handler._Request
      * @override service.handler._Request#handle
      */
-    return declare([_Request], {
+    return declare([_Request, _ResponseBody], {
         /**
          * Handle the incoming GET Request
          * @param {RdfJs.Node} iri - The URL of the request being handled
@@ -60,14 +61,24 @@ define([
          * @return {Promise | *}
          */
         finalize: function() {
-            var request = this;
+            var handler = this;
 
-            //In case the request was proxied rely on the builder's subject IRI and not
-            //  the request URL
-            var iri = request.builder.subject;
-            if (iri.isNamed()){
-                iri.setHeader("Location", iri.toString());
-            }
+            var built = handler.buildResponseBody(handler.builder);
+
+            return when(built, function(body){
+                if (body === null){
+                    handler.setStatus(406);
+                    body = "Could not find serializer for Accept Header";
+                }
+                //In case the request was proxied rely on the builder's subject IRI and not
+                //  the request URL
+                var iri = handler.builder.subject;
+                if (iri.isNamed()){
+                    handler.setHeader("Location", iri.toString().replace("file:/", handler.app().server.proxyName));
+                }
+
+                handler.response.send(body).end();
+            });
         }
     });
 });

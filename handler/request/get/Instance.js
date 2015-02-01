@@ -41,21 +41,32 @@ define([
          * @returns {Promise | *}
          * @override service.handler._Request#logic
          */
-        logic: function(iri, args){
+        logic: function(){
             var handler = this;
 
             var ready = handler.builder.load(); //Load the response data for this request
 
             var data = handler.builder;
-            ready = when(ready, function(){
+            ready = when(ready, function(found){
+                if (!found){
+                    handler.setStatus(404);
+                    handler.preventSave = true;
+                    return true;
+                }
                 //Type information is not stored, but is 'Calculated' based on the URL used to get the data
                 //  This is to better deal with multi-representation's and framing of bad type data coming from the client
-                data.addType(args.objectType);
+                data.addType(handler.objectType);
 
                 return handler.expandChildren();
             });
 
-            ready = when(ready, handler.addSaveLink.bind(handler));
+            ready = when(ready, function(){
+                if (handler.preventSave){
+                    return null;
+                }
+
+                return handler.addSaveLink(handler);
+            });
 
             return ready;
         },
@@ -124,7 +135,7 @@ define([
             var data = handler.builder;
 
             if (handler.app().permission.canEdit(data.subject, data.objectType, data)) {
-                data.allowReplace(args.objectType);
+                data.allowReplace(handler.objectType);
             }
         }
     });
