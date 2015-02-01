@@ -43,6 +43,11 @@ define([
          */
         subject:null,
         /**
+         * @property The primary Object Type for this representation
+         * @type {RdfJs.node.Named}
+         */
+        objectType:null,
+        /**
          * @property Name of the graph which contains the object being built
          * @type {String}
          */

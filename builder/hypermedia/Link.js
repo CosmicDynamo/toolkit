@@ -57,7 +57,7 @@ define([
          * @return {service.builder.hypermedia.Link}
          */
         setMethod: function(method){
-            return this.setValue(hm("method"), hm(method.toUpperCase()));
+            return this.setValue(hm("method"), hm(method[0].toUpperCase() + method.substr(1).toLowerCase()));
         },
         /**
          * Defines the ObjectType IRI that the request body MUST conform to to be acceptable for this Link

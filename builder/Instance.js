@@ -25,53 +25,33 @@
  */
 define([
     "dojo/_base/declare",
-    "./Base",
+    "./_Singleton",
     "service/ontology/jss",
-    "./Container",
 
 //Extensions
     "./hypermedia/Link"
-], function (declare, Base, jss, Container) {
+], function (declare, _Singleton, jss) {
     /**
      * Used for creating/updating triples representing a single Instance of data
      * @class service.builder.Instance
      * @mixes service._Builder
      */
-    return declare([Base], {
+    return declare([_Singleton], {
         /**
          * Adds a Hypermedia Update Link which will replace the current representation with the request body
-         * @param {RdfJs.node.Named} objectType - the type of representation being replaced
+         * @param {RdfJs.node.Named} [objectType] - the type of representation being replaced
          * @returns {service.builder.Instance}
          */
         allowReplace: function(objectType){
-            this.addLink()
-                .addType(jss("Update"))
-                .setMethod("put")
-                .setUrl(this.subject.toString())
-                .setAccepts(objectType)
-                .setProvides(objectType);
-            return this;
+            return this.allowSave(jss("Update"), "put", this.subject.toString(), objectType);
         },
         /**
          * Adds a Hypermedia Update Link which will modify the current representation using the request body
-         * @param {RdfJs.node.Named} objectType - the type of representation being modified
+         * @param {RdfJs.node.Named} [objectType] - the type of representation being modified
          * @returns {service.builder.Instance}
          */
         allowPatch: function(objectType){
-            this.addLink()
-                .addType(jss("Update"))
-                .setMethod("patch")
-                .setUrl(this.subject.toString())
-                .setAccepts(objectType)
-                .setProvides(objectType);
-            return this;
-        },
-        markCollection: function(predicate){
-            return new Container({
-                memberSubject: this.subject,
-                predicate: predicate,
-                graphName: this.graphName
-            });
+            return this.allowSave(jss("Update"), "patch", this.subject.toString(), objectType);
         }
     });
 });

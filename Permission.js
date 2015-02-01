@@ -40,6 +40,18 @@ define([
         canEdit: function(subject, objectType, graph){
             //TODO: This
             return true;
+        },
+        /**
+         * Check permissions for the Current User to see if they can edit the object in question
+         * @param {RdfJs.Node} parent - Subject IRI of the object to be edited
+         * @param {RdfJs.Node} predicate - Subject IRI of the object to be edited
+         * @param {RdfJs.Node} objectType - Type IRI of the current representation of this object
+         * @param {RdfJs.Graph} graph - Triples related to the object for State-Based permissions
+         * @returns {boolean}
+         */
+        canAdd: function(parent, predicate, objectType, graph){
+            //TODO: This
+            return true;
         }
     });
 });

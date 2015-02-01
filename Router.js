@@ -40,56 +40,69 @@ define([
         configGraph: "RequestHandlers",
         /** @property {String} */
         handlerType: "http://vocab.cosmicdynamo.net/service.owl#RequestHandler",
-        /*init: function () {
-            var router = this;
-            router.app().messaging.use(router.route.bind(router));
-        },*/
         init: function(){
             var router = this;
             var graph = router.app().server.config();
 
 
-            router.register("/api/", jss("Resource"), "get", "container");
-            router.register("/vocab/", owl("Class"), "get", "container");
+            router.register("/api/", {
+                objectType: jss("Resource"),
+                predicate: jss("hasResource")
+            }, "get", "container");
+            router.register("/vocab/", {
+                objectType: owl("Class"),
+                predicate: jss("servesClass")
+            }, "get", "container");
 
             var topLevel = router.getParts(graph.match(null, rdf("type").toNT(), jss("UrlPart").toNT()), "subject");
 
             topLevel.forEach(function(details){
                 var url = "/api/" + details.token + "/";
 
-                router.register(url, details.objectType, "post", "container");
-                router.register(url, details.objectType, "get", "container");
+                router.register(url, details, "post", "container");
+                router.register(url, details, "get", "container");
 
-                router.register(url + "new/", details.objectType, "get", "initial");
+                router.register(url + "new/", details, "get", "template");
 
                 url = "^" + url + "id/*/";
-                router.register(url + "$", details.objectType, "get", "instance");
-                router.register(url + "$", details.objectType, "put", "instance");
-                router.register(url + "$", details.objectType, "patch", "instance");
+                router.register(url + "$", details, "get", "instance");
+                router.register(url + "$", details, "put", "instance");
+                router.register(url + "$", details, "patch", "instance");
 
                 var children = router.getParts(graph.match(details.subject.toNT(), jss("hasCollection").toNT(), null), "object");
 
                 children.forEach(function(child){
-                    router.register(url + child.token + "/$", child.objectType, "get", "container");
-                    router.register(url + child.token + "/$", child.objectType, "post", "container");
-                })
+                    router.register(url + child.token + "/$", child, "get", "container");
+                    router.register(url + child.token + "/$", child, "post", "container");
+
+                    router.register(url + child.token + "new/$", details, "get", "template");
+                });
             });
 
         },
         getParts: function(graph, position) {
+            var router = this;
             var config = this.app().server.config();
             return graph.toArray().map(function(triple){
+                var subject = triple[position];
                 return {
                     subject: triple.subject,
-                    token: config.match(triple[position].toNT(), jss("token").toNT(), null).toArray()[0].object.valueOf(),
-                    objectType: config.match(triple[position].toNT(), jss("objectType").toNT(), null).toArray()[0].object
+                    token: router._object(subject, jss("token"), config).valueOf(),
+                    objectType: router._object(subject, jss("objectType"), config),
+                    predicate: router._object(subject, jss("predicate"), config)
                 }
             });
         },
-        register: function(url, objectType, method, logicType){
+        _object: function(subject, predicate, graph){
+            return graph.match(subject.toNT(), predicate.toNT(), null).toArray().map(function(triple){
+                return triple.object;
+            })[0];
+        },
+        register: function(url, urlPart, method, logicType){
             var args = {
-                handleAs: objectType,
-                objectType: objectType,
+                handleAs: urlPart.objectType,
+                objectType: urlPart.objectType,
+                predicate: urlPart.predicate,
                 noExec: true,
                 purpose: method + "-" + logicType
             };
@@ -103,7 +116,7 @@ define([
             }
 
             if (!loading){
-                console.error("No Handler Found", objectType.toNT(), method, logicType);
+                console.error("No Handler Found", urlPart.objectType.toNT(), method, logicType);
                 return null;
             }
 
@@ -113,59 +126,15 @@ define([
                     var url = hub.app().server.urlToPath(new Named(req.url));
 
                     handler.handle(url, {
-                        objectType: objectType,
+                        predicate: urlPart.predicate,
+                        objectType: urlPart.objectType,
                         request: req,
                         response: res
                     });
                 });
             }, function(err){
-                console.error("Failed to load handler", objectType.toNT(), method, logicType, err.message);
+                console.error("Failed to load handler", urlPart.objectType.toNT(), method, logicType, err.message);
             });
         }
-        /**
-         * Redirects the request to the correct logic module
-         * @param req
-         * @param res
-         *
-
-        route: function (req, res) {
-            var app = this.app();
-            var server = app.server;
-            var router = this;
-
-            var url = server.urlToPath(new Named(req.url));
-
-            var objectType = server.typeFromUrl(url);
-            objectType = objectType || jss("BadRequest-TypeNotSupported");
-
-            console.verbose("Request Identified As Type:".verbose, objectType.toNT().info);
-
-            var purpose = req.method.toLowerCase() + "-";
-            if (server.isCollection(url)){
-                purpose += "container";
-            } else if (server.isNew(url)){
-                purpose += "initial-state";
-            } else {
-                purpose += "instance";
-            }
-
-            console.verbose("Request Identified As Purpose:".verbose, purpose.info);
-
-            var args = {
-                handleAs: objectType,
-                objectType: objectType,
-                request: req,
-                response: res,
-                purpose: purpose
-            };
-
-            var custom = router.handle(url, args);
-
-            if (!custom){
-                args.handleAs = jss("DefaultRequestHandler");
-                return router.handle(url, args);
-            }
-            return custom;
-        }*/
     });
 });

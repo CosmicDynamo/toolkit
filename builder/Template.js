@@ -21,30 +21,40 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module service.handler.request._Instance
+ * @module service.builder.Template
  */
 define([
     "dojo/_base/declare",
-    "service/builder/Instance"
-], function (declare, Instance) {
+    "./_Singleton",
+    "service/ontology/jss",
+    "./Container",
+
+//Extensions
+    "./hypermedia/Link"
+], function (declare, _Singleton, jss, Container) {
     /**
-     * Base class for GET requests
-     * @class service.handler.request._Instance
+     * Used for creating/updating triples representing a single Instance of data
+     * @class service.builder.Template
+     * @mixes service._Builder
      */
-    return declare([], {
+    return declare([_Singleton], {
         /**
-         * @property
-         * @type builder.Instance
+         * Adds a Hypermedia Update Link which will modify the current representation using the request body
+         * @param {RdfJs.node.Named} objectType - the type of representation being modified
+         * @returns {service.builder.Instance}
          */
-        builder: null,
-        /**
-         * Handle the incoming GET Request
-         * @param {service.handler._Request} params - arguments that will be used to instantiate the builder
-         * @returns {Promise<*> | *}
-         * @override service.handler._Request#initBuilder
-         */
-        initBuilder: function(params){
-            return this.builder = new Instance(params);
+        allowCreate: function(objectType){
+            var url = this.subject.toString();
+            url = url.substr(0, url.lastIndexOf("new/"));
+
+            return this.allowSave(jss("Create"), "post", url, objectType);
+        },
+        markCollection: function(predicate){
+            return new Container({
+                memberSubject: this.subject,
+                predicate: predicate,
+                graphName: this.graphName
+            });
         }
     });
 });

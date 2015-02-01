@@ -21,30 +21,50 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module service.handler.request._Instance
+ * @module service.handler.request.get.Container
  */
 define([
     "dojo/_base/declare",
-    "service/builder/Instance"
-], function (declare, Instance) {
+    "../_Get",
+    "../_Container",
+    "blocks/promise/when"
+], function (declare, _Get, _Container, when) {
     /**
-     * Base class for GET requests
-     * @class service.handler.request._Instance
+     * @class service.handler.request.get.Instance
+     * @mixes service.handler.request._Get
+     * @mixes service.handler.request._Instance
      */
-    return declare([], {
+    return declare([_Get, _Container], {
         /**
-         * @property
-         * @type builder.Instance
+         * Fill in calculated values and add Hypermedia Controls
+         * @returns {Promise | *}
+         * @override service.handler._Request#logic
          */
-        builder: null,
+        logic: function(){
+            var handler = this;
+
+            var ready = handler.builder.load();
+
+            ready = when(ready, function(){
+                if (handler.preventSave){
+                    return null;
+                }
+
+                return handler.addNewItemTemplate(handler);
+            });
+
+            return ready;
+        },
         /**
-         * Handle the incoming GET Request
-         * @param {service.handler._Request} params - arguments that will be used to instantiate the builder
-         * @returns {Promise<*> | *}
-         * @override service.handler._Request#initBuilder
+         * Add the Hypermedia Link that will allow this object to be Updated
          */
-        initBuilder: function(params){
-            return this.builder = new Instance(params);
+        addNewItemTemplate: function(){
+            var handler = this;
+            var data = handler.builder;
+
+            if (handler.app().permission.canAdd(data.memberSubject, data.predicate, data.objectType, data)) {
+                data.exposeNewItemTemplate();
+            }
         }
     });
 });

@@ -21,20 +21,20 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module service.handler.request._Instance
+ * @module service.handler.request._Template
  */
 define([
     "dojo/_base/declare",
-    "service/builder/Instance"
-], function (declare, Instance) {
+    "service/builder/Template"
+], function (declare, Template) {
     /**
      * Base class for GET requests
-     * @class service.handler.request._Instance
+     * @class service.handler.request._Template
      */
     return declare([], {
         /**
          * @property
-         * @type builder.Instance
+         * @type builder.Template
          */
         builder: null,
         /**
@@ -44,7 +44,7 @@ define([
          * @override service.handler._Request#initBuilder
          */
         initBuilder: function(params){
-            return this.builder = new Instance(params);
+            return this.builder = new Template(params);
         }
     });
 });

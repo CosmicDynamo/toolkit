@@ -68,6 +68,7 @@ define([
             this.request = args.request;
             this.response = args.response;
             this.objectType = args.objectType;
+            this.predicate = args.predicate;
 
             return this.initBuilder(this);
         },

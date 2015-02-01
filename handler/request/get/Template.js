@@ -21,30 +21,29 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module service.handler.request._Instance
+ * @module service.handler.request.get.Template
  */
 define([
     "dojo/_base/declare",
-    "service/builder/Instance"
-], function (declare, Instance) {
+    "./_Singleton",
+    "../_Template"
+], function (declare, _Singleton, _Template) {
     /**
-     * Base class for GET requests
-     * @class service.handler.request._Instance
+     * @class service.handler.request.get.Template
+     * @mixes service.handler.request.get._Singleton
+     * @mixes service.handler.request._Template
      */
-    return declare([], {
+    return declare([_Singleton, _Template], {
         /**
-         * @property
-         * @type builder.Instance
+         * Add the Hypermedia Link that will allow this object to be Updated
          */
-        builder: null,
-        /**
-         * Handle the incoming GET Request
-         * @param {service.handler._Request} params - arguments that will be used to instantiate the builder
-         * @returns {Promise<*> | *}
-         * @override service.handler._Request#initBuilder
-         */
-        initBuilder: function(params){
-            return this.builder = new Instance(params);
+        addSaveLink: function(){
+            var handler = this;
+            var data = handler.builder;
+
+            if (handler.app().permission.canAdd(data.subject, data.predicate, data.objectType, data.graph())) {
+                data.allowCreate(handler.objectType);
+            }
         }
     });
 });
