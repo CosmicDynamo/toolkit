@@ -25,20 +25,40 @@
  */
 define([
     "RdfJs/Graph",
-    "RdfJs/Triple"
-], function (Graph, Triple) {
+    "RdfJs/Triple",
+    "blocks/parser/Data",
+    "RdfJs/parser/iri",
+    "RdfJs/parser/literal",
+    "RdfJs/parser/bNode",
+    "blocks/parser/hasChar",
+    "RdfJs/parser/whiteSpace"
+], function (Graph, Triple, Data, iri, literal, bNode, hasChar, whiteSpace) {
     /**
      * Converts data from a N-Triples string to an RDF Graph
      * @method RdfJs.parser.nTriples.rdfGraph
      * @param {String} data - The N-Triples string data
      * @return {RdfJs.Graph} - the resulting data
      */
-    return function (data) {
+    return function (string) {
         var out = new Graph();
-        data.split(".").forEach(function (triple) {
-            var parts = triple.split(" ");
-            out.add(new Triple(parts[0], parts[1], parts.slice(2).join(" ")));
+
+        var data = new Data({
+            input: string,
+            whiteSpace: whiteSpace
         });
+        while(!data.isEnd()){
+            var subject = iri(data) || bNode(data);
+            var predicate = iri(data);
+            var object = iri(data) || bNode(data) || literal(data);
+            var end = hasChar(data, ".", true, true);
+
+            if (!subject || !predicate || !object || !end){
+                return null;
+            }
+
+            out.add(new Triple(subject, predicate, object));
+        }
+
         return out;
     }
 });

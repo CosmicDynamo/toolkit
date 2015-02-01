@@ -32,6 +32,6 @@ define([
      * @return {String} data - The resulting N-Triples string
      */
     return function (data) {
-        return data.toArray().join(""); //Nice that RDF Graph already supports this
+        return data.toArray().join("\r\n"); //Nice that RDF Graph already supports this
     }
 });

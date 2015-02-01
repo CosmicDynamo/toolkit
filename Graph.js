@@ -238,22 +238,22 @@ define([
             /* http://www.w3.org/TR/rdf-interfaces/#widl-Graph-forEach-void-TripleCallback-callback */
             var graph = this;
             var changed = [];
-            this._triples.forEach(function (t) {
+            this._triples.forEach(function (t, key) {
                 var value = this._expand(t);
                 var before = value.toString();
                 tCallback(value, graph);
 
                 if (before !== value.toString()) {
                     changed.push({
-                        ptr: t,
+                        ptr: key,
                         newVal: value
                     });
                 }
             }.bind(this));
 
             changed.forEach(function (changes) {
-                this._removeByPtr(changes.ptr);
-                this._add(changes.newVal);
+                graph._removeByPtr(changes.ptr);
+                graph._add(changes.newVal);
             });
 
             this.onChange();
