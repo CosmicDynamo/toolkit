@@ -21,48 +21,56 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module service.handler.request.get.Container
+ * @module service.handler._Request
  */
 define([
     "dojo/_base/declare",
-    "../_Get",
-    "../_Container",
+    "core/convert",
     "blocks/promise/when"
-], function (declare, _Get, _Container, when) {
+], function (declare, convert, when) {
     /**
-     * @class service.handler.request.get.Instance
-     * @mixes service.handler.request._Get
-     * @mixes service.handler.request._Container
+     * Base class for processing Incoming Requests
+     * @class service.handler._Request
+     * @mixes service._Request
+     * @interface
      */
-    return declare([_Get, _Container], {
+    return declare([], {
         /**
-         * Fill in calculated values and add Hypermedia Controls
-         * @returns {Promise | *}
-         * @override service.handler._Request#logic
+         * @property
+         * @type {String}
          */
-        logic: function(args){
-            var handler = this;
-
-            var ready = args.builder.load();
-
-            ready = when(ready, function(){
-                return handler.addNewItemTemplate(args);
+        reqBody: null,
+        handle: function(iri, args){
+            var request = args.request;
+            var body = "";
+            request.on('data', function (chunk) {
+                body += chunk.toString();
             });
 
-            return when(ready, function(){
-                return handler.finalize(args);
+            var ready = new Deferred();
+            request.on('end', function () {
+                ready.resolve(body);
             });
+            this.reqBody = ready;
+
+            return this.inherited(arguments);
         },
-        /**
-         * Add the Hypermedia Link that will allow this object to be Updated
-         */
-        addNewItemTemplate: function(args){
+        parseRequestBody: function(){
             var handler = this;
-            var data = args.builder;
+            return when(handler.reqBody, function(data){
+                var contentType = handler.request.headers["Content-Type"];
 
-            if (handler.app().permission.canAdd(data.memberSubject, args.predicate, args.objectType, data)) {
-                data.exposeNewItemTemplate();
-            }
+                if (!contentType){
+                    handler.setHeader("Content-Type", "text/plane");
+                    handler.setStatus(406);
+                    handler.requestFailed = true;
+                    return "Fatal Exception: Missing Content-Type Header";
+                }
+
+                var out = convert(data, contentType, "RdfGraph");
+
+                handler.builder.graph().addAll(out);
+            })
         }
     });
 });

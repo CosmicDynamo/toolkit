@@ -21,40 +21,38 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module service.handler.request._Container
+ * @module service.handler.request.get.Instance
  */
 define([
     "dojo/_base/declare",
-    "service/builder/Container",
-    "RdfJs/node/Named"
-], function (declare, Container, Named) {
+    "../_Put",
+    "../_Instance"
+], function (declare, _Put, Instance) {
     /**
-     * Base class for GET requests
-     * @class service.handler.request._Container
-     * @mixes service.handler._Request
+     * @class service.handler.request.get.Instance
+     * @mixes service.handler.request.get._Singleton
+     * @mixes service.handler.request._Instance
      */
-    return declare([], {
-        /**
-         * @property
-         * @type builder.Container
-         */
-        builder: null,
-        /**
-         * Handle the incoming GET Request
-         * @param {Object} args - arguments that will be used to instantiate the builder
-         * @returns {Promise<*> | *}
-         * @override service.handler._Request#initBuilder
-         */
-        initBuilder: function(args){
-            var subject = args.subject.toString();
-            if (subject.indexOf("/id/") > -1){
-                subject = subject.substr(0, subject.lastIndexOf("/". subject.length - 2));
+    return declare([_Put, Instance], {
+        expandDetails: function(found){
+            if (!found){
+                handler.setStatus(404);
+                handler.skipDetails = true;
+                handler.preventSave = true;
             }
 
-            args.memberSubject = new Named(subject);
-            args.builder = new Container(args);
+            return this.inherited(arguments);
+        },
+        /**
+         * Add the Hypermedia Link that will allow this object to be Updated
+         */
+        addSaveLink: function(){
+            var handler = this;
+            var data = handler.builder;
 
-            return this.logic(args);
+            if (handler.app().permission.canEdit(data.subject, data.objectType, data)) {
+                data.allowReplace(handler.objectType);
+            }
         }
     });
 });

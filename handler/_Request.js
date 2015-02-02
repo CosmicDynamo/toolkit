@@ -25,8 +25,9 @@
  */
 define([
     "dojo/_base/declare",
-    "core/_Handler"
-], function (declare, _Handler) {
+    "core/_Handler",
+    "blocks/promise/when"
+], function (declare, _Handler, when) {
     /**
      * Base class for processing Incoming Requests
      * @class service.handler._Request
@@ -64,24 +65,65 @@ define([
          * @override core._Handler#handle
          */
         handle: function(iri, args){
-            this.subject = iri;
-            this.request = args.request;
-            this.response = args.response;
-            this.objectType = args.objectType;
-            this.predicate = args.predicate;
+            args.subject = iri;
 
-            return this.initBuilder(this);
+            return this.initBuilder(args);
         },
         /**
          * Initializes the builder object that will be used to manipulate/read data for this request
-         * @param {service.handler._Request} params - arguments that will be used to instantiate the builder
+         * @param {service.handler._Request} args - arguments that will be used to instantiate the builder
          * @return {Promise | *} - Promise that is resolved when initialization is complete
          */
-        initBuilder: function (params){
-            throw { message:"_Request initBuilder has not been implemented" };
+        initBuilder: function (args){
+            return this.logic(args);
         },
-        setHeader: function(name, value){
-            var response = this.response;
+        logic: function(args){
+            return this.finalize();
+        },
+        /**
+         * Fill in request headers and perform any operations that should be done before response is sent
+         * @return {Promise | *}
+         */
+        finalize: function(args) {
+            var handler = this;
+
+            var built = handler.formatResponse(args);
+
+            return when(built, function(body){
+                if (body === null){
+                    return handler.invalidAccept(args);
+                }
+
+                handler.sendBody(args, body);
+            });
+        },
+        end: function(args){
+            //In case the request was proxied rely on the builder's subject IRI and not
+            //  the request URL
+            this.setLocation(args, args.builder.subject);
+
+            args.response.end();
+        },
+        formatResponse: function(body){
+            this.setStatus(501);
+
+            return 'Not Implemented';
+        },
+        sendBody: function(args, body){
+            args.response.send(body);
+        },
+        invalidAccept: function(args){
+            this.setStatus(args, 406);
+
+            this.sendBody(args, "Could not find serializer for Accept Header");
+        },
+        setLocation: function(args, iri){
+            if (iri.isNamed()){
+                this.setHeader(args, "Location", iri.toString().replace("file:/", this.app().server.proxyName));
+            }
+        },
+        setHeader: function(args, name, value){
+            var response = args.response;
 
             //CORS requires that every header that you want to make readable should be exposed
             var expose = (response.getHeader("Access-Control-Expose-Headers") || "").split(", ");
@@ -92,11 +134,11 @@ define([
 
             response.setHeader(name, value);
         },
-        setStatus: function(value){
-            var code = Math.max(this.response.statusCode || 0, value);
-            this.response.status(code);
+        setStatus: function(args, value){
+            var code = Math.max(args.response.statusCode || 0, value);
+            args.response.status(code);
 
-            this.response.statusCode = code;
+            args.response.statusCode = code;
         }
     });
 });

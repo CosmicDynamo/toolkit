@@ -26,9 +26,8 @@
 define([
     "dojo/_base/declare",
     "../_Request",
-    "../_ResponseBody",
-    "blocks/promise/when"
-], function (declare, _Request, _ResponseBody, when) {
+    "../_ResponseBody"
+], function (declare, _Request, _ResponseBody) {
     /**
      * Base class for GET requests
      * @class service.handler.request._Get
@@ -36,49 +35,5 @@ define([
      * @override service.handler._Request#handle
      */
     return declare([_Request, _ResponseBody], {
-        /**
-         * Handle the incoming GET Request
-         * @param {RdfJs.Node} iri - The URL of the request being handled
-         * @param {Object} args - arguments that can be used to control how the data is handled
-         * @returns {Promise<*>}
-         */
-        handle: function(iri, args) {
-            var ready = this.inherited(arguments);
-
-            ready = when(ready, this.logic.bind(this));
-
-            return when(ready, this.finalize.bind(this));
-        },
-        /**
-         * Perform Business logic and add Hypermedia Controls
-         * @return {Promise | *}
-         */
-        logic: function(){
-            //NOOP
-        },
-        /**
-         * Fill in request headers and perform any operations that should be done before response is sent
-         * @return {Promise | *}
-         */
-        finalize: function() {
-            var handler = this;
-
-            var built = handler.buildResponseBody(handler.builder);
-
-            return when(built, function(body){
-                if (body === null){
-                    handler.setStatus(406);
-                    body = "Could not find serializer for Accept Header";
-                }
-                //In case the request was proxied rely on the builder's subject IRI and not
-                //  the request URL
-                var iri = handler.builder.subject;
-                if (iri.isNamed()){
-                    handler.setHeader("Location", iri.toString().replace("file:/", handler.app().server.proxyName));
-                }
-
-                handler.response.send(body).end();
-            });
-        }
     });
 });

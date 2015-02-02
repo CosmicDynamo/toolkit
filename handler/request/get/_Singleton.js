@@ -36,111 +36,101 @@ define([
      */
     return declare([_Get], {
         /**
-         * @property
-         * @type {Boolean}
-         */
-        skipDetails: false,
-        preventSave: false,
-        /**
          * Fill in calculated values and add Hypermedia Controls
          * @returns {Promise | *}
          * @override service.handler._Request#logic
          */
-        logic: function(){
+        logic: function(args){
             var handler = this;
 
-            var ready = handler.builder.load(); //Load the response data for this request
+            var ready = args.builder.load(); //Load the response data for this request
 
-            ready = when(ready,this.expandDetails.bind(this));
+            return when(ready, function(found){
+                if (!found){
+                    handler.setStatus(args, 404);
+                    return handler.end(args);
+                }
 
-            ready = when(ready, this.addLinks.bind(this));
-
-            return ready;
+                return handler.expandDetails(args);
+            });
         },
-        expandDetails: function(){
-            if (this.skipDetails){
-                return;
-            }
+        expandDetails: function(args){
             var handler = this;
             //Type information is not stored, but is 'Calculated' based on the URL used to get the data
             //  This is to better deal with multi-representation's and framing of bad type data coming from the client
-            handler.builder.addType(handler.objectType);
+            args.builder.addType(args.objectType);
 
-            return handler.expandChildren();
-        },
-        /**
-         * Add any Links that can be used to interact with this object
-         * @returns {*}
-         */
-        addLinks: function(){
-            if (this.preventSave){
-                return null;
-            }
+            var ready = handler.expandChildren(args);
 
-            return this.addSaveLink();
+            ready = when(ready, function(){
+                return handler.addSaveLink(args);
+            });
+
+            return when(ready, function(){
+                return handler.finalize(args);
+            });
         },
         /**
          * Pull any Containers and add Source-Data links
          * @return {Promise | *}
          */
-        expandChildren: function(){
+        expandChildren: function(args){
             var handler = this;
-            var properties = handler.app().ontology.getProperties(handler.objectType);
+            var properties = handler.app().ontology.getProperties(args.objectType);
 
             return all(properties.map(function(predicate){
-                return handler.expandProperty(predicate);
+                return handler.expandProperty(args, predicate);
             }));
         },
         /**
          * Used to expand the value of a specific property for this representation
+         * @param {service.handler._Request} args - arguments that will be used to instantiate the builder
          * @param {RdfJs.node.Named} predicate
          * @return {Promise | *}
          */
-        expandProperty: function(predicate){
-            var isCollection = this.app().ontology.isCollection(predicate, this.objectType);
+        expandProperty: function(args, predicate){
+            var isCollection = this.app().ontology.isCollection(predicate, args.objectType);
 
-            var link = this.addSourceLink(predicate);
+            var link = this.addSourceLink(args, predicate);
             var expansion ;
             if (isCollection){
-                expansion = this.expandList(predicate);
+                expansion = this.expandList(args, predicate);
             } else {
-                expansion = this.expandSet(predicate);
+                expansion = this.expandSet(args, predicate);
             }
             return all([link, expansion]);
         },
         /**
          * Expands a predicate that has been identified as being an Ordered List of data
+         * @param {service.handler._Request} args - arguments that will be used to instantiate the builder
          * @param {RdfJs.node.Named} predicate
          * @return {Promise | *}
          */
-        expandList: function(predicate){
-            var data = this.builder;
-
-            data.addContainer(predicate);
-            return this;
+        expandList: function(args, predicate){
+            args.builder.addContainer(predicate);
         },
         /**
          * Expands a predicate that has been identified as being an Unordered Set of data
+         * @param {service.handler._Request} args - arguments that will be used to instantiate the builder
          * @param {RdfJs.node.Named} predicate
          * @return {Promise | *}
          */
-        expandSet: function(predicate){
+        expandSet: function(args, predicate){
             //NO-OP - Default behavior is to leave as is
-            return this;
         },
         /**
          * Detects and Connects the source data Link for this input predicate
+         * @param {service.handler._Request} args - arguments that will be used to instantiate the builder
          * @param predicate
          * @return {Promise | *}
          */
-        addSourceLink:function(predicate){
+        addSourceLink:function(args, predicate){
             //TODO: This
         },
         /**
          * Add the Hypermedia Link that will allow this object to be Updated
          */
         addSaveLink: function(){
-            throw { message: "Not Implemented Exception"};
         }
     });
 });

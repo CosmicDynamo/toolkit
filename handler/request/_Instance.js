@@ -39,12 +39,14 @@ define([
         builder: null,
         /**
          * Handle the incoming GET Request
-         * @param {service.handler._Request} params - arguments that will be used to instantiate the builder
+         * @param {service.handler._Request} args - arguments that will be used to instantiate the builder
          * @returns {Promise<*> | *}
          * @override service.handler._Request#initBuilder
          */
-        initBuilder: function(params){
-            return this.builder = new Instance(params);
+        initBuilder: function(args){
+            args.builder = new Instance(args);
+
+            return this.logic(args);
         }
     });
 });

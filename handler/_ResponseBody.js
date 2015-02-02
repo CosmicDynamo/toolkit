@@ -34,8 +34,8 @@ define([
      * @interface
      */
     return declare([], {
-        buildResponseBody: function(){
-            var accept = this.request.headers["accept"];
+        formatResponse: function(args){
+            var accept = args.request.headers["accept"];
 
             if (!accept){
                 this.setHeader("Content-Type", "text/plane");
@@ -43,7 +43,7 @@ define([
                 return "Fatal Exception: Missing Accept Header";
             }
 
-            var data = this.builder.graph();
+            var data = args.builder.graph();
             var baseUrl = this.app().server.proxyName;
             var replace = function (node) {
                 if (node.isNamed() && node.toString().indexOf("file:/") == 0) {
@@ -55,6 +55,8 @@ define([
                 replace(triple.subject);
                 replace(triple.object);
             });
+
+            this.setHeader(args, "Content-Type", (convert.bestMatch("RdfGraph", accept) || {}).mimeType);
 
             return convert(data, "RdfGraph", accept);
         }

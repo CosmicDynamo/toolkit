@@ -34,24 +34,15 @@ define([
      * @mixes service.handler.request._Instance
      */
     return declare([_Singleton, _Instance], {
-        expandDetails: function(found){
-            if (!found){
-                handler.setStatus(404);
-                handler.skipDetails = true;
-                handler.preventSave = true;
-            }
-
-            return this.inherited(arguments);
-        },
         /**
          * Add the Hypermedia Link that will allow this object to be Updated
          */
-        addSaveLink: function(){
+        addSaveLink: function(args){
             var handler = this;
-            var data = handler.builder;
+            var data = args.builder;
 
-            if (handler.app().permission.canEdit(data.subject, data.objectType, data)) {
-                data.allowReplace(handler.objectType);
+            if (handler.app().permission.canEdit(data.subject, args.objectType, data)) {
+                data.allowReplace(args.objectType);
             }
         }
     });
