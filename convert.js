@@ -74,6 +74,20 @@ define([
             return parse(data, options);
         });
     }
+
+    /**
+     * Returns the mime-type that the converter will use when parsing the accept value
+     * @param {String} fromType - mediaType of the input data
+     * @param {String} accept - data type of the output
+     * @returns {String}
+     */
+    convert.bestMatch = function(fromType, accept){
+        var parts = fromType.split(";");
+
+        var from = parsers.get(parts[0]);
+
+        return parseAccept(from.keys(), accept);
+    };
     /**
      * Registers converters using the provided moduleIds
      * @param {Object} config
