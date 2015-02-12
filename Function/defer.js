@@ -23,32 +23,28 @@
  * THE SOFTWARE.
  */
 define([
-    "dojo/_base/Deferred", "dojo/when"
+    "dojo/_base/Deferred",
+    "dojo/when"
 ], function (Deferred, when) {
-    if (!Function.prototype.defer) {
-        Function.prototype.defer = function (self, args, waitTime) {
-            var fn = this;
+    // NOT A REAL Polyfill.  If I make a system, I can break it so there
+    /**
+     * Delays execution of a function and then returns a promise that will resolve when the function is complete
+     * @param {Object} self - Function execution context
+     * @param {Array<*>} args - Arguments to pas into the function
+     * @param {Number} waitTime - wait time in ms
+     * @return {Deferred}
+     */
+    Function.prototype.defer = function (self, args, waitTime) {
+        var fn = this;
 
-            var done = new Deferred();
-            setTimeout(function () {
-                try {
-                    when(fn.apply(self, args), done.resolve, done.reject, done.progress);
-                } catch (ex) {
-                    done.reject(ex);
-                }
-            }, waitTime || 0);
-            return done;
-        };
-    }
-
-    if (!Function.prototype.next) {
-        Function.prototype.next = function (self, args, waitTime) {
-            var fn = this;
-
-            setTimeout(function () {
-                fn.apply(self, args);
-            }, waitTime || 0);
-        };
-    }
-    return {};
+        var done = new Deferred();
+        setTimeout(function () {
+            try {
+                when(fn.apply(self, args), done.resolve, done.reject, done.progress);
+            } catch (ex) {
+                done.reject(ex);
+            }
+        }, waitTime || 0);
+        return done;
+    };
 });

@@ -13,7 +13,7 @@ if (!String.prototype.codePointAt) {
         }());
         var codePointAt = function(position) {
             if (this == null) {
-                throw TypeError();
+                throw new TypeError();
             }
             var string = String(this);
             var size = string.length;

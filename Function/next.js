@@ -22,14 +22,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-define([
-    //"dojo/has"
-], function () {
-    return function () {
-        //if (performace){
-        //    return performance.now();
-        //}
 
-        return new Date();
-    }
-})
+// NOT A REAL Polyfill.  If I make a system, I can break it so there
+/**
+ * Delays execution of a function.  Helper to make Futures easier
+ * @param {Object} self - Function execution context
+ * @param {Array<*>} args - Arguments to pas into the function
+ * @param {Number} waitTime - wait time in ms
+ * @return {Deferred}
+ */
+Function.prototype.next = function (self, args, waitTime) {
+    var fn = this;
+
+    setTimeout(function () {
+        fn.apply(self, args);
+    }, waitTime || 0);
+};
