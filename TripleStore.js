@@ -178,7 +178,7 @@ define([
         },
         /**
          * Returns true if tFilter returns true for any Triple in the target Graph(s)
-         * @param {RdfJs._TripleFilter} tFilter - Filter to run against the Graph
+         * @param {Function} tFilter - Filter to run against the Graph
          * @param {String|String[]} graphName - The target Graph name(s)
          * @returns {Boolean}
          */
@@ -191,7 +191,7 @@ define([
         },
         /**
          * Returns true if tFilter returns true for every Triple in the target Graph(s)
-         * @param {RdfJs._TripleFilter} tFilter - Filter to run against the Graph
+         * @param {Function} tFilter - Filter to run against the Graph
          * @param {String|String[]} graphName - The target Graph name(s)
          * @returns {Boolean}
          */
@@ -204,7 +204,7 @@ define([
         },
         /**
          * Returns A Graph containing the filtered Triples from the target Graph(s)
-         * @param {RdfJs._TripleFilter} tFilter - Filter to run against the Graph
+         * @param {Function} tFilter - Filter to run against the Graph
          * @param {String|String[]} graphName - The target Graph name(s)
          * @returns {RdfJs.Graph}
          */
@@ -218,7 +218,7 @@ define([
         },
         /**
          * Runs the input function on the target Graph(s)
-         * @param {RdfJs._TripleCallback} tCallback - Filter to run against the Graph
+         * @param {Function} tCallback - Filter to run against the Graph
          * @param {String|String[]} graphName - The target Graph name(s)
          * @returns {RdfJs.Graph}
          */

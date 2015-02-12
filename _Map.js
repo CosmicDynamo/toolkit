@@ -2,42 +2,36 @@
  * Created by Akeron on 3/8/14.
  */
 define([
-    "dojo/_base/declare", "dojo/_base/lang"
-], function (declare, lang) {
+    "dojo/_base/declare",
+    "dojo/_base/lang",
+    "blocks/Container"
+], function (declare, lang, Container) {
     /* Base Class to minimize redundant code when implementing RDF PrefixMap and TermMap */
-
-    return declare([], {
-        values: null,
-        //resolve: function(curie) ... implement
-        //shrink: function(iri) ... implement
-        constructor: function (params) {
-            lang.mixin(this, params);
-
-            this.values = this.values || {};
-        },
+    /**
+     * @class RdfJs._Map
+     * @mixes blocks.Container
+     */
+    return declare([Container], {
         get: function (alias) {
             this.isValid(alias);
 
-            return this.values[alias];
+            return this.inherited(arguments);
         },
         set: function (alias, expanded) {
             this.isValid(alias);
 
-            this.values[alias] = expanded;
-        },
-        remove: function (alias) {
-            delete this.values[alias];
+            return this.inherited(arguments);
         },
         isValid: function (alias) {
             return alias.indexOf(" ") == -1;
         },
-        addAll: function (map, override) {
-            var list = Object.keys(map.values);
-            list.forEach(function (term) {
-                if (override || this.get(term) === undefined) {
-                    this.set(term, map.values[term]);
+        addAll: function (values, override) {
+            var map = this;
+            values.keys().forEach(function (term) {
+                if (override || map.get(term) === undefined) {
+                    map.set(term, map.values[term]);
                 }
-            }.bind(this));
+            });
 
             return this;
         }

@@ -89,20 +89,22 @@ define([
                 name: "createAction: creates a new Triple Action",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-RDFEnvironment-createAction-TripleAction-TripleFilter-test-TripleCallback-action",
                 exec: function (test) {
+                    var was = {
+                        run: false
+                    };
                     var action = test.env.createAction(function () {
                         return true;
                     }, function () {
-                        this.ran = true;
+                        was.run = true;
                     });
-                    action.ran = false;
 
                     test.assertTrue(lang.isObject(action), "output is an object");
-                    test.assertTrue(lang.isFunction(action.run), "add method defined");
-                    test.assertFalse(action.ran, "Action has not been run yet");
+                    test.assertTrue(lang.isFunction(action), "add method defined");
+                    test.assertFalse(was.run, "Action has not been run yet");
 
-                    action.run();
+                    action();
 
-                    test.assertTrue(action.ran, "Action was run");
+                    test.assertTrue(was.run, "Action was run");
 
                     test.complete();
                 }

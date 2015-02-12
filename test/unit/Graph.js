@@ -58,7 +58,11 @@ define([
                 name: "remove(Triple): returns the graph instance it was called on",
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-add-Graph-Triple-triple",
                 exec: function (test) {
-                    var input = new Triple({subject: "<urn:Hello>", prediate: "<urn:World>", object: "\"!!!\"^^<xsd:string>"}, test);
+                    var input = new Triple({
+                        subject: "<urn:Hello>",
+                        predicate: "<urn:World>",
+                        object: "\"!!!\"^^<xsd:string>"
+                    }, test);
                     var output = test.graph.remove(input);
 
                     test.assertEqual(test.graph, output);
@@ -395,10 +399,8 @@ define([
                     test.graph.add(input2);
                     test.graph.add(input3);
 
-                    test.assertTrue(test.graph.some({
-                        test: function (triple) {
-                            return triple.object.toNT() === "\"XOXO\"^^<xsd:string>";
-                        }
+                    test.assertTrue(test.graph.some(function (triple) {
+                        return triple.object.toNT() === "\"XOXO\"^^<xsd:string>";
                     }));
 
                     test.complete();
@@ -415,10 +417,8 @@ define([
                     test.graph.add(input2);
                     test.graph.add(input3);
 
-                    test.assertFalse(test.graph.some({
-                        test: function () {
-                            return false;
-                        }
+                    test.assertFalse(test.graph.some(function () {
+                        return false;
                     }));
 
                     test.complete();
@@ -435,10 +435,8 @@ define([
                     test.graph.add(input2);
                     test.graph.add(input3);
 
-                    test.assertFalse(test.graph.every({
-                        test: function (triple) {
-                            return triple.object.toNT() !== "\"XOXO\"^^<xsd:string>";
-                        }
+                    test.assertFalse(test.graph.every(function (triple) {
+                        return triple.object.toNT() !== "\"XOXO\"^^<xsd:string>";
                     }));
 
                     test.complete();
@@ -455,10 +453,8 @@ define([
                     test.graph.add(input2);
                     test.graph.add(input3);
 
-                    test.assertTrue(test.graph.some({
-                        test: function () {
-                            return true;
-                        }
+                    test.assertTrue(test.graph.some(function () {
+                        return true;
                     }));
 
                     test.complete();
@@ -477,24 +473,21 @@ define([
                     test.graph.add(input3);
                     test.graph.add(input4);
 
-                    var out = test.graph.filter({
-                        test: function (triple) {
-                            return triple.object.toNT() === "\"XOXO\"^^<xsd:string>" || triple.object.toNT() === "\"123\"";
-
-                        }
+                    var out = test.graph.filter(function (triple) {
+                        return triple.object.toNT() === "\"XOXO\"^^<xsd:string>" || triple.object.toNT() === "\"123\"";
                     });
 
                     test.assertEqual(2, out.length);
 
                     var has1 = false, has2 = false;
-                    out.forEach({ run: function (triple) {
+                    out.forEach(function (triple) {
                         if (triple.object.toNT() == "\"123\"") {
                             has1 = true;
                         }
                         if (triple.object.toNT() == "\"XOXO\"^^<xsd:string>") {
                             has2 = true;
                         }
-                    }});
+                    });
 
                     test.assertTrue(has1 && has2);
 
@@ -518,23 +511,22 @@ define([
                         run1: false,
                         run2: false,
                         run3: false,
-                        run4: false,
-                        run: function (triple) {
-                            if (triple.object.toNT() == "\"123\"") {
-                                this.run1 = true;
-                            }
-                            if (triple.object.toNT() == "\"XOXO\"^^<xsd:string>") {
-                                this.run2 = true;
-                            }
-                            if (triple.object.toNT() == "\"ABC\"^^<xsd:string>") {
-                                this.run3 = true;
-                            }
-                            if (triple.object.toNT() == "\"Who's on First!!\"^^<xsd:string>") {
-                                this.run4 = true;
-                            }
-                        }
+                        run4: false
                     };
-                    test.graph.forEach(obj);
+                    test.graph.forEach(function (triple) {
+                        if (triple.object.toNT() == "\"123\"") {
+                            obj.run1 = true;
+                        }
+                        if (triple.object.toNT() == "\"XOXO\"^^<xsd:string>") {
+                            obj.run2 = true;
+                        }
+                        if (triple.object.toNT() == "\"ABC\"^^<xsd:string>") {
+                            obj.run3 = true;
+                        }
+                        if (triple.object.toNT() == "\"Who's on First!!\"^^<xsd:string>") {
+                            obj.run4 = true;
+                        }
+                    });
 
                     test.assertTrue(obj.run1 && obj.run2 && obj.run3 && obj.run4);
 
@@ -738,17 +730,16 @@ define([
                     test.assertEqual(2, out.length);
                     var obj = {
                         run1: false,
-                        run2: false,
-                        run: function (triple) {
-                            if (triple.object.toNT() == "\"123\"") {
-                                this.run1 = true;
-                            }
-                            if (triple.object.toNT() == "\"XOXO\"^^<xsd:string>") {
-                                this.run2 = true;
-                            }
-                        }
+                        run2: false
                     };
-                    out.forEach(obj);
+                    out.forEach(function (triple) {
+                        if (triple.object.toNT() == "\"123\"") {
+                            obj.run1 = true;
+                        }
+                        if (triple.object.toNT() == "\"XOXO\"^^<xsd:string>") {
+                            obj.run2 = true;
+                        }
+                    });
                     test.assertTrue(obj.run1 && obj.run2);
                     test.assertNotEqual(out, test.graph);
                     test.assertNotEqual(out, g2);
@@ -775,17 +766,16 @@ define([
                     test.assertEqual(2, out.length);
                     var obj = {
                         run1: false,
-                        run2: false,
-                        run: function (triple) {
-                            if (triple.object.toNT() == "\"123\"") {
-                                this.run1 = true;
-                            }
-                            if (triple.object.toNT() == "\"XOXO\"^^<xsd:string>") {
-                                this.run2 = true;
-                            }
-                        }
+                        run2: false
                     };
-                    out.forEach(obj);
+                    out.forEach(function (triple) {
+                        if (triple.object.toNT() == "\"123\"") {
+                            obj.run1 = true;
+                        }
+                        if (triple.object.toNT() == "\"XOXO\"^^<xsd:string>") {
+                            obj.run2 = true;
+                        }
+                    });
                     test.assertTrue(obj.run1 && obj.run2);
                     test.assertNotEqual(out, test.graph);
                     test.assertNotEqual(out, g2);
@@ -798,20 +788,16 @@ define([
                 spec: "http://www.w3.org/TR/rdf-interfaces/#widl-Graph-addAction-Graph-TripleAction-action-boolean-run",
                 exec: function (test) {
                     var a1 = {
-                        runCt: 0,
-                        run: function () {
-                            this.runCt++;
-                        }
+                        runCt: 0
                     }, a2 = {
-                        runCt: 0,
-                        run: function () {
-                            this.runCt++;
-                        }
+                        runCt: 0
                     };
 
                     test.graph.add(Triple({subject: "<1>", predicate: "<1>", object: "\"1\""}, test));
 
-                    test.graph.addAction(a1);
+                    test.graph.addAction(function () {
+                        a1.runCt++;
+                    });
 
                     test.assertEqual(0, a1.runCt);
                     test.assertEqual(0, a2.runCt);
@@ -821,7 +807,9 @@ define([
                     test.assertEqual(1, a1.runCt);
                     test.assertEqual(0, a2.runCt);
 
-                    test.graph.addAction(a2, true);
+                    test.graph.addAction(function () {
+                        a2.runCt++;
+                    }, true);
 
                     test.assertEqual(1, a1.runCt);
                     test.assertEqual(2, a2.runCt);

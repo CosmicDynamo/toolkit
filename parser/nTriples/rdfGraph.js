@@ -25,20 +25,53 @@
  */
 define([
     "RdfJs/Graph",
-    "RdfJs/Triple"
-], function (Graph, Triple) {
+    "RdfJs/Triple",
+    "RdfJs/node/Blank",
+    "blocks/parser/Data",
+    "RdfJs/parser/iriRef",
+    "RdfJs/parser/literal",
+    "RdfJs/parser/bNodeLabel",
+    "blocks/parser/hasChar",
+    "RdfJs/parser/whiteSpace"
+], function (Graph, Triple, Blank, Data, iriRef, literal, bNodeLabel, hasChar, whiteSpace) {
     /**
      * Converts data from a N-Triples string to an RDF Graph
      * @method RdfJs.parser.nTriples.rdfGraph
      * @param {String} data - The N-Triples string data
      * @return {RdfJs.Graph} - the resulting data
      */
-    return function (data) {
+    return function (string) {
+        var bNodeMap = {};
+        function mapBNode(value){
+            if (!value || !value.isBlank()){
+                return value;
+            }
+
+            if (bNodeMap[value.toNT()]){
+                return bNodeMap[value.toNT()];
+            }
+
+            return bNodeMap[value.toNT()] = new Blank();
+        }
         var out = new Graph();
-        data.split(".").forEach(function (triple) {
-            var parts = triple.split(" ");
-            out.add(new Triple(parts[0], parts[1], parts.slice(2).join(" ")));
+
+        var data = new Data({
+            input: string,
+            whiteSpace: whiteSpace
         });
+        while(!data.isEnd()){
+            var subject = iriRef(data) || mapBNode(bNodeLabel(data));
+            var predicate = iriRef(data);
+            var object = iriRef(data) || literal(data) || mapBNode(bNodeLabel(data));
+            var end = hasChar(data, ".", true, true);
+
+            if (!subject || !predicate || !object || !end){
+                return null;
+            }
+
+            out.add(new Triple(subject, predicate, object));
+        }
+
         return out;
     }
 });

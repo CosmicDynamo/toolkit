@@ -1,5 +1,6 @@
 define([
     './node/module',
+    "./parser/module",
     './Environment',
     './Graph',
     './Node',

@@ -257,10 +257,8 @@ define([
                     };
                 },
                 exec: function (test) {
-                    var tFilter = {
-                        test: function () {
-                            return true;
-                        }
+                    var tFilter = function () {
+                        return true;
                     };
                     test.result = true;
                     test.assertTrue(test.tStore.some(tFilter, "ALL"), "Returns true when a Graph returns true");
@@ -288,10 +286,8 @@ define([
                     };
                 },
                 exec: function (test) {
-                    var tFilter = {
-                        test: function () {
-                            return true;
-                        }
+                    var tFilter = function () {
+                        return true;
                     };
                     test.result = true;
                     test.assertTrue(test.tStore.every(tFilter, "ALL"), "Returns true when a Graph returns true");
@@ -326,10 +322,8 @@ define([
                     };
                 },
                 exec: function (test) {
-                    var tFilter = {
-                        test: function () {
-                            return true;
-                        }
+                    var tFilter = function () {
+                        return true;
                     };
                     var result = test.tStore.filter(tFilter, "ALL");
 
@@ -349,17 +343,15 @@ define([
                 setUp: function (test) {
                     var graph = test.tStore.getGraph("urn:ThirdGraph");
                     graph.forEach = function (callback) {
-                        callback.run("Triple");
+                        callback("Triple");
                     };
 
                     test.runOnGraphsCalled = null;
                 },
                 exec: function (test) {
-                    var tCallback = {
-                        run: function (arg) {
-                            test.assertEqual("Triple", arg);
-                            test.run = true;
-                        }
+                    var tCallback = function (arg) {
+                        test.assertEqual("Triple", arg);
+                        test.run = true;
                     };
 
                     test.tStore.forEach(tCallback);
@@ -423,11 +415,15 @@ define([
                 },
                 exec: function (test) {
                     var p1 = new Graph({test: test});
-                    p1.add(new Triple({subject: "<urn:ThirdGraph>", predicate: "<urn:hasValue>", object: '"G3"'}, test));
+                    var s = "<urn:ThirdGraph>";
+                    var p = "<urn:hasValue>";
+                    var o = '"G3"';
+                    p1.add(new Triple({subject: s, predicate: p, object: o}, test));
                     test.tStore.addAll(p1);
 
                     test.assertEqual("DEFAULT", test.runOnGraphsCalled, "runOnGraphs method was used to execute this request");
-                    test.assertEqual(p1, test.added, "input Graph was passed to target Graph#addAll");
+                    test.assertEqual(p1.length, test.added.length, "input Graph was passed to target Graph#addAll");
+                    test.assertEqual(1, test.added.match(s, p, o).length);
 
                     test.complete();
                 }

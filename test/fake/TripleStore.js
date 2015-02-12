@@ -28,10 +28,8 @@ define([
     "dojo/_base/lang",
     "qasht/_Fake",
     "RdfJs/TripleStore",
-    "RdfJs/test/api/Triple",
-    "RdfJs/test/api/_TripleFilter",
-    "RdfJs/test/api/_TripleCallback"
-], function (declare, lang, _Fake, TripleStore, testTripleApi, testFilterApi, testCallbackApi) {
+    "RdfJs/test/api/Triple"
+], function (declare, lang, _Fake, TripleStore, testTripleApi) {
     /**
      * @class RdfJs.test.fake.TripleStore
      * @mixes qasht._Fake
@@ -134,28 +132,28 @@ define([
         some: function (tFilter, graphName) {
             var test = this.test;
             test.assertEqual(2, arguments.length, "TripleStore.some: takes two arguments");
-            testFilterApi(triple, test);
+            test.assertIsFunction(tFilter);
 
             return this.inherited(arguments);
         },
         every: function (tFilter, graphName) {
             var test = this.test;
             test.assertEqual(2, arguments.length, "TripleStore.every: takes two arguments");
-            testFilterApi(triple, test);
+            test.assertIsFunction(tFilter);
 
             return this.inherited(arguments);
         },
         filter: function (tFilter, graphName) {
             var test = this.test;
             test.assertEqual(2, arguments.length, "TripleStore.filter: takes two arguments");
-            testFilterApi(triple, test);
+            test.assertIsFunction(tFilter);
 
             return this.inherited(arguments);
         },
         forEach: function (tCallback, graphName) {
             var test = this.test;
             test.assertEqual(2, arguments.length, "TripleStore.forEach: takes two arguments");
-            testCallbackApi(triple, test);
+            test.assertIsFunction(tCallback);
 
             return this.inherited(arguments);
         },
