@@ -25,7 +25,7 @@
  */
 define([
     "dojo/_base/declare",
-    "dojo/when"
+    "./when"
 ], function (declare, when) {
     /**
      * Helps with synchronizing async functions by allowing you to setup a queue where each function will execute after the last' promise resolves
@@ -33,18 +33,29 @@ define([
      */
     return declare([], {
         last: null,
-        constructor: function (scope) {
+        constructor: function (scope, onError, onProgress) {
             this.scope = scope;
+            this.onError = onError?onError.bind(scope):null;
+            this.onProgress = onProgress?onProgress.bind(scope):null;
         },
         /**
          * Queues the next Function for execution
          * @param {Function} fn - Next function to run
+         * @param {Array<*>} [args] - Function execution arguments
          */
-        enqueue: function (fn) {
+        enqueue: function (fn, args) {
             var scope = this.scope;
             this.last = when(this.last, function (results) {
-                return fn.call(scope, results);
+                return fn.apply(scope, args || [results]);
             });
+
+            if (this.onError || this.onProgress) {
+                this.last = when(this.last, function (out) {
+                    return out;
+                }, this.onError, this.onProgress);
+            }
+
+            return this.last;
         }
     });
 });

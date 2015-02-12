@@ -28,7 +28,8 @@ define([
     "dojo/_base/lang"
 ], function (declare, lang) {
     /**
-     * @class locks.Exception
+     * Base Exception object
+     * @class blocks.Exception
      */
     return declare([], {
         /** @property {String} */

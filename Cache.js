@@ -25,58 +25,60 @@
  */
 define([
     "dojo/_base/declare",
-    "dojo/_base/lang",
-    "./Container"
-], function (declare, lang, Container) {
+    "./Container",
+    "./HashTable"
+], function (declare, Container, HashTable) {
     /**
      * Supposed to be a module for handling the caching of data requests so that if an entry is not defined it will call an
      * input get method your code can override
      * @class blocks.Cache
      * @mixes dojo.declare
-     * @mixes blocks.Container
      */
-    return declare([Container], {
-        _pointer: null,
-        _empty: null,
-        constructor: function (parent, fnName) {
-            this.parent = parent;
-            this.fnName = fnName;
+    return declare([], {
+        /** @property {blocks.HashTable} */
+        _keys: null,
+        /** @property {blocks.Container} */
+        _values: null,
+        constructor: function (args) {
+            this._keys = new HashTable(args);
+            this._values = new Container();
 
-            if (parent.getObjectId) {
-                this.getObjectId = parent.getObjectId;
-            }
+            this.load = args.load;
         },
         /**
-         * Gets a value
-         * @param {String} name
-         * @return {*} value
-         */
-        get: function (name) {
-            arguments[0] = this.getObjectId(name);
-
-            var val = this.inherited(arguments);
-            if (val === null) {
-                return this.parent[this.fnName](name);
-            }
-        },
-        /**
-         * Sets a value
-         * @param {String} name
+         * Gets a value from the cache
          * @param {*} value
+         * @return {*}
          */
-        set: function (name, value) {
-            arguments[0] = this.getObjectId(name);
+        get: function (value) {
+            var key = this._keys.lookup(value);
 
-            this.inherited(arguments)
+            var val = this._values.get(key);
+            if (val == null){
+                val = this.load(value);
+                key = this._keys.add(value);
+                this._values.set(key, val);
+            }
+
+            return val;
         },
         /**
-         * Creates a Hash from an input object
-         * @description Intended to be overridden by more complex Caches
-         * @param {String} name
-         * @return {String}
+         * Loads a value that is not already in the cache
+         * @param {*} id
+         * @return {null}
          */
-        getObjectId: function (name) {
-            return name;
+        load: function(id){
+            return null;
+        },
+        /**
+         * Removes a value from the cache so it can be re-loaded
+         * @param {*} key - The key that identifies this object
+         */
+        remove: function(key){
+            var hash = this._keys.lookup(key);
+
+            this._values.remove(hash);
+            this._keys.remove(hash);
         }
     })
 });

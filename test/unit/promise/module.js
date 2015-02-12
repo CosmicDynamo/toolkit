@@ -1,0 +1,5 @@
+define([
+    "./all",
+    "./Queue"
+], function () {
+});

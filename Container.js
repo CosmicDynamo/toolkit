@@ -27,12 +27,22 @@ define([
     "dojo/_base/declare"
 ], function (declare) {
     /**
+     * A Basic Object Container used for storing data without worrying about hasOwnProperty checks
      * @class blocks.Container
+     * @mixes dojo.declare
      */
-    return declare([], {
+    var Container = declare([], {
         _values: null,
-        constructor: function () {
+        constructor: function (args) {
             this._values = {};
+
+            if (args) {
+                for (var x in args) {
+                    if (args.hasOwnProperty(x)) {
+                        this.set(x, args[x]);
+                    }
+                }
+            }
         },
         /**
          * Removes an value from this Container
@@ -58,7 +68,7 @@ define([
          * @returns {* | null}
          */
         get: function (name) {
-            return this._values[name] || null;
+            return (name in this._values)?this._values[name]:null;
         },
         /**
          * Returns the names of the data in this Container
@@ -66,6 +76,19 @@ define([
          */
         keys: function () {
             return Object.keys(this._values);
+        },
+        /**
+         * Creates a shallow clown of this container
+         * @return {Container}
+         */
+        clone: function () {
+            var clone = new Container();
+            var original = this;
+            original.keys().forEach(function (key) {
+                clone.set(key, original.get(key));
+            });
+            return clone;
         }
     });
+    return Container;
 });

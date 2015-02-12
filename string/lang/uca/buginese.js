@@ -1,0 +1,7 @@
+define([
+    "../single"
+], function (Single) {
+    return new Single({
+        collation: '1A001A011A021A031A041A051A061A071A081A091A0A1A0B1A0C1A0D1A0E1A0F1A101A111A121A131A141A151A161A171A181A191A1A1A1B'
+    });
+});
