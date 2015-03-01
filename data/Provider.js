@@ -44,12 +44,65 @@ define([
             var app = this.app();
             var fs = app.file;
 
-            var path = this.runtime + subject.toString().replace("file://api/", "/").replace("/id/", "/");
-            path = path.substr(0, path.length - 1) + ".nt";
+            var path = this._calcPath(subject);
             if (fs.existsSync(path)){
                 return convert.loadFile(path, "RdfGraph");
             }
             return null;
+        },
+        persist: function(subject, graph){
+            var data = this.namedObject(subject, graph);
+            var string = convert(data, "RdfGraph", "application/n-triples");
+
+            var path = this._calcPath(subject);
+            return this._mkFile(path, string);
+        },
+        namedObject: function(rootNode, sourceGraph, destGraph){
+            var node = sourceGraph.match(rootNode.toNT(), null, null);
+            if (destGraph){
+                destGraph.addAll(node);
+            } else {
+                destGraph = node;
+            }
+
+            var provider = this;
+            node.forEach(function(triple){
+                if (triple.object.isBlank()){
+                    provider.namedObject(triple.object, sourceGraph, destGraph);
+                }
+            });
+            return destGraph;
+        },
+        _calcPath: function(subject){
+            var path = this.runtime + subject.toString().replace("file://api/", "/").replace("/id/", "/");
+            if (path.endsWith("/new/")){
+                path = path.replace("/new", "-new");
+            }
+            return path.substr(0, path.length - 1) + ".nt";
+        },
+        _mkFile: function (path, data) {
+            var fs = this.app().file;
+            console.verbose("Trying to Create File:", path);
+            if (!this._mkDir(path, 2)) {
+                return false;
+            }
+            try {
+                if (fs.existsSync(path)) {
+                    fs.unlinkSync(path);
+                }
+
+                if (fs.existsSync(path)) {
+                    return false;
+                }
+                fs.writeFileSync(path, data);
+                console.verbose("Write Complete:".verbose, path.data);
+
+                return true;
+            } catch (ex) {
+                console.error("Failed to Write File: ".error, path.info);
+                console.error(ex);
+            }
+            return false;
         },
         _mkDir: function (fullPath, start) {
             var sep = this.app().path.sep;

@@ -38,9 +38,9 @@ define([
         /**
          * Fill in calculated values and add Hypermedia Controls
          * @returns {Promise | *}
-         * @override service.handler._Request#logic
+         * @override service.handler._Request#responseLogic
          */
-        logic: function(args){
+        load: function(args){
             var handler = this;
 
             var ready = args.builder.load(); //Load the response data for this request
@@ -48,33 +48,20 @@ define([
             return when(ready, function(found){
                 if (!found){
                     handler.setStatus(args, 404);
-                    return handler.end(args);
+                    handler.skipTo(args, "send");
                 }
-
-                return handler.expandDetails(args);
             });
         },
-        expandDetails: function(args){
-            var handler = this;
+        applyTypes: function(args){
             //Type information is not stored, but is 'Calculated' based on the URL used to get the data
             //  This is to better deal with multi-representation's and framing of bad type data coming from the client
             args.builder.addType(args.objectType);
-
-            var ready = handler.expandChildren(args);
-
-            ready = when(ready, function(){
-                return handler.addSaveLink(args);
-            });
-
-            return when(ready, function(){
-                return handler.finalize(args);
-            });
         },
         /**
          * Pull any Containers and add Source-Data links
          * @return {Promise | *}
          */
-        expandChildren: function(args){
+        addContainers: function(args){
             var handler = this;
             var properties = handler.app().ontology.getProperties(args.objectType);
 
@@ -126,11 +113,6 @@ define([
          */
         addSourceLink:function(args, predicate){
             //TODO: This
-        },
-        /**
-         * Add the Hypermedia Link that will allow this object to be Updated
-         */
-        addSaveLink: function(){
         }
     });
 });

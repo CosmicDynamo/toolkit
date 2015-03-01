@@ -26,33 +26,14 @@
 define([
     "dojo/_base/declare",
     "../_Put",
-    "../_Instance"
+    "../get/Instance"
 ], function (declare, _Put, Instance) {
     /**
      * @class service.handler.request.get.Instance
      * @mixes service.handler.request.get._Singleton
      * @mixes service.handler.request._Instance
      */
-    return declare([_Put, Instance], {
-        expandDetails: function(found){
-            if (!found){
-                handler.setStatus(404);
-                handler.skipDetails = true;
-                handler.preventSave = true;
-            }
+    return declare([Instance, _Put], {
 
-            return this.inherited(arguments);
-        },
-        /**
-         * Add the Hypermedia Link that will allow this object to be Updated
-         */
-        addSaveLink: function(){
-            var handler = this;
-            var data = handler.builder;
-
-            if (handler.app().permission.canEdit(data.subject, data.objectType, data)) {
-                data.allowReplace(handler.objectType);
-            }
-        }
     });
 });

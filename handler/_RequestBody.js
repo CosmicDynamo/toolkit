@@ -26,8 +26,9 @@
 define([
     "dojo/_base/declare",
     "core/convert",
-    "blocks/promise/when"
-], function (declare, convert, when) {
+    "blocks/promise/when",
+    "dojo/_base/Deferred"
+], function (declare, convert, when, Deferred) {
     /**
      * Base class for processing Incoming Requests
      * @class service.handler._Request
@@ -51,26 +52,47 @@ define([
             request.on('end', function () {
                 ready.resolve(body);
             });
-            this.reqBody = ready;
-
+            args.requestBOdy = ready;
             return this.inherited(arguments);
         },
-        parseRequestBody: function(){
+        parseRequest: function(args) {
             var handler = this;
-            return when(handler.reqBody, function(data){
-                var contentType = handler.request.headers["Content-Type"];
+            var queue =  when(args.requestBOdy, function(string){
+                var contentType = args.request.headers["content-type"];
 
-                if (!contentType){
-                    handler.setHeader("Content-Type", "text/plane");
-                    handler.setStatus(406);
-                    handler.requestFailed = true;
-                    return "Fatal Exception: Missing Content-Type Header";
+                var failure = "";
+                if (!contentType) {
+                    failure = "Fatal Exception: Missing Content-Type Header";
+                } else if (!convert.bestMatch(contentType, "RdfGraph")){
+                    failure = "No parser found for Content-Type: " + contentType;
                 }
 
-                var out = convert(data, contentType, "RdfGraph");
+                if (failure){
+                    handler.setHeader(args, "Content-Type", "text/plain");
+                    handler.setStatus(args, 406);
+                    args.body(args, failure);
+                    return handler.skipTo(args, "send");
+                }
+                return convert(string, contentType, "RdfGraph");
+            });
 
-                handler.builder.graph().addAll(out);
-            })
+            var baseUrl = this.app().server.proxyName;
+            return when(queue, function(data){
+                var replace = function (node) {
+                    if (node.isNamed() && node.toString().indexOf(baseUrl) == 0) {
+                        node.nominalValue = node.nominalValue.replace(baseUrl, "file:/");
+                    }
+                };
+
+                data.forEach(function (triple) {
+                    replace(triple.subject);
+                    replace(triple.object);
+                });
+                args.builder.graph().addAll(data);
+            });
+        },
+        persist: function(args){
+            return this.app().data.persist(args.subject, args.builder.graph());
         }
     });
 });

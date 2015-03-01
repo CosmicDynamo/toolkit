@@ -26,15 +26,16 @@
 define([
     "dojo/_base/declare",
     "core/_Handler",
-    "blocks/promise/when"
-], function (declare, _Handler, when) {
+    "./_MethodFlow"
+], function (declare, _Handler, _MethodFlow) {
     /**
      * Base class for processing Incoming Requests
      * @class service.handler._Request
+     * @mixes service.handler._MethodFlow
      * @mixes core._Handler
      * @interface
      */
-    return declare([_Handler], {
+    return declare([_Handler, _MethodFlow], {
         /**
          * @property
          * @type {Number}
@@ -55,6 +56,17 @@ define([
          * @type {RdfJs.node.Named}
          */
         objectType: null,
+        constructor: function(){
+            this.setOrder([
+                "init",
+                "load",
+                "addContainers",
+                "applyTypes",
+                "addLinks",
+                "formatResponse",
+                "send"
+            ]);
+        },
         /**
          * Handle the incoming Request
          * @param {RdfJs.Node} iri - The URL of the request being handled
@@ -67,60 +79,7 @@ define([
         handle: function(iri, args){
             args.subject = iri;
 
-            return this.initBuilder(args);
-        },
-        /**
-         * Initializes the builder object that will be used to manipulate/read data for this request
-         * @param {service.handler._Request} args - arguments that will be used to instantiate the builder
-         * @return {Promise | *} - Promise that is resolved when initialization is complete
-         */
-        initBuilder: function (args){
-            return this.logic(args);
-        },
-        logic: function(args){
-            return this.finalize();
-        },
-        /**
-         * Fill in request headers and perform any operations that should be done before response is sent
-         * @return {Promise | *}
-         */
-        finalize: function(args) {
-            var handler = this;
-
-            var built = handler.formatResponse(args);
-
-            return when(built, function(body){
-                if (body === null){
-                    return handler.invalidAccept(args);
-                }
-
-                handler.sendBody(args, body);
-            });
-        },
-        end: function(args){
-            //In case the request was proxied rely on the builder's subject IRI and not
-            //  the request URL
-            this.setLocation(args, args.builder.subject);
-
-            args.response.end();
-        },
-        formatResponse: function(body){
-            this.setStatus(501);
-
-            return 'Not Implemented';
-        },
-        sendBody: function(args, body){
-            args.response.send(body);
-        },
-        invalidAccept: function(args){
-            this.setStatus(args, 406);
-
-            this.sendBody(args, "Could not find serializer for Accept Header");
-        },
-        setLocation: function(args, iri){
-            if (iri.isNamed()){
-                this.setHeader(args, "Location", iri.toString().replace("file:/", this.app().server.proxyName));
-            }
+            return this.start(args);
         },
         setHeader: function(args, name, value){
             var response = args.response;
@@ -139,6 +98,20 @@ define([
             args.response.status(code);
 
             args.response.statusCode = code;
+        },
+        send: function(args){
+            //In case the request was proxied rely on the builder's subject IRI and not
+            //  the request URL
+            if (args.builder) {
+                this.setLocation(args, args.builder.subject);
+            }
+
+            args.response.send(args.body).end();
+        },
+        setLocation: function(args, iri){
+            if (iri.isNamed()){
+                this.setHeader(args, "Location", iri.toString().replace("file:/", this.app().server.proxyName));
+            }
         }
     });
 });

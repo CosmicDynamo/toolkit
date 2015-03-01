@@ -37,7 +37,7 @@ define([
         /**
          * Add the Hypermedia Link that will allow this object to be Updated
          */
-        addSaveLink: function(args){
+        addLinks: function(args){
             var handler = this;
             var data = args.builder;
 

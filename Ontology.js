@@ -48,6 +48,14 @@ define([
          */
         isCollection: function(predicate, objectType){
             return false;
+        },
+        /**
+         * Validate the provided data as if it were the desired objectType
+         * @param {service.builder._Builder} instance
+         * @param {RdfJs.node.Named} objectType
+         */
+        validate: function(instance, objectType){
+            return true;
         }
     });
 });

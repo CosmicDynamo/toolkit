@@ -26,9 +26,8 @@
 define([
     "dojo/_base/declare",
     "../_Get",
-    "../_Container",
-    "blocks/promise/when"
-], function (declare, _Get, _Container, when) {
+    "../_Container"
+], function (declare, _Get, _Container) {
     /**
      * @class service.handler.request.get.Instance
      * @mixes service.handler.request._Get
@@ -38,31 +37,23 @@ define([
         /**
          * Fill in calculated values and add Hypermedia Controls
          * @returns {Promise | *}
-         * @override service.handler._Request#logic
+         * @override service.handler._Request#responseLogic
          */
-        logic: function(args){
-            var handler = this;
-
-            var ready = args.builder.load();
-
-            ready = when(ready, function(){
-                return handler.addNewItemTemplate(args);
-            });
-
-            return when(ready, function(){
-                return handler.finalize(args);
-            });
+        load: function(args){
+            return args.builder.load();
         },
         /**
          * Add the Hypermedia Link that will allow this object to be Updated
          */
-        addNewItemTemplate: function(args){
+        addLinks: function(args){
             var handler = this;
             var data = args.builder;
 
             if (handler.app().permission.canAdd(data.memberSubject, args.predicate, args.objectType, data)) {
                 data.exposeNewItemTemplate();
             }
+
+            return this.inherited(arguments);
         }
     });
 });

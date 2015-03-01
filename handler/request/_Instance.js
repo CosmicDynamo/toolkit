@@ -43,10 +43,8 @@ define([
          * @returns {Promise<*> | *}
          * @override service.handler._Request#initBuilder
          */
-        initBuilder: function(args){
+        init: function(args){
             args.builder = new Instance(args);
-
-            return this.logic(args);
         }
     });
 });

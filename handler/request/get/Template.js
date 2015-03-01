@@ -34,15 +34,14 @@ define([
      * @mixes service.handler.request._Template
      */
     return declare([_Singleton, _Template], {
-        logic: function(args){
-            var handler = this;
-
-            return handler.expandDetails(args);
+        load: function(args){
+            //Can store some of these settings in a static file
+            return args.builder.load();
         },
         /**
          * Add the Hypermedia Link that will allow this object to be Updated
          */
-        addSaveLink: function(args){
+        addLinks: function(args){
             var handler = this;
             var data = args.builder;
 

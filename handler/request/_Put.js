@@ -28,8 +28,12 @@ define([
     "../_Request",
     "../_ResponseBody",
     "../_RequestBody",
+    "service/ontology/jss",
+    "RdfJs/node/Literal",
+    "RdfJs/ontology/xsd",
+    "RdfJs/ontology/rdf",
     "blocks/promise/when"
-], function (declare, _Request, _ResponseBody, _RequestBody, when) {
+], function (declare, _Request, _ResponseBody, _RequestBody, jss, Literal, xsd, rdf, when) {
     /**
      * Base class for GET requests
      * @class service.handler.request._Get
@@ -37,51 +41,37 @@ define([
      * @override service.handler._Request#handle
      */
     return declare([_Request, _ResponseBody, _RequestBody], {
-        /**
-         * Handle the incoming GET Request
-         * @param {RdfJs.Node} iri - The URL of the request being handled
-         * @param {Object} args - arguments that can be used to control how the data is handled
-         * @returns {Promise<*>}
-         */
-        handle: function(iri, args) {
-            var ready = this.inherited(arguments);
-
-            ready = when(ready, this.parseRequestBody.bind(this));
-
-            ready = when(ready, this.logic.bind(this));
-
-            return when(ready, this.finalize.bind(this));
+        constructor: function(){
+            this.expandStep("load",
+                "parseRequest",
+                "preValidation",
+                "validate",
+                "postValidation",
+                "persist"
+            );
         },
-        /**
-         * Perform Business logic and add Hypermedia Controls
-         * @return {Promise | *}
-         */
-        logic: function(){
-            //NOOP
+        preValidation: function(args){
+            args.builder.removeLinks();
         },
-        /**
-         * Fill in request headers and perform any operations that should be done before response is sent
-         * @return {Promise | *}
-         */
-        finalize: function() {
-            var handler = this;
-
-            var built = handler.buildResponseBody(handler.builder);
-
-            return when(built, function(body){
-                if (body === null){
-                    handler.setStatus(406);
-                    body = "Could not find serializer for Accept Header";
+        validate: function(args){
+            return when(this.app().ontology.validate({
+                instance: args.builder,
+                objectType: args.objectType
+            }), function(pass){
+                if (pass === false){
+                    handler.setStatus(args, 400);
+                    handler.skipTo(args, "formatResponse");
                 }
-                //In case the request was proxied rely on the builder's subject IRI and not
-                //  the request URL
-                var iri = handler.builder.subject;
-                if (iri.isNamed()){
-                    handler.setHeader("Location", iri.toString().replace("file:/", handler.app().server.proxyName));
-                }
-
-                handler.response.send(body).end();
             });
+        },
+        postValidation: function(args){
+            var data = args.builder;
+
+            data.clear(rdf("type"))
+                .setValue(jss("updatedOn"), new Literal((new Date()).toISOString(), null, xsd("date")));
+        },
+        persist: function(args){
+            this.app().data.persist(args.builder.subject, args.builder.graph());
         }
     });
 });

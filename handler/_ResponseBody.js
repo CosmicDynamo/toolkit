@@ -25,8 +25,9 @@
  */
 define([
     "dojo/_base/declare",
-    "core/convert"
-], function (declare, convert) {
+    "core/convert",
+    "blocks/promise/when"
+], function (declare, convert, when) {
     /**
      * Base class for processing Incoming Requests
      * @class service.handler._Request
@@ -40,7 +41,8 @@ define([
             if (!accept){
                 this.setHeader("Content-Type", "text/plane");
                 this.setStatus(406);
-                return "Fatal Exception: Missing Accept Header";
+                args.body = "Fatal Exception: Missing Accept Header";
+                return;
             }
 
             var data = args.builder.graph();
@@ -56,9 +58,19 @@ define([
                 replace(triple.object);
             });
 
-            this.setHeader(args, "Content-Type", (convert.bestMatch("RdfGraph", accept) || {}).mimeType);
+            var match = (convert.bestMatch("RdfGraph", accept) || {}).mimeType;
+            if (!match){
+                this.setHeader("Content-Type", "text/plane");
+                this.setStatus(406);
+                args.body = "Fatal Exception: No acceptable serializer found for " + accept;
+                return;
+            }
 
-            return convert(data, "RdfGraph", accept);
+            this.setHeader(args, "Content-Type", match);
+
+            return when(convert(data, "RdfGraph", accept), function(body){
+                args.body = body;
+            });
         }
     });
 });

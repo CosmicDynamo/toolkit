@@ -97,6 +97,13 @@ define([
                 link.setUrl(this.subject.toString());
             }
             return link;
+        },
+        /**
+         * Remove all links attached to this object
+         * @returns {service._Builder}
+         */
+        removeLinks: function(){
+            return this.clear(hm("hasLink"));
         }
     });
 

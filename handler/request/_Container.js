@@ -45,7 +45,7 @@ define([
          * @returns {Promise<*> | *}
          * @override service.handler._Request#initBuilder
          */
-        initBuilder: function(args){
+        init: function(args){
             var subject = args.subject.toString();
             if (subject.indexOf("/id/") > -1){
                 subject = subject.substr(0, subject.lastIndexOf("/". subject.length - 2));
@@ -53,8 +53,6 @@ define([
 
             args.memberSubject = new Named(subject);
             args.builder = new Container(args);
-
-            return this.logic(args);
         }
     });
 });
