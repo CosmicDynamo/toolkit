@@ -3,3 +3,7 @@
 #################
 .idea/
 *.iml
+
+**/dojo
+**/polyfill
+**/blocks
