@@ -21,18 +21,18 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
+ * @module polyfill.Function.defer
  */
 define([
-    "dojo/_base/Deferred",
-    "dojo/when"
+    "dojo/Deferred",
+    "dojo/promise/when"
 ], function (Deferred, when) {
-    // NOT A REAL Polyfill.  If I make a system, I can break it so there
     /**
      * Delays execution of a function and then returns a promise that will resolve when the function is complete
      * @param {Object} self - Function execution context
      * @param {Array<*>} args - Arguments to pas into the function
      * @param {Number} waitTime - wait time in ms
-     * @return {Deferred}
+     * @return {dojo.Deferred}
      */
     Function.prototype.defer = function (self, args, waitTime) {
         var fn = this;

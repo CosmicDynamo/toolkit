@@ -8,7 +8,7 @@ publishing {
         maven(MavenPublication) {
             groupId 'net.cosmicdynamo.web'
             artifactId 'polyfill'
-            version '1.1-SNAPSHOT'
+            version '1.0.1-SNAPSHOT'
 
             artifact zip
             pom.withXml {
@@ -77,11 +77,12 @@ configurations {
 }
 
 dependencies {
-    zipDependencies "org.dojotoolkit:dojo:1.10.2"
+    zipDependencies "org.dojotoolkit:dojo:1.10.4"
 }
 
 task dependencies(type: Copy) {
     configurations.zipDependencies.files.each { file ->
+        prntln file.name
         from zipTree(file)
         into "src/"
     }
