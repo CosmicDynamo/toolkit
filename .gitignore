@@ -4,6 +4,7 @@
 .idea/
 *.iml
 
-**/dojo
-**/polyfill
-**/blocks
+node_modules/**
+**/dojo/**
+**/polyfill/**
+**/blocks/**

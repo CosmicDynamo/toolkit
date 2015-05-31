@@ -2,7 +2,7 @@
  * @copyright
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Cosmic Dynamo LLC
+ * Copyright (c) 2014-2015 Cosmic Dynamo LLC
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -21,30 +21,41 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module RdfJs.Node
+ * @module RdfJs..parser.rdfGraph.toJsonld
  */
 define([
-    "blocks/parser/Data",
-    "./parser/iriRef",
-    "./parser/rdfLiteral",
-    "./parser/bNode"
-], function (Data, iriRef, rdfLiteral, bNode) {
-    /**
-     * Creates an RDF Node based on the input string
-     * @param {String} value - value to be parsed
-     * @param {Object} [options] - param to considered when parsing the string
-     * @param {RdfJs.PrefixMap} [options.prefixMap] - a map to used when expanding any prefixed terms in the string
-     * @return {*}
-     * @constructor
-     */
-    function Node(value, options) {
-        var data = new Data({
-            input: value,
-            prefixMap: options ? options.prefixMap : null
+    "dojo/_base/Deferred",
+    "dojo/_base/lang",
+    "dojo/when",
+    "jsonld"
+], function (Deferred, lang, when, jsonld) {
+    return function (input, options) {
+        options = options || {};
+
+        return when(input, function (rdf) {
+            if (lang.isFunction(rdf.toArray)) {
+                rdf = rdf.toArray();
+            }
+
+            var p = new Deferred();
+            jsonld.fromRDF({ "@default": rdf }, function (err, ld) {
+                if (err) {
+                    p.reject(err);
+                }
+
+                if (options.context) {
+                    jsonld.compact(ld, options.context, function (err, ld) {
+                        if (err) {
+                            p.reject(err);
+                        }
+
+                        p.resolve(ld);
+                    })
+                } else {
+                    p.resolve(ld);
+                }
+            });
+            return p;
         });
-
-        return iriRef(data) || rdfLiteral(data) || bNode(data);
-    }
-
-    return Node;
+    };
 });

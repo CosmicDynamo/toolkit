@@ -24,19 +24,15 @@
  * @module RdfJs.PrefixMap
  */
 define([
-    "dojo/_base/declare", "./_Map"
+    "dojo/_base/declare",
+    "./_Map"
 ], function (declare, _Map) {
     /**
      * @class RdfJs.PrefixMap
+     * @mixes RdfJs._Map
      * @see http://www.w3.org/TR/rdf-interfaces/#idl-def-PrefixMap
      */
     return declare([_Map], {
-        values: null,
-        constructor: function () {
-            if (this.default) {
-                this.values[""] = this.default;
-            }
-        },
         /*get :  http://www.w3.org/TR/rdf-interfaces/#widl-PrefixMap-get-omittable-getter-DOMString-DOMString-prefix */
         /*set : http://www.w3.org/TR/rdf-interfaces/#widl-PrefixMap-set-omittable-setter-void-DOMString-prefix-DOMString-iri */
         /*remove : http://www.w3.org/TR/rdf-interfaces/#widl-PrefixMap-remove-omittable-deleter-void-DOMString-prefix */
@@ -64,26 +60,20 @@ define([
         shrink: function (iri) {
             /* http://www.w3.org/TR/rdf-interfaces/#widl-PrefixMap-shrink-DOMString-DOMString-iri */
             var p = null, u = "";
-            for (var pref in this.values) {
-                var val = this.values[pref];
-                if (iri.indexOf(val) === 0) {
-                    if (val.length > u.length) {
-                        p = pref;
-                        u = val;
-                    }
+            var map = this;
+            this.keys().forEach(function(key){
+                var val = map.get(key);
+                if (~iri.indexOf(val) && val.length > u.length) {
+                    p = key;
+                    u = val;
                 }
-            }
+            });
 
-            if (p !== null) {
-                return p + ":" + iri.substring(u.length);
+            if (p === null) {
+                return iri;
             }
-
-            return iri;
-        },
-        setDefault: function (iri) {
-            /* http://www.w3.org/TR/rdf-interfaces/#widl-PrefixMap-setDefault-void-DOMString-iri */
-            this.values[""] = iri;
+            return p + ":" + iri.substring(u.length);
         }
         /*addAll : http://www.w3.org/TR/rdf-interfaces/#widl-PrefixMap-addAll-PrefixMap-PrefixMap-prefixes-boolean-override */
     });
-})
+});
