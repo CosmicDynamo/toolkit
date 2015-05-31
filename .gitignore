@@ -3,3 +3,8 @@
 #################
 .idea/
 *.iml
+
+
+node_modules/**
+src/dojo/**
+src/polyfill/**
