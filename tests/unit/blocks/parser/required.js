@@ -24,37 +24,24 @@
  * @module blocks.test.unit.parser.required
  */
 define([
-    "qasht/package/Unit",
+    "intern!object",
+    "intern/chai!assert",
     "blocks/parser/required"
-], function (TestPackage, required) {
-    return new TestPackage({
-        module: "blocks/parser/required",
-        tests: [
-            {
-                name: "Passed input value through",
-                exec: function (test) {
-                    var value = "12345";
-
-                    test.assertEqual(value, required(value));
-
-                    test.complete();
-                }
-            },
-            {
-                name: "Throws exception if value is null",
-                exec: function (test) {
-                    var message = "Pass";
-
-                    try {
-                        required(null, message);
-                    } catch (err) {
-                        test.assertEqual(message, err.message);
-                    }
-
-                    test.complete();
-                }
+], function (TestSuite, assert, required) {
+    return new TestSuite({
+        name: "blocks/parser/required",
+        "Passed input value through": function(){
+            var value = "12345";
+            test.assertEqual(value, required(value));
+        },
+        "Throws exception if value is null": function () {
+            var message = "Pass";
+            try {
+                required(null, message);
+            } catch (err) {
+                test.assertEqual(message, err.message);
             }
-        ]
+        }
     });
 });
 /*
