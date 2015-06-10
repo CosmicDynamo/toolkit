@@ -24,43 +24,31 @@
  * @module jazzHands.test.unit.parser.char.utf16Encode
  */
 define([
-    "qasht/package/Unit",
+    "intern!object",
+    "intern/chai!assert",
     "../../../string/utf16Encode"
-], function (TestPackage, utf16Encode) {
-    return new TestPackage({
-        module: "blocks/parser/utf16Encode",
-        tests: [
-            {
-                name: "'0x' HEX HEX HEX HEX converted to String",
-                exec: function (test) {
-                    test.assertEqual(String.fromCharCode(0), utf16Encode("0x0000"));
-                    test.assertEqual(String.fromCharCode(39321), utf16Encode("0x9999"));
-                    test.assertEqual(String.fromCharCode(43690), utf16Encode("0xaaaa"));
-                    test.assertEqual(String.fromCharCode(43690), utf16Encode("0xAAAA"));
-                    test.assertEqual(String.fromCharCode(65535), utf16Encode("0xffff"));
-                    test.assertEqual(String.fromCharCode(65535), utf16Encode("0xFFFF"));
-
-                    test.complete();
-                }
-            },
-            {
-                name: "'0x' HEX HEX HEX HEX HEX HEX HEX HEX converted to String",
-                input: "\\U00000000\\U99999999\\Uaaaaaaaa\\UAAAAAAAA\\Uffffffff\\UFFFFFFFFStop",
-                exec: function (test) {
-                    function char(code) {
-                        return String.fromCharCode(code)
-                    }
-
-                    test.assertEqual(String.fromCharCode(0), utf16Encode("0x00000000"));
-                    test.assertEqual(char(55846) + char(56729), utf16Encode("0x99999999"));
-                    test.assertEqual(char(55914) + char(57002), utf16Encode("0xaaaaaaaa"));
-                    test.assertEqual(char(55914) + char(57002), utf16Encode("0xAAAAAAAA"));
-                    test.assertEqual(char(56255) + char(57343), utf16Encode("0xffffffff"));
-                    test.assertEqual(char(56255) + char(57343), utf16Encode("0xFFFFFFFF"));
-
-                    test.complete();
-                }
+], function (TestSuite, assert, utf16Encode) {
+    return new TestSuite({
+        name: "blocks/parser/utf16Encode",
+        "'0x' HEX HEX HEX HEX converted to String": {
+            assert.strictEqual(String.fromCharCode(0), utf16Encode("0x0000"));
+            assert.strictEqual(String.fromCharCode(39321), utf16Encode("0x9999"));
+            assert.strictEqual(String.fromCharCode(43690), utf16Encode("0xaaaa"));
+            assert.strictEqual(String.fromCharCode(43690), utf16Encode("0xAAAA"));
+            assert.strictEqual(String.fromCharCode(65535), utf16Encode("0xffff"));
+            assert.strictEqual(String.fromCharCode(65535), utf16Encode("0xFFFF"));
+        },
+        "'0x' HEX HEX HEX HEX HEX HEX HEX HEX converted to String": {
+            input: "\\U00000000\\U99999999\\Uaaaaaaaa\\UAAAAAAAA\\Uffffffff\\UFFFFFFFFStop",
+            function char(code) {
+                return String.fromCharCode(code)
             }
-        ]
+            assert.strictEqual(String.fromCharCode(0), utf16Encode("0x00000000"));
+            assert.strictEqual(char(55846) + char(56729), utf16Encode("0x99999999"));
+            assert.strictEqual(char(55914) + char(57002), utf16Encode("0xaaaaaaaa"));
+            assert.strictEqual(char(55914) + char(57002), utf16Encode("0xAAAAAAAA"));
+            assert.strictEqual(char(56255) + char(57343), utf16Encode("0xffffffff"));
+            assert.strictEqual(char(56255) + char(57343), utf16Encode("0xFFFFFFFF"));
+        }
     });
 });
