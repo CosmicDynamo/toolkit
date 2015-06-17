@@ -24,31 +24,21 @@
  * @module jazzHands.test.unit.parser.char.hex
  */
 define([
-    "qasht/package/Unit",
+    "intern!object",
+    "intern/chai!assert",
     "blocks/parser/hex",
     "blocks/parser/Data"
-], function (TestPackage, hex, Data) {
-    return new TestPackage({
-        module: "blocks/parser/hex",
-        tests: [
-            {
-                name: "0-9, A-F, a-f",
-                input: "0123456789aAbBcCdDeEfFG",
-                exec: function (test) {
-                    for (var idx = 0; idx < 22; idx++) {
-                        test.assertEqual(test.input[idx], hex(test.data))
-                    }
-
-                    test.assertNull(hex(test.data));
-
-                    test.complete();
-                }
+], function (TestSuite, assert, hex, Data) {
+    return new TestSuite({
+        name: "blocks/parser/hex",
+        "0-9, A-F, a-f": function () {
+            var input = "0123456789aAbBcCdDeEfFG";
+            var data = new Data({ input: "0123456789aAbBcCdDeEfFG"});
+            for (var idx = 0; idx < 22; idx++) {
+                assert.strictEqual(input[idx], hex(data));
             }
-        ],
-        setUp: function (test) {
-            test.data = new Data({
-                input: test.input
-            })
+
+            assert.isNull(hex(data));
         }
     });
 });
