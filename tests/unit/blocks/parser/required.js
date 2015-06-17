@@ -32,14 +32,14 @@ define([
         name: "blocks/parser/required",
         "Passed input value through": function(){
             var value = "12345";
-            test.assertEqual(value, required(value));
+            assert.strictEqual(value, required(value));
         },
         "Throws exception if value is null": function () {
             var message = "Pass";
             try {
                 required(null, message);
             } catch (err) {
-                test.assertEqual(message, err.message);
+                assert.strictEqual(message, err.message);
             }
         }
     });
