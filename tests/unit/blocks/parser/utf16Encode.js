@@ -30,7 +30,7 @@ define([
 ], function (TestSuite, assert, utf16Encode) {
     return new TestSuite({
         name: "blocks/parser/utf16Encode",
-        "'0x' HEX HEX HEX HEX converted to String": {
+        "'0x' HEX HEX HEX HEX converted to String": function(){
             assert.strictEqual(String.fromCharCode(0), utf16Encode("0x0000"));
             assert.strictEqual(String.fromCharCode(39321), utf16Encode("0x9999"));
             assert.strictEqual(String.fromCharCode(43690), utf16Encode("0xaaaa"));
@@ -38,11 +38,11 @@ define([
             assert.strictEqual(String.fromCharCode(65535), utf16Encode("0xffff"));
             assert.strictEqual(String.fromCharCode(65535), utf16Encode("0xFFFF"));
         },
-        "'0x' HEX HEX HEX HEX HEX HEX HEX HEX converted to String": {
+        "'0x' HEX HEX HEX HEX HEX HEX HEX HEX converted to String": function(){
             input: "\\U00000000\\U99999999\\Uaaaaaaaa\\UAAAAAAAA\\Uffffffff\\UFFFFFFFFStop",
             function char(code) {
-                return String.fromCharCode(code)
-            }
+                return String.fromCharCode(code);
+            };
             assert.strictEqual(String.fromCharCode(0), utf16Encode("0x00000000"));
             assert.strictEqual(char(55846) + char(56729), utf16Encode("0x99999999"));
             assert.strictEqual(char(55914) + char(57002), utf16Encode("0xaaaaaaaa"));

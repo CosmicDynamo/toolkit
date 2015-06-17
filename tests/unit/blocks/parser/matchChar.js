@@ -24,75 +24,65 @@
  * @module blocks.test.unit.parser.matchChar
  */
 define([
-    "qasht/package/Unit",
+    "intern!object",
+    "intern/chai!assert",
     "blocks/parser/matchChar",
     "blocks/parser/Data"
-], function (TestPackage, matchChar, Data) {
-    return new TestPackage({
-        module: "blocks/parser/matchChar",
+], function (TestSuite, assert, matchChar, Data) {
+    return new TestSuite({
+        name: "blocks/parser/matchChar",
 //This is a basic RegEx machine.  And in leu of testing all RegEx, I will just validate a few cases I care about
-        tests: [
-            {
-                name: "Match Alpha-Numeric",
-                input: "afe0DS2v#",
-                exec: function (test) {
-                    test.assertEqual("a", matchChar(test.data, "[a-zA-Z0-9]"));
-                    test.assertEqual("f", matchChar(test.data, "[a-zA-Z0-9]"));
-                    test.assertEqual("e", matchChar(test.data, "[a-zA-Z0-9]"));
-                    test.assertEqual("0", matchChar(test.data, "[a-zA-Z0-9]"));
-                    test.assertEqual("D", matchChar(test.data, "[a-zA-Z0-9]"));
-                    test.assertEqual("S", matchChar(test.data, "[a-zA-Z0-9]"));
-                    test.assertEqual("2", matchChar(test.data, "[a-zA-Z0-9]"));
-                    test.assertEqual("v", matchChar(test.data, "[a-zA-Z0-9]"));
-                    test.assertNull(matchChar(test.data, "[a-zA-Z0-9]"));
 
-                    test.complete();
-                }
-            },
-            {   //#x20 | #x9 | #xD | #xA
-                name: "Match white space characters",
-                input: " \n\t\rC",
-                exec: function (test) {
-                    test.assertEqual(" ", matchChar(test.data, "[\x20|\x09|\x0D|\x0A]"));
-                    test.assertEqual("\n", matchChar(test.data, "[\x20|\x09|\x0D|\x0A]"));
-                    test.assertEqual("\t", matchChar(test.data, "[\x20|\x09|\x0D|\x0A]"));
-                    test.assertEqual("\r", matchChar(test.data, "[\x20|\x09|\x0D|\x0A]"));
+        "Match Alpha-Numeric": function () {
+            var data = new Data({
+                input: "afe0DS2v#"
+            });
+            assert.strictEqual("a", matchChar(data, "[a-zA-Z0-9]"));
+            assert.strictEqual("f", matchChar(data, "[a-zA-Z0-9]"));
+            assert.strictEqual("e", matchChar(data, "[a-zA-Z0-9]"));
+            assert.strictEqual("0", matchChar(data, "[a-zA-Z0-9]"));
+            assert.strictEqual("D", matchChar(data, "[a-zA-Z0-9]"));
+            assert.strictEqual("S", matchChar(data, "[a-zA-Z0-9]"));
+            assert.strictEqual("2", matchChar(data, "[a-zA-Z0-9]"));
+            assert.strictEqual("v", matchChar(data, "[a-zA-Z0-9]"));
+            assert.isNull(matchChar(data, "[a-zA-Z0-9]"));
 
-                    test.assertNull(matchChar(test.data, "[\x20|\x09|\x0D|\x0A]"));
+        
+        },
+        //#x20 | #x9 | #xD | #xA
+        "Match white space characters": function () {
+            var data = new Data({
+                input: " \n\t\rC"
+            });
+            assert.strictEqual(" ", matchChar(data, "[\x20|\x09|\x0D|\x0A]"));
+            assert.strictEqual("\n", matchChar(data, "[\x20|\x09|\x0D|\x0A]"));
+            assert.strictEqual("\t", matchChar(data, "[\x20|\x09|\x0D|\x0A]"));
+            assert.strictEqual("\r", matchChar(data, "[\x20|\x09|\x0D|\x0A]"));
 
-                    test.complete();
-                }
-            },
-            {   //[0-9] | #x00B7 | [#x0300-#x036F] | [#x203F-#x2040]
-                name: "Two character ASCII",
-                input: "\xB7x\u0300x\u036Fx\u203Fx\u2040",
-                exec: function (test) {
-                    test.assertEqual("\xB7", matchChar(test.data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
-                    test.assertNull(matchChar(test.data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
-                    test.data.pos++;
+            assert.isNull(matchChar(data, "[\x20|\x09|\x0D|\x0A]"));
+        },
+        //[0-9] | #x00B7 | [#x0300-#x036F] | [#x203F-#x2040]
+        "Two character ASCII": function () {
+            var data = new Data({
+                input: "\xB7x\u0300x\u036Fx\u203Fx\u2040"
+            });
+            assert.strictEqual("\xB7", matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
+            assert.isNull(matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
+            data.pos++;
 
-                    test.assertEqual("\u0300", matchChar(test.data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
-                    test.assertNull(matchChar(test.data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
-                    test.data.pos++;
+            assert.strictEqual("\u0300", matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
+            assert.isNull(matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
+            data.pos++;
 
-                    test.assertEqual("\u036F", matchChar(test.data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
-                    test.assertNull(matchChar(test.data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
-                    test.data.pos++;
+            assert.strictEqual("\u036F", matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
+            assertisNull(matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
+            data.pos++;
 
-                    test.assertEqual("\u203F", matchChar(test.data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
-                    test.assertNull(matchChar(test.data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
-                    test.data.pos++;
+            assert.strictEqual("\u203F", matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
+            assertisNull(matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
+            data.pos++;
 
-                    test.assertEqual("\u2040", matchChar(test.data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
-
-                    test.complete();
-                }
-            }
-        ],
-        setUp: function (test) {
-            test.data = new Data({
-                input: test.input
-            })
+            assert.strictEqual("\u2040", matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
         }
     });
 });

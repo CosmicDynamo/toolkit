@@ -24,70 +24,46 @@
  * @module blocks.test.unit.parser.hasChar
  */
 define([
-    "qasht/package/Unit",
+    "intern!object",
+    "intern/chai!assert",
     "blocks/parser/hasChar",
     "blocks/parser/Data"
-], function (TestPackage, hasChar, Data) {
-    return new TestPackage({
-        module: "blocks/parser/hasChar",
-        tests: [
-            {
-                name: "Returns character if in string",
-                input: "$",
-                exec: function (test) {
-                    var out = hasChar(test.data, "$");
+], function (TestSuite, assert, hasChar, Data) {
+    return new TestSuite({
+        name: "blocks/parser/hasChar",
 
-                    test.assertEqual(test.input, out);
-                    test.assertNull(hasChar(test.data, "$"), "position was updated");
+        "Returns character if in string": function () {
+            var data = new Data({ input: "$" });
+            var out = hasChar(data, "$");
 
-                    test.complete();
-                }
-            },
-            {
-                name: "Not Case sensitive by default",
-                input: "a",
-                exec: function (test) {
-                    var out = hasChar(test.data, "A");
+            assert.strictEqual(input, out);
+            assert.isNull(hasChar(data, "$"), "position was updated");
+        },
 
-                    test.assertEqual("a", out);
+        "Not Case sensitive by default": function () {
+            var data = new Data({ input: "a" });
+            var out = hasChar(data, "A");
 
-                    test.complete();
-                }
-            },
-            {
-                name: "Case sensitivity can be enabled",
-                input: "a",
-                exec: function (test) {
-                    var out = hasChar(test.data, "A", true);
-                    test.assertNull(out);
+            assert.strictEqual("a", out);
+        },
 
-                    out = hasChar(test.data, "a", true);
-                    test.assertEqual("a", out);
+        "Case sensitivity can be enabled": function () {
+            var data = new Data({ input: "a" });
+            var out = hasChar(data, "A", true);
+            assert.isNull(out);
 
-                    test.complete();
-                }
-            },
-            {
-                name: "Can strip leading white space",
-                input: " a",
-                setUp: function (test) {
-                    test.data.whiteSpace = function (data) {
-                        data.pos++;
-                    }
-                },
-                exec: function (test) {
-                    var out = hasChar(test.data, "A", false, true);
+            out = hasChar(data, "a", true);
+            assert.strictEqual("a", out);
+        },
 
-                    test.assertEqual("a", out);
+        "Can strip leading white space": function () {
+            var data = new Data({ input: " a" });
+            data.whiteSpace = function (data) {
+                data.pos++;
+            };
+            var out = hasChar(data, "A", false, true);
 
-                    test.complete();
-                }
-            }
-        ],
-        setUp: function (test) {
-            test.data = new Data({
-                input: test.input
-            })
+            assert.isEqual("a", out);
         }
     });
 });

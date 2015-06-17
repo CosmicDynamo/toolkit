@@ -24,82 +24,65 @@
  * @module jazzHands.test.unit.parser.match.keyWord
  */
 define([
-    "qasht/package/Unit",
+    "intern!object",
+    "intern/chai!assert",
     "blocks/parser/keyWord",
     "blocks/parser/Data"
-], function (TestPackage, keyWord, Data) {
-    return new TestPackage({
-        module: "blocks/parser/keyWord",
-        tests: [
-            {
-                name: "returns the key word if it is next in the string",
-                input: "The quick brown fox jumps over the lazy dog",
-                exec: function (test) {
-                    var out = keyWord(test.data, "THE");
+], function (TestSuite, assert, keyWord, Data) {
+    return new TestSuite({
+        name: "blocks/parser/keyWord",
 
-                    test.assertEqual("THE", out);
-                    test.assertEqual(3, test.data.pos);
-
-                    test.complete();
-                }
-            },
-            {
-                name: "returns null if it is not next in the string",
-                input: " The quick brown fox jumps over the lazy dog",
-                exec: function (test) {
-                    var out = keyWord(test.data, "The");
-
-                    test.assertNull(out);
-                    test.assertEqual(0, test.data.pos);
-
-                    test.complete();
-                }
-            },
-            {
-                name: "matchCase: returns the key word if it is next in the string",
-                input: "The quick brown fox jumps over the lazy dog",
-                exec: function (test) {
-                    var out = keyWord(test.data, "The");
-
-                    test.assertEqual("The", out);
-                    test.assertEqual(3, test.data.pos);
-
-                    test.complete();
-                }
-            },
-            {
-                name: "matchCase: returns null if it is not next in the string",
-                input: "The quick brown fox jumps over the lazy dog",
-                exec: function (test) {
-                    var out = keyWord(test.data, "THE", true);
-
-                    test.assertNull(out);
-                    test.assertEqual(0, test.data.pos);
-
-                    test.complete();
-                }
-            },
-            {
-                name: "white-space: can ignore leading white space",
-                input: " The quick brown fox jumps over the lazy dog",
-                setUp: function (test) {
-                    test.data.whiteSpace = function (data) {
-                        data.pos++;
-                    }
-                },
-                exec: function (test) {
-                    var out = keyWord(test.data, "THE", false, true);
-
-                    test.assertEqual("THE", out);
-
-                    test.complete();
-                }
-            }
-        ],
-        setUp: function (test) {
-            test.data = new Data({
-                input: test.input
+        "returns the key word if it is next in the string": function () {
+            var data = new Data({
+                input: "The quick brown fox jumps over the lazy dog"
             });
+            var out = keyWord(data, "THE");
+
+            assert.strictEqual("THE", out);
+            assert.strictEqual(3, data.pos);
+        },
+ 
+        "returns null if it is not next in the string": function () {
+            var data = new Data({
+                input: " The quick brown fox jumps over the lazy dog"
+            });
+            var out = keyWord(data, "The");
+
+            assert.isNull(out);
+            assert.strictEqual(0, data.pos);
+        },
+
+        "matchCase: returns the key word if it is next in the string": function () {
+            var data = new Data({
+                input: "The quick brown fox jumps over the lazy dog"
+            });
+            var out = keyWord(data, "The");
+
+            assert.strictEqual("The", out);
+            assert.strictEqual(3, data.pos);
+            },
+            
+        "matchCase: returns null if it is not next in the string": function () {
+            var data = new Data({
+                input: "The quick brown fox jumps over the lazy dog"
+            });
+            var out = keyWord(data, "THE", true);
+
+            assert.isNull(out);
+            assert.strictEqual(0, data.pos);
+        },
+
+        "white-space: can ignore leading white space": function () {
+        
+            var data = new Data({
+                input: " The quick brown fox jumps over the lazy dog"
+            });
+            data.whiteSpace = function (data) {
+                data.pos++;
+            };
+            var out = keyWord(data, "THE", false, true);
+
+            assert.strictEqual("THE", out);
         }
     });
 });
