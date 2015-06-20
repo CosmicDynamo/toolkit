@@ -7,6 +7,7 @@ define([
     //"./Exception",
     //"./genId",
     //"./HashTable",
-    "./require"
+    //Cannot be tested due to a dojo 2.0 conflict
+    // "./require"
 ], function () {
 });
