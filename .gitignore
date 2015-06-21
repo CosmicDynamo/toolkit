@@ -1,5 +1,15 @@
 #################
 ## IntelliJ
 #################
-.idea/
+.idea/**
 *.iml
+
+#################
+## Gradle
+#################
+build/
+.gradle/
+
+
+src/dojo/**
+node_modules/**

@@ -21,20 +21,30 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
+ * @module polyfill.Function.defer
  */
+define([
+    "dojo/Deferred",
+    "dojo/promise/when"
+], function (Deferred, when) {
+    /**
+     * Delays execution of a function and then returns a promise that will resolve when the function is complete
+     * @param {Object} self - Function execution context
+     * @param {Array<*>} args - Arguments to pas into the function
+     * @param {Number} waitTime - wait time in ms
+     * @return {dojo.Deferred}
+     */
+    Function.prototype.defer = function (self, args, waitTime) {
+        var fn = this;
 
-// NOT A REAL Polyfill.  If I make a system, I can break it so there
-/**
- * Delays execution of a function.  Helper to make Futures easier
- * @param {Object} self - Function execution context
- * @param {Array<*>} args - Arguments to pas into the function
- * @param {Number} waitTime - wait time in ms
- * @return {Deferred}
- */
-Function.prototype.next = function (self, args, waitTime) {
-    var fn = this;
-
-    setTimeout(function () {
-        fn.apply(self, args);
-    }, waitTime || 0);
-};
+        var done = new Deferred();
+        setTimeout(function () {
+            try {
+                when(fn.apply(self, args), done.resolve, done.reject, done.progress);
+            } catch (ex) {
+                done.reject(ex);
+            }
+        }, waitTime || 0);
+        return done;
+    };
+});
