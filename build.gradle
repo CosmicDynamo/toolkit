@@ -1,0 +1,93 @@
+/*
+apply plugin: 'base'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId 'net.cosmicdynamo.web'
+            artifactId 'polyfill'
+            version '1.0.1-SNAPSHOT'
+
+            artifact zip
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+
+                //Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
+                configurations.zipDependencies.allDependencies.each {
+                    if (!it.name.contains('component')) {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            // Add your credentials to ~/.gradle/gradle.properties on your local system
+            // artifactoryUsername=USERNAME
+            // artifactoryPassword=PASSWORD
+
+            credentials {
+                if (project.hasProperty('artifactoryUsername')) {
+                    username artifactoryUsername
+                    password artifactoryPassword
+                }
+            }
+
+            if (publications.maven.version.endsWith('-SNAPSHOT'))
+                url "http://membuild01:8081/artifactory/libs-snapshot-local"
+            else
+                url "http://membuild01:8081/artifactory/libs-release-local"
+        }
+    }
+}
+
+configurations.all {
+    // check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+task zip(type: Zip) {
+    from 'src'
+    exclude '**//*
+dojo'
+    exclude '**/dojo'
+}
+
+assemble.dependsOn(zip)
+
+repositories {
+    mavenLocal ()
+    maven {
+        url "http://cosmicdynamo.net/artifactory/libs-release"
+    }
+    maven {
+        url "http://cosmicdynamo.net/artifactory/libs-snapshot"
+    }
+    maven {
+        url "http://cosmicdynamo.net/artifactory/repo1"
+    }
+}
+
+configurations {
+    zipDependencies
+}
+
+dependencies {
+    zipDependencies "org.dojotoolkit:dojo:1.10.4"
+}
+
+task dependencies(type: Copy) {
+    configurations.zipDependencies.files.each { file ->
+        prntln file.name
+        from zipTree(file)
+        into "src/"
+    }
+}
+*/

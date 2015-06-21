@@ -2,7 +2,7 @@
  * @copyright
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Cosmic Dynamo LLC
+ * Copyright (c) 2014-2015 Cosmic Dynamo LLC
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -21,9 +21,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
+ */
+/**
  * @module polyfill.has
  */
-define(["dojo/_base/kernel"], function (kernal) {
+define([
+    "dojo/kernel"
+], function (kernel) {
     /**
      * @instance polyfill.has
      */
@@ -39,7 +43,7 @@ define(["dojo/_base/kernel"], function (kernal) {
             if (parts.length !== 2) {
                 return loaded("Invalid param");
             }
-            var Ctor = kernal.global[parts[0]];
+            var Ctor = kernel.global[parts[0]];
             if (Ctor == null) {
                 return loaded("Unsupported Constructor")
             }
