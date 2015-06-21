@@ -1,3 +1,4 @@
+/*
 apply plugin: 'base'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
@@ -54,6 +55,8 @@ configurations.all {
 
 task zip(type: Zip) {
     from 'src'
+    exclude '**//*
+dojo'
     exclude '**/dojo'
 }
 
@@ -87,3 +90,4 @@ task dependencies(type: Copy) {
         into "src/"
     }
 }
+*/
