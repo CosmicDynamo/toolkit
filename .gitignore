@@ -1,8 +1,18 @@
 #################
+## Dependencies
+#################
+node_modules/**
+**/dojo/**
+**/polyfill/**
+**/blocks/**
+**/RdfJs/**
+
+#################
 ## IntelliJ
 #################
 .idea/
 *.iml
+
 
 #################
 ## Eclipse
