@@ -1,0 +1,24 @@
+#################
+## IntelliJ
+#################
+.idea/**
+*.iml
+
+#################
+## NodeJs
+#################
+node_modules/**
+
+#################
+## Dojo Toolkit
+#################
+src/dojo/**
+
+#################
+## CosmicDynamo
+#################
+src/polyfill/**
+src/blocks/**
+src/RdfJs/**
+src/jazzHands/**
+src/core/**
