@@ -26,7 +26,7 @@
  * @module polyfill.has
  */
 define([
-    "dojo/kernel"
+    "dojo/_base/kernel"
 ], function (kernel) {
     /**
      * @instance polyfill.has
