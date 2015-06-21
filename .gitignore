@@ -1,0 +1,11 @@
+node_modules/**
+
+.idea/**
+
+src/dojo/**
+src/polyfill/**
+src/RdfJs/**
+src/jazzHands/**
+src/blocks/**
+
+*.iml
