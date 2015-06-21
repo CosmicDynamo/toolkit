@@ -1,4 +1,0 @@
-define([
-    "./unit/module"
-], function () {
-});
