@@ -38,7 +38,7 @@ define([
             });
             var out = range(data, 0, -1, function () {
                 //this line is designed to always throw a failure if reached
-                assert.fail(data,true,"End of string: can't get here");
+                assert.ok(false, "End of string: can't get here");
             });
 
             assert.isArray(out);
