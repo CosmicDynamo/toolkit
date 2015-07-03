@@ -1,5 +1,6 @@
 define([
     "./all",
-    "./Queue"
+    "./Queue",
+    "./when"
 ], function () {
 });
