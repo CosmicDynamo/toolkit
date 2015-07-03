@@ -21,13 +21,12 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- */
-/**
+ *
  * @module polyfill.has
  */
 define([
-    "dojo/_base/kernel"
-], function (kernel) {
+], function () {
+    var global = this;
     /**
      * @instance polyfill.has
      */
@@ -40,14 +39,12 @@ define([
          */
         load: function (id, parentRequire, loaded) {
             var parts = id.split(".");
-            if (parts.length !== 2) {
-                return loaded("Invalid param");
-            }
-            var Ctor = kernel.global[parts[0]];
+
+            var Ctor = global[parts[0]];
             if (Ctor == null) {
-                return loaded("Unsupported Constructor")
+                return parentRequire(["polyfill/" + parts.join("/")], loaded);
             }
-            else if (Ctor.prototype[parts[1]] == undefined) {
+            else if (parts[1] && Ctor.prototype[parts[1]] == undefined) {
                 return parentRequire(["polyfill/" + parts.join("/")], loaded);
             }
             return loaded();
