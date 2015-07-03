@@ -237,8 +237,7 @@ define([
             });
 
             var done = this.async();
-            //TODO not sure if this is the right function call done.?
-            when(last, done.progback(function () {
+            when(last, done.errback(function () {
                 assert.isTrue(scope.err, "Error fn was called");
                 assert.isTrue(scope.lastRun, "Last fn was called");
             }));
