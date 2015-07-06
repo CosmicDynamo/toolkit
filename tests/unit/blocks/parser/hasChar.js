@@ -36,7 +36,7 @@ define([
             var data = new Data({ input: "$" });
             var out = hasChar(data, "$");
 
-            assert.strictEqual(input, out);
+            assert.strictEqual(data.input, out);
             assert.isNull(hasChar(data, "$"), "position was updated");
         },
 
