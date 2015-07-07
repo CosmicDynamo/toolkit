@@ -55,8 +55,8 @@ define([
 
             var val = this._values.get(key);
             if (val == null){
-                val = this.load(value);
                 key = this._keys.add(value);
+                val = this.load(value, key);
                 this._values.set(key, val);
             }
 
@@ -65,9 +65,10 @@ define([
         /**
          * Loads a value that is not already in the cache
          * @param {*} id
+         * @param {string} key - the Hash that will be used to cache this item
          * @return {null}
          */
-        load: function(id){
+        load: function(id, key){
             return null;
         },
         /**

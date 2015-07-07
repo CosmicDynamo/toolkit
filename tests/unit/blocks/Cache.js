@@ -24,167 +24,149 @@
  * @module blocks.test.unit.Cache
  */
 define([
-    "qasht/package/Unit",
+    "intern!object",
+    "intern/chai!assert",
     "blocks/Cache"
-], function (TestPackage, Cache) {
-    return new TestPackage({
-        module: "blocks/Cache",
-        tests: [
-            {
-                name: "get: calls getter method if key not found",
-                load: function(id){
-                    this.__requestedId =id;
-                },
-                exec: function (test) {
-                    test.cache.get("anId");
+], function (intern, assert, Cache) {
+    return new intern({
+        name: "blocks/Cache",
+        "get: calls getter method if key not found": function(){
+            var __requestedId = null, __requestedKey = null;
 
-                    test.assertEqual("anId", test.__requestedId);
-
-                    test.complete();
+            var cache = new Cache({
+                load: function(id, key){
+                    __requestedId =id;
+                    __requestedKey =key;
                 }
-            },
-            {
-                name: "get: returns value from getter",
+            });
+
+            cache.get("anId");
+
+            assert.strictEqual("anId", __requestedId);
+            assert.isNotNull("anId", "key matches string value for simple objects");
+        },
+        "get: returns value from getter": function () {
+            var cache = new Cache({
                 load: function(){
                     return "expected";
-                },
-                exec: function (test) {
-                    var actual = test.cache.get("anId");
-
-                    test.assertEqual("expected", actual);
-
-                    test.complete();
                 }
-            },
-            {
-                name: "get: only called once; value returned every time",
+            });
+
+            var actual = cache.get("anId");
+
+            assert.strictEqual("expected", actual);
+        },
+        "get: only called once; value returned every time": function () {
+            var __called = 0;
+            var cache = new Cache({
                 load: function(){
-                    this.__called++;
+                    __called++;
                     return "expected";
-                },
-                exec: function (test) {
-                    test.__called = 0;
-                    var actual = test.cache.get("anId");
-                    test.assertEqual(1, test.__called);
-                    test.assertEqual("expected", actual);
-
-                    actual = test.cache.get("anId");
-                    test.assertEqual(1, test.__called);
-                    test.assertEqual("expected", actual);
-
-                    test.complete();
                 }
-            },
-            {
-                name: "get: Supports Object Ids",
+            });
+
+            var actual = cache.get("anId");
+            assert.strictEqual(1, __called);
+            assert.strictEqual("expected", actual);
+
+            actual = cache.get("anId");
+            assert.strictEqual(1, __called);
+            assert.strictEqual("expected", actual);
+        },
+        "get: Supports Object Ids": function () {
+            var __called = 0;
+            var cache = new Cache({
                 load: function(id){
-                    this.__called++;
+                    __called++;
                     return id.object.nested;
-                },
-                exec: function (test) {
-                    test.__called = 0;
-                    var actual = test.cache.get({
-                        "one": "somewhere",
-                        "object": { "nested": "value1" },
-                        "value": "property"
-                    });
-                    test.assertEqual(1, test.__called);
-                    test.assertEqual("value1", actual);
-
-                    actual = test.cache.get({
-                        "two": "somewhere",
-                        "object": { "nested": "value2" },
-                        "value": "property"
-                    });
-                    test.assertEqual(2, test.__called);
-                    test.assertEqual("value2", actual);
-
-                    actual = test.cache.get({
-                        "one": "somewhere",
-                        "value": "property",
-                        "object": { "nested": "value1" }
-                    });
-                    test.assertEqual(2, test.__called);
-                    test.assertEqual("value1", actual);
-
-                    actual = test.cache.get({
-                        "two": "somewhere",
-                        "value": "property",
-                        "object": { "nested": "value2" }
-                    });
-                    test.assertEqual(2, test.__called);
-                    test.assertEqual("value2", actual);
-
-                    test.complete();
                 }
-            },
-            {
-                name: "get: different key will cause getter to be called",
-                load: function(value){
-                    this.__called = this.__called || [];
-                    this.__called.push(value);
-                    return value;
-                },
-                exec: function (test) {
-                    test.cache.get("id1");
-                    test.cache.get("id2");
+            });
 
-                    test.assertEqual(2, test.__called.length);
+            var actual = cache.get({
+                "one": "somewhere",
+                "object": { "nested": "value1" },
+                "value": "property"
+            });
+            assert.strictEqual(1, __called);
+            assert.strictEqual("value1", actual);
 
-                    test.assertEqual("id1", test.__called[0]);
-                    test.assertEqual("id2", test.__called[1]);
+            actual = cache.get({
+                "two": "somewhere",
+                "object": { "nested": "value2" },
+                "value": "property"
+            });
+            assert.strictEqual(2, __called);
+            assert.strictEqual("value2", actual);
 
+            actual = cache.get({
+                "one": "somewhere",
+                "value": "property",
+                "object": { "nested": "value1" }
+            });
+            assert.strictEqual(2, __called);
+            assert.strictEqual("value1", actual);
 
-                    test.complete();
+            actual = cache.get({
+                "two": "somewhere",
+                "value": "property",
+                "object": { "nested": "value2" }
+            });
+            assert.strictEqual(2, __called);
+            assert.strictEqual("value2", actual);
+        },
+        "get: different key will cause getter to be called": function () {
+            var __called = 0;
+            var cache = new Cache({
+                load: function(id){
+                    __called = __called || [];
+                    __called.push(id);
+                    return id;
                 }
-            },
-            {
-                name: "get: null return will prevent caching",
+            });
+            
+            cache.get("id1");
+            cache.get("id2");
+
+            assert.strictEqual(2, __called.length);
+
+            assert.strictEqual("id1", __called[0]);
+            assert.strictEqual("id2", __called[1]);
+        },
+        "get: null return will prevent caching": function () {
+            var __called = 0;
+            var cache = new Cache({
                 load: function(){
-                    this.__called++;
+                    __called++;
                     return null;
-                },
-                exec: function (test) {
-                    test.__called = 0;
-
-                    var actual = test.cache.get("anId");
-                    test.assertEqual(1, test.__called);
-                    test.assertNull(actual);
-
-                    actual = test.cache.get("anId");
-                    test.assertEqual(2, test.__called);
-                    test.assertNull(actual);
-
-                    test.cache.get("anId");
-                    test.assertEqual(3, test.__called);
-
-                    test.complete();
                 }
-            },
-            {
-                name: "remove: will clear a value from the cache",
+            });
+
+            var actual = cache.get("anId");
+            assert.strictEqual(1, __called);
+            assert.isNull(actual);
+
+            actual = cache.get("anId");
+            assert.strictEqual(2, __called);
+            assert.isNull(actual);
+
+            cache.get("anId");
+            assert.strictEqual(3, __called);
+        },
+        "remove: will clear a value from the cache": function(){
+            var __called = 0;
+            var cache = new Cache({
                 load: function(){
-                    return this.__called++;
-                },
-                exec: function(test){
-                    test.__called = 0;
-                    var key = "The Key";
-
-                    test.assertEqual(0, test.cache.get(key));
-                    test.assertEqual(0, test.cache.get(key));
-
-                    test.cache.remove(key);
-
-                    test.assertEqual(1, test.cache.get(key));
-
-                    test.complete();
+                    return __called++;
                 }
-            }
-        ],
-        setUp: function (test) {
-            test.cache = new Cache({
-                load: test.load.bind(test)
-            })
+            });
+            var key = "The Key";
+
+            assert.strictEqual(0, cache.get(key));
+            assert.strictEqual(0, cache.get(key));
+
+            cache.remove(key);
+
+            assert.strictEqual(1, cache.get(key));
         }
     });
 });

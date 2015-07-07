@@ -2,7 +2,7 @@ define([
     "./parser/module",
     //"./promise/module",
     //"./require/module",
-    //"./Cache",
+    "./Cache",
     //"./Container",
     //"./Exception",
     //"./genId",
