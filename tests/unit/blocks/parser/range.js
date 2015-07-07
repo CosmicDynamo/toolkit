@@ -38,7 +38,7 @@ define([
             });
             var out = range(data, 0, -1, function () {
                 //this line is designed to always throw a failure if reached
-                assert.fail(data,true,"End of string: can't get here");
+                assert.ok(false, "End of string: can't get here");
             });
 
             assert.isArray(out);
@@ -53,7 +53,7 @@ define([
                 return data.next();
             });
             assert.isArray(out);
-            assert.strictEqual(test.input, out.join(""));
+            assert.strictEqual(data.input, out.join(""));
         },
 
         "separator:Will look for separator between each function return": function () {
@@ -65,7 +65,7 @@ define([
             }, ",");
 
             assert.isArray(out);
-            assert.strictEqual(test.input.split(",").join(""), out.join(""));
+            assert.strictEqual(data.input.split(",").join(""), out.join(""));
         },
         
         "separators: Will stop when no more separators are found": function () {

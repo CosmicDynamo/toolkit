@@ -75,11 +75,11 @@ define([
             data.pos++;
 
             assert.strictEqual("\u036F", matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
-            assertisNull(matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
+            assert.isNull(matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
             data.pos++;
 
             assert.strictEqual("\u203F", matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
-            assertisNull(matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
+            assert.isNull(matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));
             data.pos++;
 
             assert.strictEqual("\u2040", matchChar(data, "[\xB7]|[\u0300-\u036F]|[\u203F-\u2040]"));

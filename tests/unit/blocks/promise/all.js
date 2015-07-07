@@ -24,119 +24,89 @@
  * @module blocks.test.unit.promise.all
  */
 define([
-    "qasht/package/Unit",
+    "intern!object",
+    "intern/chai!assert",
     "blocks/promise/all",
     "dojo/_base/Deferred"
-], function (TestPackage, all, Deferred) {
-    return new TestPackage({
-        module: "blocks/promise/all",
-        tests: [
-            {
-                name: "API",
-                exec: function (test) {
-                    test.assertIsFunction(all, "all is a function");
+], function (TestSuite, assert, all, Deferred) {
+    return new TestSuite({
+        name: "blocks/promise/all",
+        "API": function () {
+            assert.isFunction(all, "all is a function");
+        },
+        "all: can take a single value: not a promise": function(){
+            var result = all("someValue");
+            assert.strictEqual("someValue", result[0], "returns value as-is");
+        },
+        "all: can take a single value: promise": function(){
+            var input = new Deferred();
+            var result = all(input);
 
-                    test.complete();
-                }
-            },
-            {
-                name: "all: can take a single value: not a promise",
-                exec: function(test){
-                    var result = all("someValue");
+            assert.notStrictEqual(input, result, "Return does not match input");
+            assert.isFunction(result.then, "Return is a promise");
 
-                    test.assertEqual("someValue", result[0], "returns value as-is");
+            var done = this.async();
+            when(result, done.callback(function(result){
+                assert.strictEqual("1", result[0], "Resolution includes each promises resolution");
+            }));
 
-                    test.complete();
-                }
-            },
-            {
-                name: "all: can take a single value: promise",
-                exec: function(test){
-                    var input = new Deferred();
-                    var result = all(input);
+            input.resolve("1");
+        },
+        "all: can take an array of values: not a promise": function(){
+            var input = ["Value1", "Value2"];
+            var result = all(input);
 
-                    test.assertNotEqual(input, result, "Return does not match input");
-                    test.assertIsFunction(result.then, "Return is a promise");
+            assert.isTrue(result.every(function(val, idx){
+                return input[idx] === val;
+            }));
+        },
+        "all: can take an array of values: promise": function(){
+            var input = [new Deferred(), new Deferred()];
+            var result = all(input);
 
-                    test.whenResolved(result, function(rtn){
-                        test.assertEqual("1", rtn[0], "Resolution includes each promises resolution");
-                        test.complete();
-                    });
+            assert.notStrictEqual(input, result, "Return does not match input");
+            assert.isFunction(result.then, "Return is a promise");
 
-                    input.resolve("1");
-                }
-            },
-            {
-                name: "all: can take an array of values: not a promise",
-                exec: function(test){
-                    var input = ["Value1", "Value2"];
-                    var result = all(input);
+            var done = this.async();
+            when(result, done.callback(function(result){
+                assert.strictEqual("1", result[0], "Resolution includes each promises resolution");
+                assert.strictEqual("2", result[1], "Resolution includes each promises resolution");
+            }));
 
-                    test.assertTrue(result.every(function(val, idx){
-                        return input[idx] === val;
-                    }));
+            input[0].resolve("1");
+            input[1].resolve("2");
+        },
+        "all: can take an array of values: mix-n-match promise": function(){
+            var input = [new Deferred(), "2", new Deferred()];
+            var result = all(input);
 
-                    test.complete();
-                }
-            },
-            {
-                name: "all: can take an array of values: promise",
-                exec: function(test){
-                    var input = [new Deferred(), new Deferred()];
-                    var result = all(input);
+            assert.notStrictEqual(input, result, "Return does not match input");
+            assert.isFunction(result.then, "Return is a promise");
 
-                    test.assertNotEqual(input, result, "Return does not match input");
-                    test.assertIsFunction(result.then, "Return is a promise");
+            var done = this.async();
+            when(result, done.callback(function(result) {
+                assert.strictEqual("1", result[0], "Resolution includes each promises resolution");
+                assert.strictEqual("2", result[1], "Resolution includes each promises resolution");
+                assert.strictEqual("3", result[2], "Resolution includes each promises resolution");
+            }));
 
-                    test.whenResolved(result, function(rtn){
-                        test.assertEqual("1", rtn[0], "Resolution includes each promises resolution");
-                        test.assertEqual("2", rtn[1], "Resolution includes each promises resolution");
-                        test.complete();
-                    });
+            input[0].resolve("1");
+            input[2].resolve("3");
+        },
+        "all: reject on any will reject all": function(){
+            var input = [new Deferred(), "2", new Deferred()];
+            var result = all(input);
 
-                    input[0].resolve("1");
-                    input[1].resolve("2");
-                }
-            },
-            {
-                name: "all: can take an array of values: mix-n-match promise",
-                exec: function(test){
-                    var input = [new Deferred(), "2", new Deferred()];
-                    var result = all(input);
+            assert.notStrictEqual(input, result, "Return does not match input");
+            assert.isFunction(result.then, "Return is a promise");
 
-                    test.assertNotEqual(input, result, "Return does not match input");
-                    test.assertIsFunction(result.then, "Return is a promise");
+            var done = this.async();
+            when(result, done.callback(function(result) {
+                assert.strictEqual("err", result, "Rejected value is returned");
+            }));
 
-                    test.whenResolved(result, function(rtn){
-                        test.assertEqual("1", rtn[0], "Resolution includes each promises resolution");
-                        test.assertEqual("2", rtn[1], "Resolution includes each promises resolution");
-                        test.assertEqual("3", rtn[2], "Resolution includes each promises resolution");
-                        test.complete();
-                    });
-
-                    input[0].resolve("1");
-                    input[2].resolve("3");
-                }
-            },
-            {
-                name: "all: reject on any will reject all",
-                exec: function(test){
-                    var input = [new Deferred(), "2", new Deferred()];
-                    var result = all(input);
-
-                    test.assertNotEqual(input, result, "Return does not match input");
-                    test.assertIsFunction(result.then, "Return is a promise");
-
-                    test.whenRejected(result, function(rtn){
-                        test.assertEqual("err", rtn, "Rejected value is returned");
-
-                        test.complete();
-                    });
-
-                    input[0].resolve("1");
-                    input[2].reject("err");
-                }
-            }
-        ]
+            input[0].resolve("1");
+            input[2].reject("err");
+        }
     });
 });
