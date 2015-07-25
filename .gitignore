@@ -12,7 +12,7 @@ node_modules/**
 #################
 ## Dojo Toolkit
 #################
-src/dojo/**
+**/dojo/**
 
 #################
 ## Gradle
