@@ -13,3 +13,9 @@ node_modules/**
 ## Dojo Toolkit
 #################
 src/dojo/**
+
+#################
+## Gradle
+#################
+build/
+.gradle/
