@@ -21,27 +21,22 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module  client.test.unit.Application
+ * @module tests.api.blocks.Observable
  */
 define([
-    "qasht/package/Unit",
-    "client/Application",
-    "client/test/api/Application"
-], function (TestPackage, Application, testApi) {
-    return new TestPackage({
-        module: "client/Application",
-        tests: [
-            {
-                name: "API",
-                exec: function (test) {
-
-                    testApi(test.app, test);
-                    test.complete();
-                }
-            }
-        ],
-        setUp: function (test) {
-            test.app = new Application();
+    "intern/chai!assert"
+], function (assert) {
+    /**
+     * @method tests.api.blocks.Observable
+     */
+    return function(instance, message){
+        if (message){
+            message += ": "
+        } else {
+            message = "";
         }
-    });
+
+        assert.isFunction(instance.dispose, message + "Disposables MUST have a dispose Method");
+        assert.isFunction(instance.warnDisposed, message + "Disposables MUST have a warnDisposed Method");
+    }
 });
