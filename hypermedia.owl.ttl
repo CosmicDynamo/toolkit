@@ -1,0 +1,1101 @@
+@prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+@prefix doc: <http://vocab.cosmicdynamo.net/documentation.owl#> .
+
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix http: <http://www.w3.org/2011/http#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+
+@base <http://vocab.cosmicdynamo.net/hypermedia.owl> .
+
+<http://vocab.cosmicdynamo.net/hypermedia.owl> rdf:type owl:Ontology ;
+    rdfs:label "Hypermedia Ontology" ;
+    owl:versionInfo "draft"^^xsd:string ;
+    dc:dateSubmitted "2014-12-06"^^xsd:date ;
+    dc:creator <mailto:bpease@cosmicdynamo.net> ;
+    dc:publisher <http://cosmicdynamo.net> ;
+    rdfs:comment """Describes the interface by which a Semantic Agent can interact with a RESTful Semantic Service"""" ;
+    <http://purl.org/vocab/vann/preferredNamespacePrefix> "hm"  ;
+    <http://purl.org/vocab/vann/preferredNamespaceUri> "http://vocab.cosmicdynamo.net/hypermedia.owl#" .
+
+
+#################################################################
+#
+#    Object Properties
+#
+#################################################################
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#acceptsResource
+hm:acceptsResource a owl:ObjectProperty ;
+  rdfs:label "Accepts Resource" ;
+  rdfs:comment "If this property is provided then any requests to the server MUST have a body with an object of the acceptable Resource type" ;
+  rdfs:domain hm:HypermediaLink ;
+  rdfs:range owl:Class  ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+
+    @base <http://example.com/> .
+
+    <Object/initial> a hm:Resource ;
+      hm:hasLink [ 
+        a hm:IdempotentLink ,
+          ex:Action ;
+        hm:hasMethod hm:Put ;
+        hm:url "http://example.com/Object" ;
+        hm:acceptsResource ex:ObjectType
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#dataPredicate
+hm:dataPredicate a owl:ObjectProperty ;
+  rdfs:label "Data Predicate" ;
+  rdfs:comment "This property is used on the Source Data link to inform the consumer what property on the parent object this link provides data for." ;
+  rdfs:domain hm:SourceDataLink ;
+  rdfs:range rdf:Property ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+
+    @base <http://example.com/> .
+
+    <Object/initial> a hm:Resource ;
+      ex:hasField <Enumeration/000> ;
+      hm:hasLink [ 
+        a hm:IdempotentLink ,
+          hm:SourceDataLink ;
+        hm:hasMethod hm:Get ;
+        hm:url "http://example.com/Enumeration" ;
+        hm:providesResource ex:EnumeratedType ;
+        hm:dataPredicate ex:hasField
+      ] .
+  """ .
+
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#hasLink
+hm:hasLink a owl:ObjectProperty ;
+  rdfs:label "Links" ;
+  rdfs:comment "The collection of RESTful Hypermedia actions that can be performed on a given object" ;
+  rdfs:domain hm:Resource ;
+  rdfs:range hm:HypermediaLink ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+
+    @base <http://example.com/> .
+
+    <Object/id/0> a hm:Resource ;
+      hm:hasLink  [ 
+        a hm:IdempotentLink ,
+          ex:Action ;
+        hm:hasMethod hm:Put ;
+        hm:url "http://example.com/Object/doSomething" ;
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#hasMethod
+hm:hasMethod a owl:ObjectProperty ;
+  rdfs:label "Method" ;
+  rdfs:comment "The HTTP method to use when executing this Hypermedia Link" ;
+  rdfs:domain hm:HypermediaLink ;
+  rdfs:range hm:HttpMethod ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+
+    @base <http://example.com/> .
+
+    <Object/id/0> a hm:Resource ;
+      hm:hasLink  [ 
+        a hm:IdempotentLink ,
+          ex:Action ;
+        hm:hasMethod hm:Put ;
+        hm:url "http://example.com/Object/doSomething" ;
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#hasOntology
+hm:hasOntology a owl:ObjectProperty ;
+  rdfs:label "Ontology" ;
+  rdfs:comment "Link to a subset of an OWL ontology which describes the owl:class served by this hypermedia resource" ;
+  rdfs:domain hm:ResourceDescription ;
+  rdfs:range owl:Ontology ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix col: <http://vocab.cosmicdynamo.net/collection.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+    @base <http://example.com/api/> .
+
+    <?objectType=http%3A%2F%2Fexample.com%2F2014%2Fexample.owl%23ObjectType> a hm:ResourceDiscoveryDocument;
+      hm:hasResource ( <ObjectType> ) .
+                  
+    <ObjectType/Resources> a col:Container ;
+      col:membershipSubject <?objectType=http%3A%2F%2Fexample.com%2F2014%2Fexample.owl%23ObjectType> ;
+      col:membershipPredicate hm:hasResource ;
+      col:totalCount "1"^^xsd:nonNegativeInteger .
+
+    <ObjectType> a hm:ResourceDescription ;
+      hm:hasOntology <ObjectType/ontology> ;
+      hm:serves ex:ObjectType .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#hasTemplateItem
+hm:hasTemplateItem a owl:ObjectProperty ;
+  rdfs:label "Template Item List" ;
+  rdfs:comment "List of template item(s) describing valid parameters used to form the URL for this Hypermedia Link" ;
+  rdfs:domain hm:TemplateLink ;
+  rdfs:range hm:TemplateItem ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    <Object/id/1> a hm:Resource ;
+      ex:field "value" ;
+      hm:hasLink [
+        a hm:TemplateLink ,
+          ex:Action ;
+        hm:templateUrl "http://example.com/Object/id/1/doSomething?param={value}" ;
+        hm:hasMethod hm:Put ;
+        hm:hasTemplateItem [
+          hm:token "{value}" ;
+          hm:templateItemPredicate ex:field 
+        ]
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#providesResource
+hm:providesResource a owl:ObjectProperty ;
+  rdfs:label "Provides Resource" ;
+  rdfs:comment "Informs the consumer what Object Type is contained in the response body for this link." ;
+  rdfs:domain hm:HypermediaLink ;
+  rdfs:range owl:Class ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/id/0> a hm:Resource ;
+      hm:hasLink  [ 
+        a hm:IdempotentLink ,
+          ex:Action ;
+        hm:hasMethod hm:Get ;
+        hm:url "http://example.com/Object/details" ;
+        hm:providesResource ex:ChildThing
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#templateItemPredicate
+hm:templateItemPredicate a owl:ObjectProperty ;
+  rdfs:label "Template-Item Predicate" ;
+  rdfs:comment "This predicate is used in combination with the hm:token to take the string value of the object and replace the token identified in the template url." ;
+  rdfs:domain hm:TemplateItem ;
+  rdfs:range rdf:Property ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    <Object/id/1> a hm:Resource ;
+      ex:field "value" ;
+      hm:hasLink [
+        a hm:TemplateLink ,
+          ex:Action ;
+        hm:templateUrl "http://example.com/Object/id/1/doSomething?param={value}" ;
+        hm:hasMethod hm:Put ;
+        hm:hasTemplateItem [
+          hm:token "{value}" ;
+          hm:templateItemPredicate ex:field 
+        ]
+      ] .
+  """ .
+
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#hasResource
+hm:hasResource a owl:ObjectProperty ;
+  rdfs:label "Has Resource" ;
+  rdfs:comment "List of resources that are available under the current resource search" ;
+  rdfs:domain hm:ResourceDiscoveryDocument ;
+  rdfs:range hm:ResourceDescription ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix col: <http://vocab.cosmicdynamo.net/collection.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+    @base <http://example.com/api/> .
+
+    <?objectType=http%3A%2F%2Fexample.com%2F2014%2Fexample.owl%23ObjectType> a hm:ResourceDiscoveryDocument;
+      hm:hasResource ( <ObjectType> ) .
+                  
+    <ObjectType/Resources> a col:Container ;
+      col:membershipSubject <?objectType=http%3A%2F%2Fexample.com%2F2014%2Fexample.owl%23ObjectType> ;
+      col:membershipPredicate hm:hasResource ;
+      col:totalCount "1"^^xsd:nonNegativeInteger.
+
+    <ObjectType> a hm:ResourceDescription ;
+      hm:hasOntology <ObjectType/ontology> ;
+      hm:serves ex:ObjectType .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#serves
+hm:serves a owl:ObjectProperty ;
+  rdfs:label "Serves" ;
+  rdfs:comment "Information on what Object Type a given resource definition provides details about" ;
+  rdfs:domain hm:ResourceDescription ;
+  rdfs:range owl:Class ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix col: <http://vocab.cosmicdynamo.net/collection.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+    @base <http://example.com/api/> .
+
+    <?objectType=http%3A%2F%2Fexample.com%2F2014%2Fexample.owl%23ObjectType> a hm:ResourceDiscoveryDocument;
+      hm:hasResource ( <ObjectType> ) .
+                  
+    <ObjectType/Resources> a col:Container ;
+      col:membershipSubject <?objectType=http%3A%2F%2Fexample.com%2F2014%2Fexample.owl%23ObjectType> ;
+      col:membershipPredicate hm:hasResource ;
+      col:totalCount "1"^^xsd:nonNegativeInteger .
+
+    <ObjectType> a hm:ResourceDescription ;
+      hm:hasOntology <ObjectType/ontology> ;
+      hm:serves ex:ObjectType .
+  """ .
+
+### http://vocab.cosmicdynamo.net/hypermedia.owl#useFrame
+hm:useFrame a owl:ObjectProperty ;
+  rdfs:domain hm:HypermediaLink ;
+  rdfs:range hm:Frame ;
+  rdfs:label "Use Frame" ;
+  rdfs:comment "Framing information to reduce the request data to only information the server can handle" ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/initial> a hm:Resource ;
+    hm:hasLink [ 
+      a hm:IdempotentLink ,
+        ex:Action ;
+      hm:hasMethod hm:Put ;
+      hm:url "http://example.com/Object" ;
+      hm:acceptsResource ex:NonPersonalClient ;
+      hm:useFrame <ObjectType/frame> 
+    ] .
+  """ .
+                
+
+#################################################################
+#
+#    Data properties
+#
+#################################################################
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#templateUrl
+hm:templateUrl a owl:DatatypeProperty ;
+  rdfs:label "Template URL" ;
+  rdfs:comment "A string with replacement tags that enable the dynamic, data-driven, construction of a request URL" ;
+  rdfs:domain hm:TemplateLink ;
+  rdfs:range xsd:string ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    <Object/id/1> a hm:Resource ;
+      ex:field "value" ;
+      hm:hasLink [
+        a hm:TemplateLink ,
+          ex:Action ;
+        hm:templateUrl "http://example.com/Object/id/1/doSomething?param={value}" ;
+        hm:hasMethod hm:Put ;
+        hm:hasTemplateItem [
+          hm:token "{value}" ;
+          hm:templateItemPredicate ex:field 
+        ]
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#token
+hm:token a owl:DatatypeProperty ;
+  rdfs:label "Token" ;
+  rdfs:comment "Token in a string to be replaced out at runtime by some value" ;
+  rdfs:domain hm:TemplateItem ;
+  rdfs:range xsd:string ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    <Object/id/1> a hm:Resource ;
+      ex:field "value" ;
+      hm:hasLink [
+        a hm:TemplateLink ,
+          ex:Action ;
+        hm:templateUrl "http://example.com/Object/id/1/doSomething?param={value}" ;
+        hm:hasMethod hm:Put ;
+        hm:hasTemplateItem [
+          hm:token "{value}" ;
+          hm:templateItemPredicate ex:field 
+        ]
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#url
+hm:url a owl:DatatypeProperty ;
+  rdfs:label "URL" ;
+  rdfs:comment "The Request URL for this hypermedia." ;
+  rdfs:domain hm:HypermediaLink ;
+  rdfs:range xsd:string ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/initial> a hm:Resource ;
+      hm:hasLink [ 
+        a hm:IdempotentLink ,
+          ex:Action ;
+        hm:hasMethod hm:Put ;
+        hm:url "http://example.com/Object/doSomething"
+      ] .
+  """ .
+
+
+#################################################################
+#
+#    Classes
+#
+#################################################################
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#CreateResourceOperation
+hm:CreateResource a owl:Class ;
+  rdfs:label "Create Resource" ;
+  rdfs:comment "A link that represents a resource creation request" ;
+  rdfs:subClassOf hm:NonIdempotentLink , [
+    a owl:Restriction ;
+    owl:hasValue hm:Post ;
+    owl:onProperty hm:hasMethod
+  ] , [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:acceptsResource
+  ] , [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:providesResource
+  ] ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .                      
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/initial> a hm:Resource ,
+                       hm:InitialState ;
+      hm:hasLink [ 
+        a hm:NonIdempotentLink ,
+          hm:CreateResource ;
+        hm:hasMethod hm:Post ;
+        hm:url "http://example.com/Object/" ;
+        hm:acceptsResource hm:Resource ;
+        hm:providesResource hm:Resource 
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#DeleteResourceOperation
+hm:DeleteResource a owl:Class ;
+  rdfs:label "Delete Resource" ;
+  rdfs:comment "A Delete Resource request" ;
+  rdfs:subClassOf hm:IdempotentLink , [
+    a owl:Restriction ;
+    owl:hasValue hm:Delete ;
+    owl:onProperty hm:hasMethod
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "0"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:acceptsResource
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "0"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:providesResource
+  ] ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .                      
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/id/1> a hm:Resource ;
+      hm:hasLink [ 
+          a hm:NonIdempotentLink ,
+            hm:DeleteResource ;
+          hm:hasMethod hm:Delete ;
+          hm:url "http://example.com/Object/id/1"
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#EmbedLink
+hm:EmbedLink a owl:Class ;
+  rdfs:label "Embed Link" ;
+  rdfs:comment """A Link used to request either update or to request the full representation of the parent Resource.
+    NOTE: By convention the IRI of an object should be equivalent to the embed link URL for that object.  This makes sending the Embed Link as a separate Link definition redundant
+  """ ;
+  rdfs:subClassOf hm:IdempotentLink , [
+    a owl:Restriction ;
+    owl:hasValue hm:Get ;
+    owl:onProperty hm:hasMethod
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "0"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:acceptsResource
+  ] , [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:providesResource
+  ] ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .                      
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/id/1> a hm:Resource ;
+      hm:hasLink [ 
+        a hm:IdempotentLink ,
+          hm:EmbedLink ;
+        hm:hasMethod hm:Get ;
+        hm:url "http://example.com/Object/id/1"
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#Frame
+hm:Frame a owl:Class ;
+  rdfs:label "Request Body Frame" ;
+  rdfs:comment "Instructions on how to reduce an RDF request body to only triples understood/accepted by the server" ;
+  doc:example "Example is not possible for this Object-Type" .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#HttpMethod
+hm:HttpMethod a owl:Class ;
+  rdfs:label "HTTP Method" ;
+  rdfs:comment "The HTTP method that must be used to execute a given Hypermedia Link" ;
+  rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty http:methodName
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty http:methodName
+  ] ;
+  doc:example """
+    See:
+    http://vocab.cosmicdynamo.net/hypermedia.owl#Delete
+    http://vocab.cosmicdynamo.net/hypermedia.owl#Get
+    http://vocab.cosmicdynamo.net/hypermedia.owl#Head
+    http://vocab.cosmicdynamo.net/hypermedia.owl#Options
+    http://vocab.cosmicdynamo.net/hypermedia.owl#Patch
+    http://vocab.cosmicdynamo.net/hypermedia.owl#Post
+    http://vocab.cosmicdynamo.net/hypermedia.owl#Put
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#HypermediaLink
+hm:HypermediaLink a owl:Class ;
+  rdfs:label "Hypermedia Link" ;
+  rdfs:comment "An Instruction set telling an RDF client how to perform an action on the parent object which requires a Hypermedia Request to be set to a Semantic Service" ;
+  rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:minCardinality "0"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:acceptsResource
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:acceptsResource
+  ] , [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:url
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:url
+  ] , [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:hasMethod
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:hasMethod
+  ] , [
+    a owl:Restriction ;
+    owl:minCardinality "0"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:providesResource
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:providesResource
+  ] , [
+    a owl:Restriction ;
+    owl:minCardinality "0"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:useFrame
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:useFrame
+  ] ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .                      
+    @prefix ex: <http://example.com/example.owl#> .
+
+    @base <http://example.com/> .
+
+    <Object/id/1> a hm:Resource ;
+      hm:hasLink [ 
+        a hm:HypermediaLink ;
+        hm:hasMethod hm:Get ;
+        hm:url "http://example.com/Object/id/1"
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#IdempotentLink
+hm:IdempotentLink a owl:Class ;
+  rdfs:label "Idempotent Link" ;
+  rdfs:subClassOf hm:HypermediaLink ;
+  rdfs:comment "A link that can be requested multiple times without changing the result beyond the initial application" ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .                      
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/id/1> a hm:Resource ;
+      hm:hasLink [ 
+          a hm:IdempotentLink ;
+          hm:hasMethod hm:Get ;
+          hm:url "http://example.com/Object/id/1"
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#JsonLdFrame
+hm:JsonLdFrame a owl:Class ;
+    rdfs:label "JSON-LD Frame" ;
+    rdfs:subClassOf hm:Frame ;
+    rdfs:comment "The assumed type of any JSON-LD Frame document.  See http://json-ld.org/spec/latest/json-ld-framing/ for details on the JSON-LD Framing specification" ;
+    doc:example """
+        {
+          "@context": {
+            "ical": "http://www.w3.org/2002/12/cal/ical#",
+            "xsd": "http://www.w3.org/2001/XMLSchema#",
+            "ical:dtstart": {
+              "@type": "xsd:dateTime"
+            }
+          }
+        }
+    """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#NonIdempotentLink
+hm:NonIdempotentLink a owl:Class ;
+  rdfs:label "Non-Idempotent Link" ;
+  rdfs:subClassOf hm:HypermediaLink ;
+  rdfs:comment "A link that CAN NOT be requested multiple times without changing the result beyond the initial application" ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .                      
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/id/1> a hm:Resource ;
+      hm:hasLink [ 
+        a hm:NonIdempotentLink ,
+          ex:Action ;
+        hm:hasMethod hm:Post ;
+        hm:url "http://example.com/Object/id/1/doSomething"
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#OutboundLink
+hm:OutboundLink rdf:type owl:Class ;
+  rdfs:label "Outbound Link" ;
+  rdfs:comment "A Request for data that is related, but not bound to it's parent object" ;
+  rdfs:subClassOf hm:IdempotentLink , [
+    a owl:Restriction ;
+    owl:hasValue hm:Get ;
+    owl:onProperty hm:hasMethod
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "0"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:acceptsResource
+  ] , [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:providesResource
+  ] ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .                      
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/id/1> a hm:Resource ;
+      hm:hasLink [ 
+        a hm:OutboundLink ;
+        hm:hasMethod hm:Get ;
+        hm:url "http://example.com/Object/id/1"
+      ] .
+  """ .
+
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#ReplaceResourceOperation
+hm:ReplaceResource rdf:type owl:Class ;
+  rdfs:label "Replace Resource" ;
+  rdfs:subClassOf hm:IdempotentLink , [
+    a owl:Restriction ;
+    owl:hasValue hm:Put ;
+    owl:onProperty hm:hasMethod
+  ] , [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:acceptsResource
+  ] , [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:providesResource
+  ] ;
+  rdfs:comment "A request that will replace the existing resource with the request body" ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .                      
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/id/1> a hm:Resource ;
+      hm:hasLink [ 
+        a hm:NonIdempotentLink ,
+          hm:ReplaceResource ;
+        hm:hasMethod hm:Put ;
+        hm:url "http://example.com/Object/id/1/doSomething" ;
+        hm:acceptsResource hm:Resource ;
+        hm:providesResource hm:Resource
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#SourceDataLink
+hm:SourceDataLink a owl:Class ;
+  rdfs:label "Source Data Link" ;
+  rdfs:subClassOf hm:OutboundLink , [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:dataPredicate;
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:dataPredicate;
+  ] ;
+  rdfs:comment "Hypermedia Link which provides information about allowed values for a given data predicate on the parent Hypermedia Resource" ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/initial> a hm:Resource ;
+      ex:hasField <Enumeration/000> ;
+      hm:hasLink [ 
+        a hm:IdempotentLink ,
+          hm:SourceDataLink ;
+        hm:hasMethod hm:Get ;
+        hm:url "http://example.com/Enumeration" ;
+        hm:providesResource ex:EnumeratedType ;
+        hm:dataPredicate ex:hasField
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#InitialStateLink
+hm:InitialStateLink a owl:Class ;
+  rdfs:label "Initial State Link" ;
+  rdfs:comment "Provides a Link to a Representation of the Default State of a New Object created for the Collection which contains this link" ;
+  rdfs:subClassOf hm:OutboundLink ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix col: <http://vocab.cosmicdynamo.net/collection.owl#> .
+    @prefix ex: <http://vocab.example.com/example.owl#> .
+    
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+    @base <http://example.com/Object/1/> .
+
+    <> a ex:ObjectCollection .
+
+    <Children/> a col:Container ;
+      col:membershipSubject <> ;
+      col:membershipPredicate ex:hasChildren ;
+      col:totalCount "0"^^xsd:nonNegativeInteger ;
+      hm:hasLink [
+        a hm:OutboundLink ,
+          hm:InitialStateLink ;
+          hm:method hm:Get ;
+          hm:url "http://example.com/Object/1/Children/new" ;
+          hm:providesResource ex:ChildType
+      ] .
+  """ .
+                    
+hm:InitialStateCollection a owl:Class ;
+  rdfs:label "Collection Of Initial State Objects" ;
+  rdfs:comment "A collection of Initial State Object which meet some search criteria" ;
+  rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:onProperty hm:hasLink ;
+    owl:minCardinality "0"^^xsd:nonNegativeInteger 
+  ] ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix col: <http://vocab.cosmicdynamo.net/collection.owl#> .
+    @prefix ex: <http://vocab.example.com/example.owl#> .
+
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+    
+    @base <http://example.com/Object/1/Children/new> .
+
+    <?type=http://example.com/SubType1> a hm:InitialStateCollection ;
+      hm:hasLink [
+        a hm:OutboundLink ,
+          hm:InitialStateLink ;
+        hm:method hm:Get ;
+        hm:url "http://example.com/Object/1/Children/new/SubType1" ;
+        hm:providesResource ex:SubType1
+      ].
+
+    <?type=http://example.com/SubType1> a col:Container , 
+                                          col:SearchResult ;
+      hm:membershipSubject <?type=http://example.com/SubType1> ;
+      hm:hasSourceContainer <?type=all> ;
+      hm:membershipPredicate hm:hasLink ;
+      hm:totalCount "1"^^xsd:nonNegativeInteger .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#TemplateItem
+hm:TemplateItem a owl:Class ;
+  rdfs:label "Template Item" ;
+  rdfs:comment "A template item represents a template parameter to be set by the client as part of a template link." ;
+  rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:templateItemPredicate
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:templateItemPredicate
+  ] ,  [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:token
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:token
+  ] ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    <Object/id/1> a hm:Resource ;
+      ex:field "value" ;
+      hm:hasLink [
+        a hm:TemplateLink ,
+          ex:Action ;
+        hm:templateUrl "http://example.com/Object/id/1/doSomething?param={value}" ;
+        hm:hasMethod hm:Put ;
+        hm:hasTemplateItem [
+          hm:token "{value}" ;
+          hm:templateItemPredicate ex:field 
+        ]
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#TemplateLink
+hm:TemplateLink a owl:Class ;
+  rdfs:label "Template Link" ;
+  rdfs:subClassOf hm:HypermediaLink ;
+  rdfs:comment "A Link that MUST be constructed using a template string with tokens that can be replaced at runtime to form a valid URL" ;
+  rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:hasTemplateItem
+  ] ,  [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:templateUrl
+  ] ,  [
+    a owl:Restriction ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:templateUrl
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "0"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:url
+  ] , [
+    a owl:Restriction ;
+    owl:hasValue hm:Get ;
+    owl:onProperty hm:hasMethod
+  ] ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+
+    <Object/id/1> a hm:Resource ;
+      ex:field "value" ;
+      hm:hasLink [
+        a hm:TemplateLink ,
+          ex:Action ;
+        hm:templateUrl "http://example.com/Object/id/1/doSomething?param={value}" ;
+        hm:hasMethod hm:Put ;
+        hm:hasTemplateItem [
+          hm:token "{value}" ;
+          hm:templateItemPredicate ex:field 
+        ]
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#Resource
+hm:ResourceDescription a rdfs:Class ;
+  rdfs:label "Resource Description" ;
+  rdfs:comment "Details about how to find and interact with a given resource type" ;
+  rdfs:subClassOf hm:Resource , [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:hasOntology
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:hasOntology
+  ] , [
+    a owl:Restriction ;
+    owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:serves
+  ] , [
+    a owl:Restriction ;
+    owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:serves
+  ] ;
+  doc:example """
+    @prefix ex: <http://example.com/example.owl#> .
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix col: <http://vocab.cosmicdynamo.net/collection.owl#> .
+    
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+    @base <http://example.com/api/> .
+
+    <> a hm:ResourceDiscoveryDocument;
+      hm:hasResource ( <ObjectType> ) .
+
+    <?typeiri=http%3A%2F%2Fvocab.example.com%2F2014%example.owl%23ObjectType> a col:SearchResult, 
+                                                                                col:Container;
+      col:membershipSubject <> ;
+      col:membershipPredicate hm:hasResource ;
+      col:totalCount "1"^^xsd:nonNegativeInteger .
+        
+    <ObjectType> a hm:ResourceDescription ;
+      hm:hasOntology <ObjectType/ontology> ;
+      hm:serves ex:ObjectType .
+    """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#ResourceDiscoveryDocument
+hm:ResourceDiscoveryDocument a owl:Class ;
+  rdfs:label "Resource Discovery Document" ;
+  rdfs:comment "A Container for top-level resource information;  Can be either a collection of all Resources exposed by a Service or a sub-set matching some Search criteria" ;
+  rdfs:subClassOf [
+    a owl:Restriction ;
+    owl:minCardinality "0"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:hasResource
+  ] ;
+  doc:example """
+    @prefix ex: <http://example.com/example.owl#> .
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix col: <http://vocab.cosmicdynamo.net/collection.owl#> .
+    
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+    @base <http://example.com/api/> .
+
+    <> a hm:ResourceDiscoveryDocument;
+       hm:hasResource ( <ObjectType> ) .
+
+    <?typeiri=http%3A%2F%2Fvocab.example.com%2F2014%example.owl%23ObjectType> a col:SearchResult, 
+                                                                                col:Container;
+      col:membershipSubject <> ;
+      col:membershipPredicate hm:hasResource ;
+      col:totalCount "1"^^xsd:nonNegativeInteger .
+        
+    <ObjectType> a hm:ResourceDescription ;
+      hm:hasOntology <ObjectType/ontology> ;
+      hm:serves ex:ObjectType .
+    """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#ResourceDiscoveryDocument
+hm:Resource a owl:Class ;
+  rdfs:label "Hypermedia Resource" ;
+  rdfs:comment "An object which contains Hypermedia Links" ;
+  rdfs:subClassOf [
+  a owl:Restriction ;
+    owl:minCardinality "0"^^xsd:nonNegativeInteger ;
+    owl:onProperty hm:hasLink
+  ] ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    <Object/id/1> a hm:Resource ;
+      ex:field "value" ;
+      hm:hasLink [
+        a hm:IdempotentLink ,
+          ex:Action ;
+        hm:url "http://example.com/Object/id/1/doSomething" ;
+        hm:hasMethod hm:Get
+      ] .
+  """ .
+
+
+#################################################################
+#
+#    Individuals
+#
+#################################################################
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#Delete
+hm:Delete rdf:type hm:HttpMethod ,
+                   owl:NamedIndividual ;
+  rdfs:label "Delete" ;
+  http:methodName "DELETE"^^xsd:string ;
+  rdfs:comment "HTTP DELETE method instance." ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .                      
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/id/1> a hm:Resource ;
+      hm:hasLink [ 
+        a hm:NonIdempotentLink ,
+          hm:DeleteResource ;
+        hm:hasMethod hm:Delete ;
+        hm:url "http://example.com/Object/id/1"
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#Get
+hm:Get a hm:HttpMethod ,
+         owl:NamedIndividual ;
+  rdfs:label "Get" ;
+  http:methodName "GET" ;
+  rdfs:comment "HTTP GET method instance." ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/id/0> a hm:Resource ;
+      hm:hasLink  [ 
+        a hm:IdempotentLink ,
+          ex:Action ;
+        hm:hasMethod hm:Get ;
+        hm:url "http://example.com/Object/details" ;
+        hm:providesResource ex:ChildThing
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#Head
+hm:Head a hm:HttpMethod ,
+          owl:NamedIndividual ;
+  rdfs:label "Head" ;
+  http:methodName "HEAD"^^xsd:string ;
+  rdfs:comment "HTTP HEAD method instance." ;
+  doc:example "This instance is here for completeness;  There are currently no known Use Cases to expose a HEAD Link to a client" .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#Options
+hm:Options a hm:HttpMethod ,
+             owl:NamedIndividual ;
+  rdfs:label "Options" ;
+  http:methodName "OPTIONS"^^xsd:string ;
+  rdfs:comment "HTTP OPTIONS method instance." ;
+  doc:example "This instance is here for completeness;  There are currently no known Use Cases to expose a OPTIONAL Link to a client" .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#Patch
+hm:Patch a hm:HttpMethod ,
+           owl:NamedIndividual ;
+  rdfs:label "Patch" ;
+  http:methodName "PATCH"^^xsd:string ;
+  rdfs:comment "HTTP PATCH method instance."  ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/id/001> a hm:Resource ;
+      hm:hasLink [ 
+          a hm:IdempotentLink ,
+            ex:Action ;
+          hm:hasMethod hm:Patch ;
+          hm:url "http://example.com/Object/id/001" ;
+          hm:acceptsResource ex:NonPersonalClient
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#Post
+hm:Post a hm:HttpMethod ,
+          owl:NamedIndividual ;
+  rdfs:label "Post" ;
+  http:methodName "POST"^^xsd:string ;
+  rdfs:comment "HTTP POST method instance."  ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/initial> a hm:Resource ,
+                       hm:InitialState ;
+      hm:hasLink [ 
+        a hm:IdempotentLink ,
+          ex:Action ;
+        hm:hasMethod hm:Post ;
+        hm:url "http://example.com/Object" ;
+        hm:acceptsResource ex:NonPersonalClient
+      ] .
+  """ .
+
+###  http://vocab.cosmicdynamo.net/hypermedia.owl#Put
+hm:Put a hm:HttpMethod ,
+         owl:NamedIndividual ;
+  rdfs:label "Put" ;
+  http:methodName "PUT"^^xsd:string ;
+  rdfs:comment "HTTP PUT method instance."  ;
+  doc:example """
+    @prefix hm: <http://vocab.cosmicdynamo.net/hypermedia.owl#> .
+    @prefix ex: <http://example.com/example.owl#> .
+    
+    @base <http://example.com/> .
+
+    <Object/id/001> a hm:Resource ;
+      hm:hasLink [ 
+        a hm:IdempotentLink ,
+          ex:Action ;
+        hm:hasMethod hm:Put ;
+        hm:url "http://example.com/Object/id/001" ;
+        hm:acceptsResource ex:NonPersonalClient
+      ] .
+  """ .
