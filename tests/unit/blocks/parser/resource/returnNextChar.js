@@ -24,6 +24,6 @@
  */
 define([], function () {
     return function (data) {
-        return data.__maxReturn--?data.input[data.pos++]:null;
+        return (data.__maxReturn-- > 0)?data.input[data.pos++]:null;
     }
 });

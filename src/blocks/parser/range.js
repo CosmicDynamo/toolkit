@@ -54,21 +54,22 @@ define([
             return data.isEnd();
         }
 
-        function onNext(results){
-            var keepOn = false;
-            if (data.isEnd()){
-                return results;
+        function onNext(details){
+            if (details.stop || data.isEnd()){
+                return details.results;
             }
+            var keepOn = false;
             do {
                 var async = when(fn.call(this, data), function(val){
                     if (val !== null) {
-                        results.push(val);
+                        details.results.push(val);
                     }
                     keepOn = !isDone(val, data, separator, optional);
                     if (max > 0) {
-                        keepOn = keepOn && results.length < max;
+                        keepOn = keepOn && details.results.length < max;
                     }
-                    return results;
+                    details.stop = !keepOn;
+                    return details;
                 });
 
                 if (async.then){
@@ -76,11 +77,11 @@ define([
                 }
             } while (keepOn);
 
-            return results;
+            return details.results;
         }
 
         var start = data.pos;
-        return when(onNext([]), function(results){
+        return when(onNext({results:[], stop:false}), function(results){
             if (results.length < min){
                 data.pos = start;
                 return null;

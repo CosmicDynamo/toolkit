@@ -41,7 +41,6 @@ define({
             { name: 'RdfJs', location: 'src/RdfJs' },
             { name: 'polyfill', location: 'src/polyfill' },
             { name: 'core', location: 'src/core' },
-            { name: 'client', location: 'src/client' },
             { name: 'service', location: 'src/service' },
             { name: 'dojo', location: 'src/dojo' },
             { name: 'fake', location: 'tests/fake' },
@@ -52,7 +51,6 @@ define({
     // Non-functional test suite(s) to run in each browser
     suites: [
         'tests/unit/blocks/module',
-        'tests/unit/client/module',
         'tests/unit/core/module',
         'tests/unit/RdfJs/module',
         'tests/unit/service/module'
