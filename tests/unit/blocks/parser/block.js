@@ -28,9 +28,9 @@ define([
     "intern/chai!assert",
     "blocks/parser/block",
     "tests/fake/blocks/parser/Data",
-    "dojo/_base/Deferred",
-    "blocks/promise/when"
-], function (TestSuite, assert, block, Data, Deferred, when) {
+    "blocks/promise/when",
+    "polyfill/has!Promise"
+], function (TestSuite, assert, block, Data, when) {
     return TestSuite({
         name: "blocks/parser/block",
         "Returns null if starting character not found": function(){
@@ -69,11 +69,15 @@ define([
             assert.deepEqual(done, output, "Null value returned");
         },
         "Will wait for promise return from function to be resolved": function(){
-            var rtn = wait = new Deferred();
+            var resolve = null, reject;
+            var rtn = new Promise(function(res, rej){
+                resolve = res;
+                reject = rej;
+            });
             var data = new Data({
                 input: "{}"
             });
-            var idx =0 ;
+
             var output = ["1"];
 
             var done = block(data, '{', '}', -1, -1, function(){
@@ -84,9 +88,9 @@ define([
             assert.isFunction(done.then, "Return is a promise");
 
             rtn = null;
-            wait.resolve(output[0]);
+            resolve(output[0]);
 
-            when(done, function(results){
+            return when(done, function(results){
                 assert.deepEqual(results, output, "Null value returned");
             });
         },

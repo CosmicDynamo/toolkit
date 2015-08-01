@@ -21,27 +21,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module  client.test.unit.Application
  */
 define([
-    "qasht/package/Unit",
-    "client/Application",
-    "client/test/api/Application"
-], function (TestPackage, Application, testApi) {
-    return new TestPackage({
-        module: "client/Application",
-        tests: [
-            {
-                name: "API",
-                exec: function (test) {
+    "dojo/_base/Deferred"
+], function (Deferred) {
+    var global = this;
 
-                    testApi(test.app, test);
-                    test.complete();
-                }
-            }
-        ],
-        setUp: function (test) {
-            test.app = new Application();
-        }
-    });
+    global.Promise = Deferred;
 });

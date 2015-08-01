@@ -25,7 +25,7 @@
  */
 define([
     "dojo/Deferred",
-    "dojo/promise/when"
+    "dojo/when"
 ], function (Deferred, when) {
     /**
      * Delays execution of a function and then returns a promise that will resolve when the function is complete

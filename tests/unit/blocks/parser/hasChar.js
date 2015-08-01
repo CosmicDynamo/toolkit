@@ -36,7 +36,7 @@ define([
             var data = new Data({ input: "$" });
             var out = hasChar(data, "$");
 
-            assert.strictEqual(input, out);
+            assert.strictEqual(data.input, out);
             assert.isNull(hasChar(data, "$"), "position was updated");
         },
 
@@ -63,7 +63,7 @@ define([
             };
             var out = hasChar(data, "A", false, true);
 
-            assert.isEqual("a", out);
+            assert.strictEqual("a", out);
         }
     });
 });

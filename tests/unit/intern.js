@@ -37,9 +37,11 @@ define({
     loader: {
         // Packages that should be registered with the loader in each testing environment
         packages: [
-            { name: 'RdfJs', location: 'src/RdfJs' },
             { name: 'blocks', location: 'src/blocks' },
+            { name: 'RdfJs', location: 'src/RdfJs' },
             { name: 'polyfill', location: 'src/polyfill' },
+            { name: 'core', location: 'src/core' },
+            { name: 'client', location: 'src/client' },
             { name: 'dojo', location: 'src/dojo' },
             { name: 'fake', location: 'tests/fake' },
             { name: 'api', location: 'tests/api' }
@@ -47,7 +49,13 @@ define({
     },
 
     // Non-functional test suite(s) to run in each browser
-    suites: [ 'tests/unit/RdfJs/module' ],
+    suites: [
+        'tests/unit/blocks/module',
+        'tests/unit/client/module',
+        'tests/unit/core/module',
+        'tests/unit/RdfJs/module',
+        'tests/unit/service/module'
+    ],
 
     // Functional test suite(s) to run in each browser once non-functional tests are completed
     //functionalSuites: [ 'tests/functional/odo' ],
