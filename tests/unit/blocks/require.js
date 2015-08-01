@@ -67,7 +67,7 @@ define([
                     ], function(){
                         test.assertFail("Callback Function should not be called")
                     }, function(err){
-                        test.assertIsObject(err);
+                        assert.isObject(err);
 
                         test.complete();
                     });
@@ -81,14 +81,14 @@ define([
                     ], function(){
                         test.assertFail("Callback Function should not be called")
                     }, function(err1){
-                        test.assertIsObject(err1);
+                        assert.isObject(err1);
 
                         require([
                             "bad/mid/repeat/errback"
                         ], function(){
                             test.assertFail("Callback Function should not be called")
                         }, function(err2){
-                            test.assertIsObject(err2);
+                            assert.isObject(err2);
 
                             test.complete();
                         });
@@ -120,7 +120,7 @@ define([
                         "bad/mid",
                         "different/bad/mid"
                     ]), function(err){
-                        test.assertIsObject(err);
+                        assert.isObject(err);
 
                         test.complete();
                     });
@@ -132,11 +132,11 @@ define([
                     test.whenRejected(require([
                         "bad/repeat/mid"
                     ]), function(err1){
-                        test.assertIsObject(err1);
+                        assert.isObject(err1);
                         test.whenRejected(require([
                             "bad/repeat/mid"
                         ]), function(err2){
-                            test.assertIsObject(err2);
+                            assert.isObject(err2);
                             test.assertEqual(err1, err2);
 
                             test.complete();

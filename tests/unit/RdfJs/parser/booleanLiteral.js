@@ -24,57 +24,44 @@
  * @module jazzHands.test.unit.parser.sparql.booleanLiteral
  */
 define([
-    "qasht/package/Unit",
+    "intern!object",
+    "intern/chai!assert",
     "RdfJs/parser/booleanLiteral",
     "blocks/parser/Data",
-    "RdfJs/test/api/Node"
-], function (TestPackage, booleanLiteral, Data, testNodeApi) {
-    return new TestPackage({
+    "api/RdfJs/Node"
+], function (intern, assert, booleanLiteral, Data, testNodeApi) {
+    return new intern({
         module: "jazzHands/parser/sparql/booleanLiteral",
-        tests: [
-            {
-                name: "Return null if 'true' or 'false' key words not present",
-                input: "{ ?s ?p ?o }",
-                exec: function (test) {
-                    var out = booleanLiteral(test.data);
-
-                    test.assertNull(out);
-
-                    test.complete();
-                }
-            },
-            {
-                name: "Returns literal node when 'true' is found",
-                input: "true asdf",
-                exec: function (test) {
-                    var out = booleanLiteral(test.data);
-
-                    testNodeApi(out, test);
-                    test.assertEqual('"true"^^<http://www.w3.org/2001/XMLSchema#boolean>', out.toNT());
-                    test.assertEqual(4, test.data.pos);
-
-                    test.complete();
-                }
-            },
-            {
-                name: "Returns literal node when 'false' is found",
-                input: "false 134}",
-                exec: function (test) {
-                    var out = booleanLiteral(test.data);
-
-                    testNodeApi(out, test);
-                    test.assertEqual('"false"^^<http://www.w3.org/2001/XMLSchema#boolean>', out.toNT());
-                    test.assertEqual(5, test.data.pos);
-
-                    test.complete();
-                }
-            }
-        ],
-        setUp: function (test) {
-            test.data = new Data({
-                input: test.input
+        "Return null if 'true' or 'false' key words not present": function () {
+            var data = new Data({
+                input: "{ ?s ?p ?o }"
             });
-        }
 
+            var out = booleanLiteral(data);
+
+            assert.isNull(out);
+        },
+        "Returns literal node when 'true' is found": function () {
+            var data = new Data({
+                input: "true asdf"
+            });
+
+            var out = booleanLiteral(data);
+
+            testNodeApi(out);
+            assert.strictEqual('"true"^^<http://www.w3.org/2001/XMLSchema#boolean>', out.toNT());
+            assert.strictEqual(4, data.pos);
+        },
+        "Returns literal node when 'false' is found": function () {
+            var data = new Data({
+                input: "false 134}"
+            });
+
+            var out = booleanLiteral(data);
+
+            testNodeApi(out);
+            assert.strictEqual('"false"^^<http://www.w3.org/2001/XMLSchema#boolean>', out.toNT());
+            assert.strictEqual(5, data.pos);
+        }
     });
 });

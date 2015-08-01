@@ -21,14 +21,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module RdfJs.test.api.Graph
+ * @module tests.api.RdfJs.Graph
  */
 define([
     "intern/chai!assert"
 ], function (assert) {
     /**
      * Method for testing if something is an RDF Graph
-     * @method RdfJs.test.api.Graph
+     * @method tests.api.RdfJs.Graph
      * @param {*} instance - The thing being tested
      */
     return function (instance) {

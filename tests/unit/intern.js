@@ -42,6 +42,7 @@ define({
             { name: 'polyfill', location: 'src/polyfill' },
             { name: 'core', location: 'src/core' },
             { name: 'client', location: 'src/client' },
+            { name: 'service', location: 'src/service' },
             { name: 'dojo', location: 'src/dojo' },
             { name: 'fake', location: 'tests/fake' },
             { name: 'api', location: 'tests/api' }

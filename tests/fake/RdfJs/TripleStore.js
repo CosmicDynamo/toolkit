@@ -71,7 +71,7 @@ define([
             return this.inherited(arguments);
         },
         setDefault: function (value) {
-            assert.stricttEqual(arguments.length, 1,"TripleStore.setDefault: takes one argument");
+            assert.strictEqual(arguments.length, 1,"TripleStore.setDefault: takes one argument");
             if (!lang.isArray(value)) {
                 value = [value];
             }

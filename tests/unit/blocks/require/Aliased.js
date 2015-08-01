@@ -62,7 +62,7 @@ define([
                 name: "require: errback fn called when AND modules fail to load",
                 exec: function(test){
                     test.whenRejected(test.require.load("BadMid"), function(err){
-                        test.assertIsObject(err);
+                        assert.isObject(err);
 
                         test.complete();
                     });
