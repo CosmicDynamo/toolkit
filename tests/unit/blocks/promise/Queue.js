@@ -27,8 +27,9 @@ define([
     "intern!object",
     "intern/chai!assert",
     "blocks/promise/Queue",
-    "dojo/_base/Deferred"
-], function (TestSuite, assert, Queue, Deferred) {
+    "dojo/_base/Deferred",
+    "blocks/promise/when"
+], function (TestSuite, assert, Queue, Deferred, when) {
     return new TestSuite({
         name: "blocks/promise/Queue",
         "enqueue: executes first queued fn sync": function(){
@@ -208,7 +209,9 @@ define([
             });
 
             var done = this.async();
-            when(last, done.errback(function(p1){
+            when(last, function(){
+                assert.fail(null, null, "Promise should have been rejected")
+            }, done.callback(function(p1){
                 assert.strictEqual("pass", p1);
             }));
 
@@ -237,7 +240,7 @@ define([
             });
 
             var done = this.async();
-            when(last, done.errback(function () {
+            when(last, done.callback(function(){
                 assert.isTrue(scope.err, "Error fn was called");
                 assert.isTrue(scope.lastRun, "Last fn was called");
             }));

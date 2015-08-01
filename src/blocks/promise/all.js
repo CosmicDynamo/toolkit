@@ -25,20 +25,33 @@
  */
 define([
     "./when",
-    "dojo/promise/all"
-], function (when, all) {
+    "dojo/_base/Deferred"
+], function (when, Deferred) {
     /**
      * @function blocks.promise.all
      * @param {Promise | * | Array} valueOrArray
      * @return {Array<*> || Promise}
      */
     return function(valueOrArray){
-        var done = false, out = null;
-        var promise = when(all(valueOrArray), function(results){
-            out = results;
-            done = true;
-        });
+        var array = [];
+        if(valueOrArray instanceof Array){
+            array = valueOrArray;
+        }else{
+            array = [].slice.call(arguments);
+        }
 
-        return done?out:promise;
+        var results = [];
+        var waiting = array.length;
+        var deferred = new Deferred();
+        array.forEach(function(valueOrPromise, index){
+            when(valueOrPromise, function(value){
+                waiting--;
+                results[index] = value;
+                if (waiting===0){
+                    deferred.resolve(results);
+                }
+            }, deferred.reject);
+        });
+        return waiting>0?deferred:results;
     };
 });

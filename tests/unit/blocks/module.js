@@ -1,6 +1,6 @@
 define([
     "./parser/module",
-    //"./promise/module",
+    "./promise/module",
     //"./require/module",
     "./Cache",
     //"./Container",
