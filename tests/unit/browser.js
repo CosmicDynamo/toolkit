@@ -47,6 +47,7 @@ define({
             { name: 'api', location: 'tests/api' }
         ]
     },
+    reporters:["html"],
 
     // Non-functional test suite(s) to run in each browser
     suites: [
