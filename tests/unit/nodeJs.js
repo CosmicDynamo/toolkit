@@ -47,7 +47,7 @@ define({
             { name: 'api', location: 'tests/api' }
         ]
     },
-
+    reporters: ["Console", "LcovHtml"],
     // Non-functional test suite(s) to run in each browser
     suites: [
         'tests/unit/blocks/module',
