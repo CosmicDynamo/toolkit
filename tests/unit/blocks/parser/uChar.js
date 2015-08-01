@@ -28,48 +28,42 @@ define([
     "intern/chai!assert",
     "blocks/parser/uChar",
     "blocks/parser/Data"
-], function (TestSuite, assert, uChar, Data) {
-    return new TestSuite({
+], function (intern, assert, uChar, Data) {
+    return intern({
         name: "blocks/parser/uChar",
-        "description of test block 1": {
-            setup: function () {
-                data = new Data({
-                    input: "\\u0000\\u9999\\uaaaa\\uAAAA\\uffff\\uFFFFStop"
-                });
-            },
-            "valid syntax: '\\u' HEX HEX HEX HEX": function(){
-                assert.strictEqual(String.fromCharCode(0),uChar(data));
-                assert.strictEqual(String.fromCharCode(39321), uChar(data));
-                assert.strictEqual(String.fromCharCode(43690), uChar(data));
-                assert.strictEqual(String.fromCharCode(43690), uChar(data));
-                assert.strictEqual(String.fromCharCode(65535), uChar(data));
-                assert.strictEqual(String.fromCharCode(65535), uChar(data));
+        "valid syntax: '\\u' HEX HEX HEX HEX": function () {
+            var data = new Data({
+                input: "\\u0000\\u9999\\uaaaa\\uAAAA\\uffff\\uFFFFStop"
+            });
 
-                assert.isNull(uChar(data));
-                assert.strictEqual("Stop", data.input.substr(data.pos));
-            }
-            
+            assert.strictEqual(String.fromCharCode(0), uChar(data));
+            assert.strictEqual(String.fromCharCode(39321), uChar(data));
+            assert.strictEqual(String.fromCharCode(43690), uChar(data));
+            assert.strictEqual(String.fromCharCode(43690), uChar(data));
+            assert.strictEqual(String.fromCharCode(65535), uChar(data));
+            assert.strictEqual(String.fromCharCode(65535), uChar(data));
+
+            assert.isNull(uChar(data));
+            assert.strictEqual("Stop", data.input.substr(data.pos));
         },
-        "description of test block 2": {
-            setup: function () {
-                data = new Data({
-                    input: "\\U00000000\\U99999999\\Uaaaaaaaa\\UAAAAAAAA\\Uffffffff\\UFFFFFFFFStop"
-                });
-            },
-            "valid syntax: '\\U' HEX HEX HEX HEX HEX HEX HEX HEX": function(){
-                function char(code) {
-                        return String.fromCharCode(code);
-                };
-                assert.strictEqual(String.fromCharCode(0), uChar(data));
-                assert.strictEqual(char(55846) + char(56729), uChar(data));
-                assert.strictEqual(char(55914) + char(57002), uChar(data));
-                assert.strictEqual(char(55914) + char(57002), uChar(data));
-                assert.strictEqual(char(56255) + char(57343), uChar(data));
-                assert.strictEqual(char(56255) + char(57343), uChar(data));
+        "valid syntax: '\\U' HEX HEX HEX HEX HEX HEX HEX HEX": function () {
+            var data = new Data({
+                input: "\\U00000000\\U99999999\\Uaaaaaaaa\\UAAAAAAAA\\Uffffffff\\UFFFFFFFFStop"
+            });
 
-                assert.isNull(uChar(data));
-                assert.strictEqual("Stop", data.input.substr(data.pos));
+            function char(code) {
+                return String.fromCharCode(code);
             }
+
+            assert.strictEqual(String.fromCharCode(0), uChar(data));
+            assert.strictEqual(char(55846) + char(56729), uChar(data));
+            assert.strictEqual(char(55914) + char(57002), uChar(data));
+            assert.strictEqual(char(55914) + char(57002), uChar(data));
+            assert.strictEqual(char(56255) + char(57343), uChar(data));
+            assert.strictEqual(char(56255) + char(57343), uChar(data));
+
+            assert.isNull(uChar(data));
+            assert.strictEqual("Stop", data.input.substr(data.pos));
         }
     });
 });

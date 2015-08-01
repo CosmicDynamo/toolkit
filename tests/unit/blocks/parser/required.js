@@ -52,7 +52,7 @@ define([
  * Method to be used if the parser has gone down a path where only one possibility exists, and there is a value that MUST be present to fulfill it
  * @method required
  * @param {Promise<* | null> | * | null} value - The output from another parsing function.  Will handle the promise and validate if a result was returned
- * @param {String} message - Exception message should the required attribute be mixxing
+ * @param {String} message - Exception message should the required attribute be missing
  * @return {Promise<*> | *}
  * @throws {jazzHands.parser.exception.MissingRequired}
  *

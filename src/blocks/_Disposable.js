@@ -21,27 +21,37 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module $<class>$
+ * @module blocks._Disposable
  */
 define([
-], function () {
+    "dojo/_base/declare"
+], function (declare) {
     /**
-     * @instance blocks.typeof
+     * @class blocks._Disposable
+     * @mixes dojo.declare
      */
-    var toString = Object.prototype.toString;
-
-    return {
-        isFunction: function(it){
-            return toString.call(it) == "[object Function]"
+    return declare([], {
+        /**
+         * Indicates if this disposable was disposed
+         * @type {Boolean}
+         */
+        wasDisposed: false,
+        /**
+         * Mark this object as disposed
+         */
+        dispose: function(){
+            this.wasDisposed = true;
         },
-        isString: function(it){
-            return toString.call(it) == "[object String]";
-        },
-        isArray: function(it){
-            return toString.call(it) == "[object Array]";
-        },
-        isObject: function(it){
-            return it !== undefined && (it === null || typeof it == "object" || this.isArray(it) || this.isFunction(it));
+        /**
+         * Will log a message to the console if an object was already disposed
+         * @param {String} [message] - message to be displayed
+         * @return {Boolean} - indicates if object was actually disposed
+         */
+        warnDisposed: function(message){
+            if (this.wasDisposed){
+                console.warn(message || "Object has already been disposed");
+            }
+            return this.wasDisposed;
         }
-    };
+    });
 });

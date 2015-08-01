@@ -21,27 +21,22 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module $<class>$
+ * @module tests.api.blocks.Observable
  */
 define([
-], function () {
+    "intern/chai!assert"
+], function (assert) {
     /**
-     * @instance blocks.typeof
+     * @method tests.api.blocks.Observable
      */
-    var toString = Object.prototype.toString;
-
-    return {
-        isFunction: function(it){
-            return toString.call(it) == "[object Function]"
-        },
-        isString: function(it){
-            return toString.call(it) == "[object String]";
-        },
-        isArray: function(it){
-            return toString.call(it) == "[object Array]";
-        },
-        isObject: function(it){
-            return it !== undefined && (it === null || typeof it == "object" || this.isArray(it) || this.isFunction(it));
+    return function(instance, message){
+        if (message){
+            message += ": "
+        } else {
+            message = "";
         }
-    };
+
+        assert.isFunction(instance.dispose, message + "Disposables MUST have a dispose Method");
+        assert.isFunction(instance.warnDisposed, message + "Disposables MUST have a warnDisposed Method");
+    }
 });
