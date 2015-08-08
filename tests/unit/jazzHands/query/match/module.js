@@ -1,0 +1,5 @@
+define([
+    "./QuadPattern",
+    "./TriplePattern"
+], function () {
+});
