@@ -3,6 +3,7 @@ define([
     "./block",
     "./eChar",
     "./find",
+    "./hasAnyChar",
     "./hasChar",
     "./keyWord",
     "./matchChar",

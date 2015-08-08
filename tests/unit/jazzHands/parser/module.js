@@ -1,0 +1,4 @@
+define([
+    "./sparql/module"
+], function () {
+});

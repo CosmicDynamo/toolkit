@@ -37,7 +37,7 @@ define([
                 exec: function (test) {
                     test.whenResolved(nil(test.data), function (out) {
 
-                        test.assertIsObject(out);
+                        assert.isObject(out);
                         test.assertIsFunction(out.resolve);
                         test.assertIsArray(out.args);
                         test.assertEqual(0, out.args.length);
@@ -52,7 +52,7 @@ define([
                 exec: function (test) {
                     test.whenResolved(nil(test.data), function (out) {
 
-                        test.assertIsObject(out);
+                        assert.isObject(out);
                         test.assertIsFunction(out.resolve);
                         test.assertIsArray(out.args);
                         test.assertEqual(0, out.args.length);

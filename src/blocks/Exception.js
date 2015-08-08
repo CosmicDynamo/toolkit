@@ -25,8 +25,9 @@
  */
 define([
     "dojo/_base/declare",
-    "dojo/Stateful"
-], function (declare, Stateful) {
+    "dojo/Stateful",
+    "./typeTest"
+], function (declare, Stateful, typeTest) {
     /**
      * Base Exception object
      * @class blocks.Exception
@@ -35,10 +36,8 @@ define([
         /** @property {String} */
         message: null,
         constructor: function (params) {
-            if (lang.isString(params)) {
+            if (typeTest.isString(params)) {
                 this.message = params;
-            } else {
-                lang.mixin(this, params);
             }
         }
     });

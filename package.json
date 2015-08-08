@@ -1,0 +1,13 @@
+{
+    "name": "jazzHands",
+    "version": "0.1.0",
+    "dependencies": {
+        "dojo": "1.10",
+        "rdfJs": "0.1.0"
+    },
+    "devDependencies": {
+        "dojo": "1.10",
+        "rdfJs": "0.1.0",
+        "qasht": "0.1.0"
+    }
+}

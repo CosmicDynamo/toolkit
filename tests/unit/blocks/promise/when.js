@@ -26,7 +26,7 @@
 define([
     "intern!object",
     "intern/chai!assert",
-    "block/promise/when",
+    "blocks/promise/when",
     "dojo/_base/Deferred"
 ], function (TestSuite, assert, when, Deferred) {
     return new TestSuite({
@@ -46,10 +46,23 @@ define([
             assert.strictEqual(input, fnArg, "Input was passed into callback");
             assert.strictEqual(rtn, output, "callback return was returned from when");
         },
+        "when: calls errBack if exception thrown in callback": function () {
+            var hit = false;
+            var output = when(0, function(){
+                throw {message: "Bang!!!"};
+            }, function(err){
+                hit = true;
+                assert.strictEqual(err.message, "Bang!!!");
+                return 1;
+            });
+
+            assert.isTrue(hit, "Errorback was called");
+            assert.strictEqual(output, 1, "errback return was returned")
+        },
         "when: handles null input": function () {
             var input = null;
             var rtn = null;
-            var fnArg;
+            var fnArg = null;
             var output = when(input, function(arg){
                 fnArg = arg;
                 return rtn;
@@ -93,35 +106,34 @@ define([
             assert.notStrictEqual(rtn, output, "callback return was not returned from when before promise resolved");
 
             input.reject("A Value");
-            var done = this.async();
-            when(output, done.errback(function(arg){
+            return when(output, function(arg){
                 assert.strictEqual("A Value", fnArg, "Promise resolution was passed to callback");
                 assert.strictEqual(rtn, arg, "Function return was returned");
-            }));
+            });
         },
         "when: takes a promise and calls the progback on progress": function () {
             var input = new Deferred();
             var rtn = "A Return";
             var fnArg = null;
+            var canCallback = false;
             var output = when(input, function(){
-                assert.ok(false, "Callback should not be called");
+                assert.ok(canCallback, "Callback should not be called");
             }, function(){
-                assert.ok(false, "ErrorBack should not be called");
+                assert.ok(false, "errback should not be called");
             }, function(arg){
                 fnArg = arg;
-                return rtn;
             });
 
             assert.notStrictEqual(input, fnArg, "Input was not passed into callback before promise resolved");
             assert.notStrictEqual(rtn, output, "callback return was not returned from when before promise resolved");
 
             input.progress("A Value");
+            canCallback = true;
+            input.resolve();
 
-            var done = this.async();
-            when(output, done.progback(function(arg){
+            return when(output, function(){
                 assert.strictEqual("A Value", fnArg, "Promise resolution was passed to callback");
-                assert.strictEqual(rtn, arg, "Function return was returned");
-            }));
+            });
         },
         "when: return promise resolved when callback return resolved": function () {
             var input = new Deferred();

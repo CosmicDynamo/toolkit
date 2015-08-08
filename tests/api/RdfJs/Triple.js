@@ -21,14 +21,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module RdfJs.test.api.Triple
+ * @module tests.ai.RdfJs.Triple
  */
 define([
     "intern/chai!assert",
     "./Node"
 ], function (assert, testNodeApi) {
     /**
-     * @method RdfJs.test.api.Triple
+     * @method tests.ai.RdfJs.Triple
      * @param {*} instance
      */
     return function (instance) {

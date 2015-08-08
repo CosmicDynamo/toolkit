@@ -27,8 +27,9 @@ define([
     "intern!object",
     "intern/chai!assert",
     "blocks/promise/all",
-    "dojo/_base/Deferred"
-], function (TestSuite, assert, all, Deferred) {
+    "dojo/_base/Deferred",
+    "blocks/promise/when"
+], function (TestSuite, assert, all, Deferred, when) {
     return new TestSuite({
         name: "blocks/promise/all",
         "API": function () {
@@ -101,7 +102,9 @@ define([
             assert.isFunction(result.then, "Return is a promise");
 
             var done = this.async();
-            when(result, done.callback(function(result) {
+            when(result, function(){
+                assert.fail("promise was rejected")
+            }, done.callback(function(result) {
                 assert.strictEqual("err", result, "Rejected value is returned");
             }));
 
