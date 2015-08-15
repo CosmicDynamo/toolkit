@@ -23,15 +23,16 @@
  * THE SOFTWARE.
  */
 define([
-    "dojo/_base/Deferred"
-], function (Deferred) {
-    var global = this;
-
-    global.Promise = function(doStuff){
-        var promise = new Deferred();
-
-        doStuff(promise.resolve, promise.reject, promise.progress);
-
-        return promise;
+    "polyfill/has!Promise"
+], function () {
+    return function(){
+        var res=null, rej=null;
+        var p = new Promise(function(resolve, reject) {
+            res = resolve;
+            rej = reject;
+        });
+        p.resolve = res;
+        p.reject = rej;
+        return p
     }
 });
