@@ -417,6 +417,9 @@ define([
         },
         has: function (triple) {
             return this.match(triple.subject.toNT(), triple.predicate.toNT(), triple.object.toNT()).length > 0;
+        },
+        toNT: function(){
+            return this.toArray().join("\n")
         }
     });
 
