@@ -24,60 +24,50 @@
  * @module blocks.test.unit.Container
  */
 define([
-    "qasht/package/Unit",
+    "intern!object",
+    "intern/chai!assert",
     "blocks/Container"
-], function (TestPackage, Container) {
-    return new TestPackage({
-        module: "blocks/Container",
-        tests: [
-            {
-                name: "get/set: Able to set a value and re-get it",
-                exec: function (test) {
-                    var v1 = "A String";
-                    var v2 = { an: "Object"};
+], function (intern, assert, Container) {
+    return new intern({
+        name: "blocks/Container",
+        "get/set: Able to set a value and re-get it": function () {
+            var container = new Container();
+            
+            var v1 = "A String";
+            var v2 = { an: "Object"};
 
-                    test.assertNull(test.container.get("field1"), "Does not have a value before it is set");
-                    test.assertNull(test.container.get("field2"), "Does not have a value before it is set");
+            assert.isNull(container.get("field1"), "Does not have a value before it is set");
+            assert.isNull(container.get("field2"), "Does not have a value before it is set");
 
-                    test.container.set("field1", v1);
-                    test.container.set("field2", v2);
+            container.set("field1", v1);
+            container.set("field2", v2);
 
-                    test.assertEqual(v1, test.container.get("field1"), "Is now set to new value");
-                    test.assertEqual(v2, test.container.get("field2"), "Is now set to new value");
+            assert.strictEqual(v1, container.get("field1"), "Is now set to new value");
+            assert.strictEqual(v2, container.get("field2"), "Is now set to new value");
+        },
+        "keys: returns the list of names in this Container": function () {
+            var container = new Container();
 
-                    test.complete();
-                }
-            },
-            {
-                name: "keys: returns the list of names in this Container",
-                exec: function (test) {
-                    test.assertEqual(0, test.container.keys().length, "Returns empty array before data is added");
+            assert.strictEqual(0, container.keys().length, "Returns empty array before data is added");
 
-                    test.container.set("aColumn1", "value");
-                    test.container.set("aColumn2", "value");
-                    test.container.set("aColumn3", "value");
-                    test.container.set("aColumn4", "value");
-                    test.container.set("aColumn4", "SetAgain");
+            container.set("aColumn1", "value");
+            container.set("aColumn2", "value");
+            container.set("aColumn3", "value");
+            container.set("aColumn4", "value");
+            container.set("aColumn4", "SetAgain");
 
-                    var columns = test.container.keys();
+            var columns = container.keys();
 
-                    test.assertEqual(4, columns.length, "Four Values were added");
-                    var values = {};
-                    columns.forEach(function (name) {
-                        values[name] = true;
-                    });
+            assert.strictEqual(4, columns.length, "Four Values were added");
+            var values = {};
+            columns.forEach(function (name) {
+                values[name] = true;
+            });
 
-                    test.assertTrue(values["aColumn1"], "Expected value Found");
-                    test.assertTrue(values["aColumn2"], "Expected value Found");
-                    test.assertTrue(values["aColumn3"], "Expected value Found");
-                    test.assertTrue(values["aColumn4"], "Expected value Found");
-
-                    test.complete();
-                }
-            }
-        ],
-        setUp: function (test) {
-            test.container = new Container();
+            assert.isTrue(values["aColumn1"], "Expected value Found");
+            assert.isTrue(values["aColumn2"], "Expected value Found");
+            assert.isTrue(values["aColumn3"], "Expected value Found");
+            assert.isTrue(values["aColumn4"], "Expected value Found");
         }
     });
 });
