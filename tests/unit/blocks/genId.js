@@ -24,55 +24,38 @@
  * @module $<class>$
  */
 define([
-    "qasht/package/Unit",
+    "intern!object",
+    "intern/chai!assert",
     "blocks/genId"
-], function (TestPackage, genId) {
-    return new TestPackage({
-        module: "blocks/genId",
-        tests: [
-            {
-                name: "genId: uses each code",
-                exec: function (test) {
-                    for(var idx = 0; idx < genId.codes.length; idx++){
-                        test.assertEqual( "x" + genId.codes[idx], genId(), "code " + idx + "used");
-                    }
+], function (intern, assert, genId) {
+    return new intern({
+        name: "blocks/genId",
+        "genId: uses each code": function () {
+            for(var idx = 0; idx < genId.codes.length; idx++){
+                assert.strictEqual( "x" + genId.codes[idx], genId(), "code " + idx + "used");
+            }
+        },
+        "genId: Each Code is unique": function () {
+            var generated = {};
+            for(var idx = 0; idx < genId.codes.length; idx++){
+                var id = genId();
+                assert.isUndefined(generated[id], "Id is unique");
+                generated[id] = true;
+            }
+        },
+        "genId: After all combinations are used, adds a char and starts over": function () {
+            for(var idx = 0; idx < genId.codes.length; idx++){
+                genId();
+            }
 
-                    test.complete();
-                }
-            },
-            {
-                name: "genId: Each Code is unique",
-                exec: function (test) {
-                    var generated = {};
-                    for(var idx = 0; idx < genId.codes.length; idx++){
-                        var id = genId();
-                        test.assertUndefined(generated[id], "Id is unique");
-                        generated[id] = true;
-                    }
-
-                    test.complete();
-                }
-            },
-            {
-                name: "genId: After all combinations are used, adds a char and starts over",
-                setUp: function(){
-                    for(var idx = 0; idx < genId.codes.length; idx++){
-                       genId();
-                    }
-                },
-                exec: function (test) {
-                    for(var idx1 = 0; idx1 < genId.codes.length; idx1++){
-                        for(var idx = 0; idx < genId.codes.length; idx++){
-                            var expected = "x" + genId.codes[idx1] + genId.codes[idx];
-                            test.assertEqual(expected, genId(), "code " + expected + "used");
-                        }
-                    }
-
-                    test.complete();
+            for(var idx1 = 0; idx1 < genId.codes.length; idx1++){
+                for(idx = 0; idx < genId.codes.length; idx++){
+                    var expected = "x" + genId.codes[idx1] + genId.codes[idx];
+                    assert.strictEqual(expected, genId(), "code " + expected + "used");
                 }
             }
-        ],
-        setUp: function () {
+        },
+        beforeEach: function() {
             genId.id = [-1];
         }
     });

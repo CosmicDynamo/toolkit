@@ -1,14 +1,14 @@
 define([
     "./parser/module",
     "./promise/module",
-    //"./require/module",
     "./Cache",
-    //"./Container",
-    //"./Exception",
-    //"./genId",
-    //"./HashTable",
+    "./Container",
+    "./Exception",
+    "./genId",
+    "./HashTable",
     "./Observable"
-    //Cannot be tested due to a dojo 2.0 conflict
-    // "./require"
+    ////Cannot be tested w/ Intern due to a dojo 2.0 conflict
+    //"./require/module",
+    //// "./require"
 ], function () {
 });

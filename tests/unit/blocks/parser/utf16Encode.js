@@ -26,7 +26,7 @@
 define([
     "intern!object",
     "intern/chai!assert",
-    "../../../string/utf16Encode"
+    "blocks/string/utf16Encode"
 ], function (TestSuite, assert, utf16Encode) {
     return new TestSuite({
         name: "blocks/parser/utf16Encode",
@@ -39,8 +39,7 @@ define([
             assert.strictEqual(String.fromCharCode(65535), utf16Encode("0xFFFF"));
         },
         "'0x' HEX HEX HEX HEX HEX HEX HEX HEX converted to String": function(){
-            input: "\\U00000000\\U99999999\\Uaaaaaaaa\\UAAAAAAAA\\Uffffffff\\UFFFFFFFFStop",
-            function char(code) {
+            var char = function (code) {
                 return String.fromCharCode(code);
             };
             assert.strictEqual(String.fromCharCode(0), utf16Encode("0x00000000"));

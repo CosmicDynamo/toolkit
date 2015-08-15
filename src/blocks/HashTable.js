@@ -123,7 +123,7 @@ define([
                 var keys = Object.keys(key).sort();
 
                 keys.forEach(function(prop){
-                    out.push(prop + ":" + this.genHash(key[prop]));
+                    out.push(prop + ":" + this.genHash(key[prop] || ""));
                 }.bind(this));
                 key = "{" + out.join(",") + "}";
             }

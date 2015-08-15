@@ -24,144 +24,116 @@
  * @module $<class>$
  */
 define([
-    "qasht/package/Unit",
+    "intern!object",
+    "intern/chai!assert",
     "blocks/HashTable"
-], function (TestPackage, HashTable) {
-    return new TestPackage({
-        module: "blocks/HashTable",
-        tests: [
-            {
-                name: "add: stores object and returns a key",
-                exec: function (test) {
-                    var value = {
-                        property: "value"
-                    };
-                    var key = test.hash.add(value);
+], function (intern, assert, HashTable) {
+    return new intern({
+        name: "blocks/HashTable",
+        "add: stores object and returns a key": function () {
+            var hash = new HashTable();
+            
+            var value = {
+                property: "value"
+            };
+            var key = hash.add(value);
 
-                    test.assertNotEqual(key, value, "key is not value");
-                    test.assertIsString(key, "Key is a string");
-                    test.assertEqual(value, test.hash.get(key), "Get(key) returns original value");
+            assert.notEqual(key, value, "key is not value");
+            assert.isString(key, "Key is a string");
+            assert.strictEqual(value, hash.get(key), "Get(key) returns original value");
+        },
+        "lookup: returns key from value": function () {
+            var hash = new HashTable();
 
-                    test.complete();
+            var value = {
+                property: "value"
+            };
+            var key = hash.add(value);
+            var lookup = hash.lookup(value);
+
+            assert.strictEqual(key, lookup, "Lookup matches original generated key");
+        },
+        "remove: removes value from table": function () {
+            var hash = new HashTable();
+
+            var value = {
+                property: "value"
+            };
+            var key = hash.add(value);
+            hash.remove(key);
+
+            assert.isNull(hash.get(key), "get does not return value");
+        },
+        "remove: removes value from lookup": function () {
+            var hash = new HashTable();
+
+            var value = {
+                property: "value"
+            };
+            var key = hash.add(value);
+            hash.remove(key);
+            var lookup = hash.lookup(value);
+
+            assert.isNull(lookup, "Lookup does not return value");
+        },
+        "keys: returns list of keys generated from adding values": function(){
+            var hash = new HashTable();
+
+            var value = {
+                property: "value"
+            };
+            var key1 = hash.add("value1");
+            var key2 = hash.add("value2");
+            var key3 = hash.add("value3");
+            var key4 = hash.add("value4");
+            var key5 = hash.add("value5");
+
+            var match = {};
+            hash.keys().forEach(function(key){
+                match[key] = true;
+            });
+            assert.isTrue(match[key1]);
+            assert.isTrue(match[key2]);
+            assert.isTrue(match[key3]);
+            assert.isTrue(match[key4]);
+            assert.isTrue(match[key5]);
+        },
+        "forEach: loops through all stored values": function(){
+            var hash = new HashTable();
+
+            var value = {
+                property: "value"
+            };
+            var key1 = hash.add("value1");
+            var key2 = hash.add("value2");
+            var key3 = hash.add("value3");
+            var key4 = hash.add("value4");
+            var key5 = hash.add("value5");
+
+            var match = {};
+            hash.forEach(function(value, key, self){
+                assert.strictEqual(self, hash);
+                match[key] = value;
+            });
+            assert.strictEqual("value1", match[key1]);
+            assert.strictEqual("value2", match[key2]);
+            assert.strictEqual("value3", match[key3]);
+            assert.strictEqual("value4", match[key4]);
+            assert.strictEqual("value5", match[key5]);
+        },
+        "genHash: can pass custom has method": function () {
+            var hash = new HashTable({
+                genHash: function(){
+                    return "custom";
                 }
-            },
-            {
-                name: "lookup: returns key from value",
-                exec: function (test) {
-                    var value = {
-                        property: "value"
-                    };
-                    var key = test.hash.add(value);
-                    var lookup = test.hash.lookup(value);
+            });
 
-                    test.assertEqual(key, lookup, "Lookup matches original generated key");
+            var value = {
+                property: "value"
+            };
+            var key = hash.add(value);
 
-                    test.complete();
-                }
-            },
-            {
-                name: "remove: removes value from table",
-                exec: function (test) {
-                    var value = {
-                        property: "value"
-                    };
-                    var key = test.hash.add(value);
-                    test.hash.remove(key);
-
-                    test.assertUndefined(test.hash.get(key), "get does not return value");
-
-                    test.complete();
-                }
-            },
-            {
-                name: "remove: removes value from lookup",
-                exec: function (test) {
-                    var value = {
-                        property: "value"
-                    };
-                    var key = test.hash.add(value);
-                    test.hash.remove(key);
-                    var lookup = test.hash.lookup(value);
-
-                    test.assertUndefined(lookup, "Lookup does not return value");
-
-                    test.complete();
-                }
-            },
-            {
-                name: "keys: returns list of keys generated from adding values",
-                exec: function(test){
-                    var value = {
-                        property: "value"
-                    };
-                    var key1 = test.hash.add("value1");
-                    var key2 = test.hash.add("value2");
-                    var key3 = test.hash.add("value3");
-                    var key4 = test.hash.add("value4");
-                    var key5 = test.hash.add("value5");
-
-                    var match = {};
-                    test.hash.keys().forEach(function(key){
-                        match[key] = true;
-                    });
-                    test.assertTrue(match[key1]);
-                    test.assertTrue(match[key2]);
-                    test.assertTrue(match[key3]);
-                    test.assertTrue(match[key4]);
-                    test.assertTrue(match[key5]);
-
-                    test.complete();
-                }
-            },
-            {
-                name: "forEach: loops through all stored values",
-                exec: function(test){
-                    var value = {
-                        property: "value"
-                    };
-                    var key1 = test.hash.add("value1");
-                    var key2 = test.hash.add("value2");
-                    var key3 = test.hash.add("value3");
-                    var key4 = test.hash.add("value4");
-                    var key5 = test.hash.add("value5");
-
-                    var match = {};
-                    test.hash.forEach(function(value, key, self){
-                        test.assertEqual(self, test.hash);
-                        match[key] = value;
-                    });
-                    test.assertEqual("value1", match[key1]);
-                    test.assertEqual("value2", match[key2]);
-                    test.assertEqual("value3", match[key3]);
-                    test.assertEqual("value4", match[key4]);
-                    test.assertEqual("value5", match[key5]);
-
-                    test.complete();
-                }
-            },
-            {
-                name: "genHash: can pass custom has method",
-                setUp: function(test){
-                    test.hash = new HashTable({
-                        genHash: function(){
-                            return "custom";
-                        }
-                    })
-                },
-                exec: function (test) {
-                    var value = {
-                        property: "value"
-                    };
-                    var key = test.hash.add(value);
-
-                    test.assertNotEqual("custom", key, "key is custom value");
-
-                    test.complete();
-                }
-            }
-        ],
-        setUp: function (test) {
-            test.hash = new HashTable();
+            assert.notEqual("custom", key, "key is custom value");
         }
     });
 });

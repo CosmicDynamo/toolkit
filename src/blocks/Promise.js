@@ -2,7 +2,7 @@
  * @copyright
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Cosmic Dynamo LLC
+ * Copyright (c) 2014 Cosmic Dynamo LLC
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -21,32 +21,18 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @module blocks.promise.all
  */
 define([
-    "./when",
-    "dojo/promise/all",
-    "../typeTest"
-], function (when, all, typeTest) {
-    /**
-     * @function blocks.promise.all
-     * @param {Promise | * | Array} valueOrArray
-     * @return {Array<*> || Promise}
-     */
-    return function(valueOrArray){
-        var done = false, out = null;
-        var array;
-        if (!typeTest.isArray(valueOrArray)){
-            array = [valueOrArray]
-        } else {
-            array = valueOrArray
-        }
-
-        var promise = when(all(array), function(results){
-            done = true;
-            return out = results;
+    "polyfill/has!Promise"
+], function () {
+    return function(){
+        var res=null, rej=null;
+        var p = new Promise(function(resolve, reject) {
+            res = resolve;
+            rej = reject;
         });
-
-        return done?out:promise;
-    };
+        p.resolve = res;
+        p.reject = rej;
+        return p
+    }
 });

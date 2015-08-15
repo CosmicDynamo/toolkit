@@ -27,5 +27,11 @@ define([
 ], function (Deferred) {
     var global = this;
 
-    global.Promise = Deferred;
+    global.Promise = function(doStuff){
+        var promise = new Deferred();
+
+        doStuff(promise.resolve, promise.reject, promise.progress);
+
+        return promise;
+    }
 });
