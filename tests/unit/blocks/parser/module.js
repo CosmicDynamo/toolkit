@@ -10,6 +10,6 @@ define([
     "./range",
     "./required",
     "./uChar",
-    //"./utf16Encode"
+    "./utf16Encode"
 ], function () {
 });
