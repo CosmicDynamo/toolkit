@@ -24,24 +24,21 @@
  * @module $<class>$
  */
 define([
-    "qasht/package/Unit",
+    "intern!object",
+    "intern/chai!assert",
     "blocks/Exception"
-], function (TestPackage, Exception) {
-    return new TestPackage({
-        module: "blocks/Exception",
-        tests: [
-            {
-                name: "ctor: message and error code are attached to Exception",
-                setUp: function (test) {
-                    test.exp = new Exception("This is a Test", 1234);
-                },
-                exec: function (test) {
-                    test.assertEqual("This is a Test", test.exp.message);
-                    //test.assertEqual(1234, test.exp.code);
+], function (intern, assert, Exception) {
+    return new intern({
+        name: "blocks/Exception",
+        "ctor: message and error code are attached to Exception (param array)": function () {
+            var exp = new Exception("This is a Test", 1234);
 
-                    test.complete();
-                }
-            }
-        ]
+            assert.strictEqual("This is a Test", exp.message);
+        },
+        "ctor: message and error code are attached to Exception (object)": function () {
+            var exp = new Exception({ message:"This is a Test", code:1234});
+
+            assert.strictEqual("This is a Test", exp.message);
+        }
     });
 });
